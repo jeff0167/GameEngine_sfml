@@ -27,7 +27,7 @@ GameObject::GameObject(list<Component> _components, Transformable _transform)
 	transform = _transform;
 }
 
-void GameObject::AddComponent(Component _component)
+void GameObject::AddComponent(Component _component) // if component is drawable then add it to the canvas
 {
 	components.push_back(_component);
 }

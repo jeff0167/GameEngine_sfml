@@ -8,8 +8,8 @@ class Animation
 public:
 	IntRect uvRect;
 
-	Animation(Texture* texture, Vector2u imageCount, float switchTime);
 	Animation();
+	Animation(Texture* texture, Vector2u imageCount, float switchTime);
 
 	void Update(int row, float deltaTime);
 	void Update(int row, int rowStartFrame, int fowEndFrame, float deltaTime);

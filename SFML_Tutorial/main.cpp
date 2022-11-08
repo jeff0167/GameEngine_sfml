@@ -4,7 +4,10 @@
 #include <cmath>
 #include <fstream> 
 #include "Animation.h"
+#include "Canvas.h"
 #include "Monobehaviour.h"
+#include "ParticleSystem.h"
+#include "Input.h"
 #include "GameObject.h"
 #include <iterator>
 #include <list>
@@ -18,7 +21,6 @@ void MouseInput();
 void CollisionChecking();
 void PlayerAnimState();
 void Shoot();
-CircleShape GetProjectile();
 
 Vector2f normalize(const Vector2f& source)
 {
@@ -35,17 +37,14 @@ int windowHeight = 1200;
 int windowWidth = 1200;
 
 RenderWindow window(VideoMode(windowWidth, windowHeight), "Pog champ", Style::Close | Style::Titlebar | Style::Resize);
-CircleShape shape(100);
-Vector2f windowPos = Vector2f(400, 400);
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 0.075f;
+float moveSpeed = 5.0f;
 float velocityX = 0;
 float velocityY = 0;
 
 int frame = 0;
-int timer = 0;
 
 Texture hero;
 Vector2u textureSize;
@@ -55,18 +54,17 @@ Clock _clock;
 
 Animation _playerIdle;
 
-CircleShape origin(5, 10);
-
 bool idle = true;
 
-CircleShape projectiles[1];
+vector<CircleShape> proj = vector<CircleShape>();
 
-list<CircleShape> proj;
+Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
 
-int main() // cant inherit monobehaviour? well this is just a function, not a class
+int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
 	// When not used in declaration, it act as a dereference operator.
+	cout << myCanvas->value();
 
 	hero.loadFromFile("_sprites_heroes.png");
 
@@ -75,29 +73,25 @@ int main() // cant inherit monobehaviour? well this is just a function, not a cl
 	textureSize.y /= 8;
 
 	_player.setPosition(60, 60);
-	_player.setOrigin(textureSize.x * 3.5, hero.getSize().y / 2); //I do understand the origin, though for this instance I CHOOSE to set the origin to *3.5 as it gives the best result
+	_player.setOrigin((float)textureSize.x * 3.5, (float)hero.getSize().y / 2); // check what these values give
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
+	myCanvas->AddDrawable(_player);
 
 	_playerIdle = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
-	proj = list<CircleShape>();
+	ParticleSystem particles(10000, Color::Black);
+	myCanvas->AddDrawable(particles);
+	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
+	myCanvas->AddDrawable(particlesPlayer);
 
-	for (size_t i = 0; i < 10; i++) // to get the size of an array you need the byte size and the byte type sizeof(myNumbers) / sizeof(int)   use foreach where possible
-	{
-		proj.push_front(CircleShape(10,10)); // use struct for simple data containers, NOT classes
-	}
-
-	for (size_t i = 0; i < 1; i++)
-	{
-		projectiles[i] = CircleShape(10, 10);
-	}
-
+	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
 	{
-		deltaTime = _clock.restart().asSeconds(); // this will get the time between frames
+		Time t = _clock.restart();
+		deltaTime = t.asSeconds(); // this will get the time between frames
 
-		sf::Event _event;
+		Event _event;
 		while (window.pollEvent(_event))
 		{
 			switch (_event.type)
@@ -118,12 +112,17 @@ int main() // cant inherit monobehaviour? well this is just a function, not a cl
 		KeyBoardInput();  // first check for input
 		MouseInput();
 
-		Monobehaviour::Instantiate(GameObject()); // yo what up! Cool
+		Vector2i mouse = Mouse::getPosition(window);
+		particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
+		particles.update(t); // would really just like to set the speed, my dude!!
+
+		//Monobehaviour::Instantiate(GameObject()); // yo what up! Cool
 
 		PlayerAnimState(); // then animate based on input
+		particlesPlayer.setEmitter(_player.getPosition()); // player origin doesn't move with the player?
+		particlesPlayer.update(t);
 
 		CollisionChecking(); // last check for collisions
-
 		Draw();
 	}
 	return 0;
@@ -131,7 +130,7 @@ int main() // cant inherit monobehaviour? well this is just a function, not a cl
 
 void PlayerAnimState() // would like to set the animation from the outside, this func will just call the animation
 {
-	if (velocityX < 0 && _player.getScale().x > 0) {
+	if (velocityX < 0 && _player.getScale().x > 0) { // what way are we facing?
 		_player.setScale(-1, _player.getScale().y);
 	}
 	else if (velocityX > 0 && _player.getScale().x < 0) {
@@ -155,22 +154,23 @@ void PlayerAnimState() // would like to set the animation from the outside, this
 			_playerIdle.NextAnim();
 		}
 
-		_playerIdle.Update(7, 0, 3, deltaTime); // we are standing still
+		_playerIdle.Update(7, 0, 3, deltaTime);
 	}
 	_player.setTextureRect(_playerIdle.uvRect);
 }
 
-CircleShape GetProjectile()
+void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
-	for (CircleShape var : proj)
-	{
-		if (var.getPosition() == _player.getPosition()) return var;
-	}
-}
+	CircleShape s = CircleShape(5, 50);
+	s.setPosition(_player.getPosition());
+	s.setOrigin(_player.getOrigin());
+	s.setFillColor(Color::Blue);
 
-void Shoot()
-{
-	projectiles[0].setPosition(_player.getPosition());
+	proj.push_back(s);
+
+	if (proj.size() == 125) { // do something with particles and noise
+		proj.erase(proj.begin());
+	}
 }
 
 void MouseInput()
@@ -184,35 +184,33 @@ void MouseInput()
 
 void KeyBoardInput()
 {
-	if (Keyboard::isKeyPressed(Keyboard::Escape))
-	{
-		window.close();
-	}
+	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
-	if (Keyboard::isKeyPressed(Keyboard::Space))
-	{
-		Shoot();
-	}
+	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
-	if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{
 		velocityX = -1;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+	if (Input::GetKey(Keyboard::Right, Input::KeyHeld) || Input::GetKey(Keyboard::D, Input::KeyHeld))
 	{
 		velocityX = 1;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) // this is wrong, if y goes down we should drop, like in a graph
+	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld)) // this is wrong, if y goes down we should drop, like in a graph
 	{
 		velocityY = -1;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+	if (Input::GetKey(Keyboard::Down, Input::KeyHeld) || Input::GetKey(Keyboard::S, Input::KeyHeld))
 	{
 		velocityY = 1;
 	}
 
+	for (size_t i = 0; i < proj.size(); i++)
+	{
+		proj[i].move(Vector2f(10 * _player.getScale().x, 0)); // we need to be able to set the movement once and it stays the same
+	}
+	//window.setPosition(window.getPosition() + Vector2i(velocityX, velocityY)); // can't touch this,      really need a += operator, would make things much smoother to work with
 	_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed);
-	//projectiles[0].setPosition(projectiles->getPosition().x + 0.1f, projectiles->getPosition().y);
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object
@@ -233,13 +231,16 @@ void CollisionChecking() // now this is a hard part, here we are just doing it f
 	}
 }
 
-void Draw() // if you make an object, it has to be drawn, have to have a list of objects in the scene
+void Draw()
 {
-	window.clear(Color(255, 204, 92)); // could be equal to camera solid backround
-	window.draw(_player);
-	window.draw(origin);
+	window.clear(Color(255, 204, 92)); // could be equal to camera solid backround, how would you lerp between colors over time? it's almost like you need an update or coroutine loop^^
 
-	window.draw(projectiles[0]);
+	myCanvas->DrawCanvas(window);
+
+	for (size_t i = 0; i < proj.size(); i++) // can't safe drawables, instantiated at runtime, too canvas and render them, can draw them here though
+	{
+		window.draw(proj[i]);
+	}
 
 	window.display();
 }
