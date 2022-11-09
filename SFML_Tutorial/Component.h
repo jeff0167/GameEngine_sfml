@@ -14,6 +14,10 @@ public:
 	int Member;
 
 	Component();
+	virtual void Yo() 
+	{
+
+	}
 
 	bool operator == (const Component& Ref) const
 	{

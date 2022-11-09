@@ -5,10 +5,13 @@
 #include <fstream> 
 #include "Animation.h"
 #include "Canvas.h"
+#include "Physics.h"
+#include "Component.h"
 #include "Monobehaviour.h"
 #include "ParticleSystem.h"
 #include "Input.h"
 #include "GameObject.h"
+#include "Rigidbody.h"
 #include <iterator>
 #include <list>
 
@@ -59,12 +62,22 @@ bool idle = true;
 vector<CircleShape> proj = vector<CircleShape>();
 
 Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
+Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
+
+// i need a physics system that takes rigidbodies and moves them 
+// i need a physics collision system that takes colliders and checks for collisions on them
+// first you move then check collision and based on collision you will change the movement on rigidbodies
+// in the future, physics simulation should happen on it's own thread
+
+GameObject g;
+Rigidbody r;
 
 int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
 	// When not used in declaration, it act as a dereference operator.
-	cout << myCanvas->value();
+	cout << myCanvas->value() + "\n";
+	cout << myPhysics->value();
 
 	hero.loadFromFile("_sprites_heroes.png");
 
@@ -84,6 +97,16 @@ int main()
 	myCanvas->AddDrawable(particles);
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
 	myCanvas->AddDrawable(particlesPlayer);
+
+	g = Monobehaviour::Instantiate(GameObject());
+	r = Rigidbody(_player);
+	g.AddComponent(r);
+
+	vector<Component*> yo = vector<Component*>();
+	yo.push_back(&r);
+
+	g = Monobehaviour::Instantiate(GameObject(yo));
+	cout << myPhysics->GetRigidbodies().size();
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -109,14 +132,28 @@ int main()
 			}
 		}
 
-		KeyBoardInput();  // first check for input
+		myPhysics->PhysicsUpdate();
+		_player.setPosition(r.transform->getPosition()); // something something inline, something went wrong now it doesn't update position when moving with mouse
 		MouseInput();
+		KeyBoardInput();  // first check for input
+
+		cout << "\n";
+		cout << "x: ";
+		cout << r.transform->getPosition().x;
+		cout << ", y:";
+		cout << r.transform->getPosition().y; // it does get the positon of the actual object transformable
+		
+		//cout << "\n";
+		//cout << "x: ";
+		//cout << r.velocity.x; // the velocity is being set to
+		//cout << ", y:";
+		//cout << r.velocity.y;
+
+		
 
 		Vector2i mouse = Mouse::getPosition(window);
 		particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
 		particles.update(t); // would really just like to set the speed, my dude!!
-
-		//Monobehaviour::Instantiate(GameObject()); // yo what up! Cool
 
 		PlayerAnimState(); // then animate based on input
 		particlesPlayer.setEmitter(_player.getPosition()); // player origin doesn't move with the player?
@@ -161,6 +198,10 @@ void PlayerAnimState() // would like to set the animation from the outside, this
 
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
+
+	// create gameobject with the circles add rigid bodies and set that rigidbodies velocity
+
+
 	CircleShape s = CircleShape(5, 50);
 	s.setPosition(_player.getPosition());
 	s.setOrigin(_player.getOrigin());
@@ -205,12 +246,12 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	for (size_t i = 0; i < proj.size(); i++)
-	{
-		proj[i].move(Vector2f(10 * _player.getScale().x, 0)); // we need to be able to set the movement once and it stays the same
-	}
-	//window.setPosition(window.getPosition() + Vector2i(velocityX, velocityY)); // can't touch this,      really need a += operator, would make things much smoother to work with
-	_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed);
+	//window.setPosition(window.getPosition() + Vector2i(velocityX, velocityY)); // can't touch this,    really need a += operator, would make things much smoother to work with
+	r.velocity = normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	//cout << "\n Set velocityy in keyboardinput: ";
+	//cout << r.velocity.x;
+	//cout << "\n";
+	//_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed);
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

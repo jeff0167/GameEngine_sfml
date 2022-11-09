@@ -1,4 +1,4 @@
 ﻿  main.cpp
 C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\ParticleSystem.h(79,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(76,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(89,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   SFML_Tutorial.vcxproj -> C:\Users\Bobby\source\repos\GameEngine_sfml\x64\Debug\SFML_Tutorial.exe

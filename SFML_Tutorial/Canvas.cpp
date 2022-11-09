@@ -22,10 +22,10 @@ void Canvas::RemoveDrawable(Drawable &_drawable)
 {
 	for (size_t i = 0; i < drawables.size(); i++)
 	{
-		/*if (texture == _texture) // should we make our own texture class so we can check the class type ref, could we check another way?
+		if (drawables[i] == &_drawable) // should we make our own texture class so we can check the class type ref, could we check another way?
 		{
-			textures.remove(texture);
-		}*/
+			drawables.erase(next(drawables.begin(), i), next(drawables.begin(), i + 1)); 
+		}
 	}
 }
 

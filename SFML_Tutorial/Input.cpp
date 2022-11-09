@@ -3,7 +3,7 @@
 using namespace sf;
 using namespace std;
 
-static bool notPressedKeys[100] = { false };
+static bool notPressedKeys[100] = { false }; // there is about a houndred keys
 static bool pressedNotReleased[100] = { false }; // suppose you could do the same with mouse input?
 
 static bool keyEvent[3] = {false};
