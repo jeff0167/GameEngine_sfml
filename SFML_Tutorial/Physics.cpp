@@ -39,12 +39,6 @@ void Physics::PhysicsUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++) // i need to update it's position by adding the velocity, which means a rigidbody should have a vector2?
 	{
-		cout << "\n";
-		cout << "px: ";
-		cout << rigidbodies[i]->transform->getPosition().x;
-		cout << ", py:";
-		cout << rigidbodies[i]->transform->getPosition().y; // it does get the positon of the actual object transformable
-		//cout << rigidbodies[i]->velocity.x;
 		rigidbodies[i]->transform->setPosition(rigidbodies[i]->transform->getPosition() + rigidbodies[i]->velocity); // does not have simple vector * float operator
 	}
 }

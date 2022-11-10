@@ -7,8 +7,3 @@ void Rigidbody::AddForce()
 {
 	
 }
-
-Rigidbody::Rigidbody(Transformable& _transform)
-{
-	transform = &_transform;
-}

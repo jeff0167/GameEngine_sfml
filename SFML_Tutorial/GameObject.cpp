@@ -7,31 +7,20 @@
 using namespace sf;
 using namespace std;
 
-GameObject::GameObject()
+GameObject::GameObject(Transformable& _transform) // what does * and then * do?   we do not want to set a reference value, we want to set the memory
 {
-	transform = Transformable();
-	transform.setPosition(0, 0);
-	transform.setRotation(0);
-	transform.setScale(1, 1);
-	transform.setOrigin(0, 0);
-}
-
-GameObject::GameObject(vector<Component*> _components)
-{
-	components = _components;
-	CheckComponentType(_components);
-	transform = Transformable();
-	transform.setPosition(0, 0);
-	transform.setRotation(0);
-	transform.setScale(1, 1);
-	transform.setOrigin(0, 0);
+	transform = &_transform;
+	transform->setPosition(0, 0);
+	transform->setRotation(0);
+	transform->setScale(1, 1);
+	transform->setOrigin(0, 0);
 }
 
 GameObject::GameObject(vector<Component*> _components, Transformable& _transform)
 {
 	components = _components;
 	CheckComponentType(_components);
-	transform = _transform;
+	transform = &_transform;
 }
 
 void GameObject::CheckComponentType(vector<Component*> _components) // this will not work, only gets the component as a class type
@@ -45,27 +34,23 @@ void GameObject::CheckComponentType(vector<Component*> _components) // this will
 
 void GameObject::CheckComponentType(Component _component)
 {
-	cout << "hii";
-	cout << typeid(_component).name(); // currently the component name is component, that explains a lot
 	string s = typeid(_component).name(); // something to do with inline makes it not work
 
 	if (s == "class Rigidbody")
 	{
-		cout << "Success";
-		dynamic_cast<Rigidbody&>(_component).transform = &transform; // the gameobject has a transformable, inherited, but can we send it?
+		dynamic_cast<Rigidbody&>(_component).transform = transform; // the gameobject has a transformable, inherited, but can we send it?
 		Physics::GetInstance("MyFirstPhysicsSystem")->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
 }
 
 void GameObject::AddComponent(Component& _component) // if component is drawable then add it to the canvas
 {
-	cout << typeid(_component).name();
+	//cout << typeid(_component).name();
 	string s = typeid(_component).name(); // something to do with inline makes it not work
 
 	if (s == "class Rigidbody")
 	{
-		cout << "Success2";
-		dynamic_cast<Rigidbody&>(_component).transform = &transform; // the gameobject has a transformable, inherited, but can we send it?
+		dynamic_cast<Rigidbody&>(_component).transform = transform; // the gameobject has a transformable, inherited, but can we send it?
 		Physics::GetInstance("MyFirstPhysicsSystem")->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
 	//CheckComponentType(_component);

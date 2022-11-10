@@ -69,8 +69,8 @@ Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
 // first you move then check collision and based on collision you will change the movement on rigidbodies
 // in the future, physics simulation should happen on it's own thread
 
-GameObject g;
-Rigidbody r;
+GameObject go;
+Rigidbody rb;
 
 int main()
 {
@@ -98,15 +98,9 @@ int main()
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
 	myCanvas->AddDrawable(particlesPlayer);
 
-	g = Monobehaviour::Instantiate(GameObject());
-	r = Rigidbody(_player);
-	g.AddComponent(r);
-
-	vector<Component*> yo = vector<Component*>();
-	yo.push_back(&r);
-
-	g = Monobehaviour::Instantiate(GameObject(yo));
-	cout << myPhysics->GetRigidbodies().size();
+	go = Monobehaviour::Instantiate(GameObject(_player)); // auto is the same as var in C#, or at least somewhat similar
+	rb = Rigidbody();
+	go.AddComponent(rb);
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -132,24 +126,10 @@ int main()
 			}
 		}
 
-		myPhysics->PhysicsUpdate();
-		_player.setPosition(r.transform->getPosition()); // something something inline, something went wrong now it doesn't update position when moving with mouse
 		MouseInput();
 		KeyBoardInput();  // first check for input
 
-		cout << "\n";
-		cout << "x: ";
-		cout << r.transform->getPosition().x;
-		cout << ", y:";
-		cout << r.transform->getPosition().y; // it does get the positon of the actual object transformable
-		
-		//cout << "\n";
-		//cout << "x: ";
-		//cout << r.velocity.x; // the velocity is being set to
-		//cout << ", y:";
-		//cout << r.velocity.y;
-
-		
+		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference
 
 		Vector2i mouse = Mouse::getPosition(window);
 		particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
@@ -247,11 +227,8 @@ void KeyBoardInput()
 	}
 
 	//window.setPosition(window.getPosition() + Vector2i(velocityX, velocityY)); // can't touch this,    really need a += operator, would make things much smoother to work with
-	r.velocity = normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
-	//cout << "\n Set velocityy in keyboardinput: ";
-	//cout << r.velocity.x;
-	//cout << "\n";
-	//_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed);
+	rb.velocity = normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	//_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed); // I suppose this move uses the origin to move relative to, need to fix that with physics update
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

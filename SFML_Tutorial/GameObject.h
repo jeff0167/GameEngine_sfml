@@ -12,11 +12,11 @@ using namespace std;
 class GameObject
 {
 public:
-	GameObject();
-	GameObject(vector<Component*> components);
+    GameObject() {};
+	GameObject(Transformable& shape);
 	GameObject(vector<Component*> _components, Transformable& _transform);
 
-    Transformable transform;
+    Transformable* transform;
     vector<Component*> components;
 
 	void AddComponent(Component& component);

@@ -1,4 +1,3 @@
-﻿  main.cpp
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\ParticleSystem.h(79,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(89,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿  GameObject.cpp
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\GameObject.cpp(69): warning C4715: 'GameObject::GetComponent': not all control paths return a value
   SFML_Tutorial.vcxproj -> C:\Users\Bobby\source\repos\GameEngine_sfml\x64\Debug\SFML_Tutorial.exe

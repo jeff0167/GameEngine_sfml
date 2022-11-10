@@ -17,7 +17,6 @@ public:
     Transformable* transform;
 
     Rigidbody() {}
-    Rigidbody(Transformable& _transform);
     void AddForce();
 
     bool operator == (const Rigidbody& Ref) const
