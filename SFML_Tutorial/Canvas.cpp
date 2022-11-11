@@ -3,7 +3,7 @@
 using namespace sf;
 using namespace std;
 
-Canvas* Canvas::_canvas = nullptr; // it just has this as a property!?!?! outside class and function scope?
+Canvas* Canvas::_canvas = nullptr; // it just has this as a property!? outside class and function scope?
 
 Canvas *Canvas::GetInstance(const string& value)
 {
@@ -13,7 +13,7 @@ Canvas *Canvas::GetInstance(const string& value)
 	return _canvas;
 }
 
-void Canvas::AddDrawable(Drawable &drawable) // I need a monobehaviour, dude it makes sense, dont judge the name, to instantiate gameobjects with and other things
+void Canvas::AddDrawable(Drawable &drawable) 
 {
 	drawables.push_back(&drawable);
 }
@@ -22,7 +22,7 @@ void Canvas::RemoveDrawable(Drawable &_drawable)
 {
 	for (size_t i = 0; i < drawables.size(); i++)
 	{
-		if (drawables[i] == &_drawable) // should we make our own texture class so we can check the class type ref, could we check another way?
+		if (drawables[i] == &_drawable)
 		{
 			drawables.erase(next(drawables.begin(), i), next(drawables.begin(), i + 1)); 
 		}

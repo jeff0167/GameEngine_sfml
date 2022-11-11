@@ -37,7 +37,7 @@ bool Input::GetKeyHeld(Keyboard::Key key)
 
 bool Input::GetKeyUp(Keyboard::Key key)
 {
-	if (!Keyboard::isKeyPressed(key) && pressedNotReleased[key]) // is key being held down, no, but it's held boolean is still true
+	if (!Keyboard::isKeyPressed(key) && pressedNotReleased[key]) 
 	{
 		pressedNotReleased[key] = false;
 		notPressedKeys[key] = false;

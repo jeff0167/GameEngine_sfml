@@ -13,7 +13,7 @@ class GameObject
 {
 public:
     GameObject() {};
-	GameObject(Transformable& shape);
+	GameObject(Shape& drawShape);
 	GameObject(vector<Component*> _components, Transformable& _transform);
 
     Transformable* transform;

@@ -39,7 +39,7 @@ Vector2f normalize(const Vector2f& source)
 int windowHeight = 1200;
 int windowWidth = 1200;
 
-RenderWindow window(VideoMode(windowWidth, windowHeight), "Pog champ", Style::Close | Style::Titlebar | Style::Resize);
+RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::Close | Style::Titlebar | Style::Resize);
 
 RectangleShape _player(Vector2f(100, 200));
 
@@ -64,7 +64,6 @@ vector<CircleShape> proj = vector<CircleShape>();
 Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
 Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
 
-// i need a physics system that takes rigidbodies and moves them 
 // i need a physics collision system that takes colliders and checks for collisions on them
 // first you move then check collision and based on collision you will change the movement on rigidbodies
 // in the future, physics simulation should happen on it's own thread
@@ -86,10 +85,9 @@ int main()
 	textureSize.y /= 8;
 
 	_player.setPosition(60, 60);
-	_player.setOrigin((float)textureSize.x * 3.5, (float)hero.getSize().y / 2); // check what these values give
+	_player.setOrigin((float)textureSize.x * 3.5, (float)hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
-	myCanvas->AddDrawable(_player);
 
 	_playerIdle = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
@@ -131,14 +129,14 @@ int main()
 
 		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference
 
-		Vector2i mouse = Mouse::getPosition(window);
-		particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
-		particles.update(t); // would really just like to set the speed, my dude!!
+		//Vector2i mouse = Mouse::getPosition(window);
+		//particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); // would like for it to update itself on it's own, once instantiated
+		//particles.update(t); // would really just like to set the speed, my dude!!
+
+		//particlesPlayer.setEmitter(_player.getPosition()); // player origin doesn't move with the player?
+		//particlesPlayer.update(t);
 
 		PlayerAnimState(); // then animate based on input
-		particlesPlayer.setEmitter(_player.getPosition()); // player origin doesn't move with the player?
-		particlesPlayer.update(t);
-
 		CollisionChecking(); // last check for collisions
 		Draw();
 	}
@@ -178,9 +176,7 @@ void PlayerAnimState() // would like to set the animation from the outside, this
 
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
-
 	// create gameobject with the circles add rigid bodies and set that rigidbodies velocity
-
 
 	CircleShape s = CircleShape(5, 50);
 	s.setPosition(_player.getPosition());
@@ -255,7 +251,7 @@ void Draw()
 
 	myCanvas->DrawCanvas(window);
 
-	for (size_t i = 0; i < proj.size(); i++) // can't safe drawables, instantiated at runtime, too canvas and render them, can draw them here though
+	for (size_t i = 0; i < proj.size(); i++) // can't safe drawables, instantiated at runtime too canvas and render them, can draw them here though
 	{
 		window.draw(proj[i]);
 	}

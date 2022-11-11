@@ -1,5 +1,6 @@
 #include "Monobehaviour.h"
 #include "GameObject.h"
+#include "Canvas.h"
 
 using namespace sf;
 

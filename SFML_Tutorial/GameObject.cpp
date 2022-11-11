@@ -1,19 +1,20 @@
 #include "GameObject.h"
 #include "Rigidbody.h"
 #include "Physics.h"
+#include "Canvas.h"
 #include <list>
 #include <iostream>
 
 using namespace sf;
 using namespace std;
 
-GameObject::GameObject(Transformable& _transform) // what does * and then * do?   we do not want to set a reference value, we want to set the memory
+GameObject::GameObject(Shape& drawShape) // what does * and then * do?   we do not want to set a reference value, we want to set the memory
 {
-	transform = &_transform;
+	transform = &drawShape;
+	Canvas::GetInstance("")->AddDrawable(drawShape);
 	transform->setPosition(0, 0);
 	transform->setRotation(0);
 	transform->setScale(1, 1);
-	transform->setOrigin(0, 0);
 }
 
 GameObject::GameObject(vector<Component*> _components, Transformable& _transform)

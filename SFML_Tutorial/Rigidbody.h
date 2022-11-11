@@ -9,7 +9,7 @@
 using namespace sf;
 using namespace std;
 
-class Rigidbody : public Component // rigidbody is a component and a component will have a gameObject which will have a transformAble which is what we want to affect
+class Rigidbody : public Component 
 {
 public:
     Vector2f velocity;
