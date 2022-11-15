@@ -1,9 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
-#include <cmath>
-#include <iterator>
-#include <list>
 #include "Component.h"
 
 using namespace sf;
@@ -17,7 +13,7 @@ public:
     Transformable* transform;
 
     Rigidbody() {}
-    void AddForce();
+    void AddForce(float force);
 
     bool operator == (const Rigidbody& Ref) const
     {

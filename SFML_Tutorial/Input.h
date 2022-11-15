@@ -1,14 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
-#include <cmath>
-#include <iterator>
-#include <list>
 
 using namespace sf;
 using namespace std;
 
-class Input // needs to be a singleton and have an observer pattern
+class Input 
 {
 public:
     enum Keycode

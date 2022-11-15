@@ -1,9 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
-#include <cmath>
-#include <iterator>
-#include <list>
 
 using namespace sf;
 using namespace std;

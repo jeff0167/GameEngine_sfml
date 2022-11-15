@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <iostream>
 #include <cmath>
 #include <fstream> 
@@ -12,8 +11,7 @@
 #include "Input.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
-#include <iterator>
-#include <list>
+#include <thread>
 
 using namespace sf;
 using namespace std;
@@ -84,7 +82,7 @@ int main()
 	textureSize.x /= 9;
 	textureSize.y /= 8;
 
-	_player.setPosition(60, 60);
+	_player.setPosition(600, 600);
 	_player.setOrigin((float)textureSize.x * 3.5, (float)hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
@@ -96,9 +94,7 @@ int main()
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
 	myCanvas->AddDrawable(particlesPlayer);
 
-	go = Monobehaviour::Instantiate(GameObject(_player)); // auto is the same as var in C#, or at least somewhat similar
-	rb = Rigidbody();
-	go.AddComponent(rb);
+	go = Monobehaviour::Instantiate(GameObject(_player, rb)); // auto is the same as var in C#, or at least somewhat similar
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -127,7 +123,7 @@ int main()
 		MouseInput();
 		KeyBoardInput();  // first check for input
 
-		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference
+		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference,    how would you have a physics loop that loops at a fixed time?
 
 		//Vector2i mouse = Mouse::getPosition(window);
 		//particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); // would like for it to update itself on it's own, once instantiated
@@ -174,14 +170,22 @@ void PlayerAnimState() // would like to set the animation from the outside, this
 	_player.setTextureRect(_playerIdle.uvRect);
 }
 
+void Yomama() 
+{
+	cout << "shoot";
+}
+
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
-	// create gameobject with the circles add rigid bodies and set that rigidbodies velocity
+	// create gameobject with the shape add rigid bodies and set that rigidbodies velocity
 
 	CircleShape s = CircleShape(5, 50);
-	s.setPosition(_player.getPosition());
+	s.setPosition(_player.getPosition()); // really can't seem to initialize gameobjects without them having acces violation the same frame, even with the use of threads
 	s.setOrigin(_player.getOrigin());
 	s.setFillColor(Color::Blue);
+
+	thread t(Yomama);
+	t.join();
 
 	proj.push_back(s);
 
@@ -213,7 +217,7 @@ void KeyBoardInput()
 	{
 		velocityX = 1;
 	}
-	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld)) // this is wrong, if y goes down we should drop, like in a graph
+	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld)) 
 	{
 		velocityY = -1;
 	}
@@ -222,9 +226,7 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	//window.setPosition(window.getPosition() + Vector2i(velocityX, velocityY)); // can't touch this,    really need a += operator, would make things much smoother to work with
 	rb.velocity = normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
-	//_player.move(normalize(Vector2f(velocityX, velocityY)) * moveSpeed); // I suppose this move uses the origin to move relative to, need to fix that with physics update
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

@@ -35,11 +35,10 @@ vector<Rigidbody*> Physics::GetRigidbodies()
 	return rigidbodies;
 }
 
-void Physics::PhysicsUpdate() // maybe show this?
+void Physics::PhysicsUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity); // does not have simple vector * float operator,     I wonder which one is best for perfromance, this line is cleaner though
-		//rigidbodies[i]->transform->setPosition(rigidbodies[i]->transform->getPosition() + rigidbodies[i]->velocity); // does not have simple vector * float operator
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity); 
 	}
 }

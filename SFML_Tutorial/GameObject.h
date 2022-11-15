@@ -1,9 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
-#include <cmath>
-#include <iterator>
-#include <list>
 #include "Component.h"
 
 using namespace sf;
@@ -14,16 +10,17 @@ class GameObject
 public:
     GameObject() {};
 	GameObject(Shape& drawShape);
-	GameObject(vector<Component*> _components, Transformable& _transform);
+	GameObject(Shape& drawShape, Component& _component);
+	GameObject(Shape& drawShape, vector<Component*>& _components);
 
     Transformable* transform;
-    vector<Component*> components;
+    vector<Component*> components; // you can only have one of each component type pr gameObject
 
 	void AddComponent(Component& component);
-    Component GetComponent(Component& component); // you can only have one component type pr gameobject
+    Component GetComponent(Component& component); 
 	void RemoveComponent(Component& component);
-    void CheckComponentType(Component _component);
-    void CheckComponentType(vector<Component*> _components);
+    void CheckComponentType(Component& _component);
+    void CheckComponentType(vector<Component*>& _components);
 
     bool operator == (const GameObject& Ref) const
     {

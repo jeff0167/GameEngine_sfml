@@ -3,7 +3,7 @@
 using namespace sf;
 using namespace std;
 
-void Rigidbody::AddForce() 
+void Rigidbody::AddForce(float force) 
 {
 	
 }
