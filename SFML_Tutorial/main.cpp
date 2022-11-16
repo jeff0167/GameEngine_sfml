@@ -8,6 +8,8 @@
 #include "Component.h"
 #include "Monobehaviour.h"
 #include "ParticleSystem.h"
+#include "Collider.h"
+#include "CircleCollider.h"
 #include "Input.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
@@ -69,6 +71,8 @@ Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
 GameObject go;
 Rigidbody rb;
 
+RectangleShape _dog(Vector2f(100, 100));
+
 int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
@@ -95,6 +99,42 @@ int main()
 	myCanvas->AddDrawable(particlesPlayer);
 
 	go = Monobehaviour::Instantiate(GameObject(_player, rb)); // auto is the same as var in C#, or at least somewhat similar
+
+	CircleCollider cool = CircleCollider();
+	cool.size = 50;
+	cool.offsetPos = Vector2f(50, 50);
+	go.AddComponent(cool);
+
+	RectangleShape Supp(Vector2f(1, 1));
+	Supp.setSize(Vector2f(50,50));
+	Supp.setOrigin(25,25);
+	Supp.setPosition(Vector2f(500,500));
+	Supp.setFillColor(Color::Blue);
+
+	CircleCollider circle = CircleCollider();
+	circle.offsetPos = Vector2f(0, 0);
+	circle.size = 25;           
+
+	GameObject zoro(Supp, circle);
+
+	Rigidbody rbd = Rigidbody();
+
+	zoro.AddComponent(rbd);
+
+	_dog.setSize(Vector2f(50,50));
+	_dog.setOrigin(25, 25);
+	_dog.setPosition(Vector2f(300,300));
+	_dog.setFillColor(Color::Blue);
+
+	CircleCollider circle2 = CircleCollider(); // every game object should have a reference to it's parent gameobject, then you can call func on it or remove components from it
+	circle2.offsetPos = Vector2f(0, 0);
+	circle2.size = 25;           
+
+	GameObject zoro2 = GameObject(_dog, circle2); // maybe use floatRect to get local bounds of objects                                          
+
+	Rigidbody rbd2 = Rigidbody();
+
+	zoro2.AddComponent(rbd2);
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -124,6 +164,7 @@ int main()
 		KeyBoardInput();  // first check for input
 
 		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference,    how would you have a physics loop that loops at a fixed time?
+		myPhysics->PhysicsCollisionUpdate();
 
 		//Vector2i mouse = Mouse::getPosition(window);
 		//particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); // would like for it to update itself on it's own, once instantiated
@@ -177,8 +218,6 @@ void Yomama()
 
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
-	// create gameobject with the shape add rigid bodies and set that rigidbodies velocity
-
 	CircleShape s = CircleShape(5, 50);
 	s.setPosition(_player.getPosition()); // really can't seem to initialize gameobjects without them having acces violation the same frame, even with the use of threads
 	s.setOrigin(_player.getOrigin());
@@ -199,7 +238,8 @@ void MouseInput()
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		_dog.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 

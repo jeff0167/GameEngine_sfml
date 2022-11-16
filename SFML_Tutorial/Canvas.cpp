@@ -3,7 +3,7 @@
 using namespace sf;
 using namespace std;
 
-Canvas* Canvas::_canvas = nullptr; // it just has this as a property!? outside class and function scope?
+Canvas* Canvas::_canvas = nullptr;
 
 Canvas *Canvas::GetInstance(const string& value)
 {
@@ -41,3 +41,4 @@ void Canvas::DrawCanvas(RenderTarget &renderTarget)
 		renderTarget.draw(*drawables[i]);
 	}
 }
+

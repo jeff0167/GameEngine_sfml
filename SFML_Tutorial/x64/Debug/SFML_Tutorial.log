@@ -1,12 +1,6 @@
-﻿  Canvas.cpp
-  GameObject.cpp
-  Input.cpp
-  Monobehaviour.cpp
-  Physics.cpp
-  Rigidbody.cpp
+﻿  Physics.cpp
   main.cpp
 C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\ParticleSystem.h(75,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(86,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(90,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating Code...
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\GameObject.cpp(84): warning C4715: 'GameObject::GetComponent': not all control paths return a value
   SFML_Tutorial.vcxproj -> C:\Users\Bobby\source\repos\GameEngine_sfml\x64\Debug\SFML_Tutorial.exe

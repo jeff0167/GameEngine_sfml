@@ -24,10 +24,10 @@ public:
 
 	vector<Drawable*> drawables;
 
-	void AddDrawable(Drawable &drawable);
-	void RemoveDrawable(Drawable &_drawable);
+	void AddDrawable(Drawable& drawable);
+	void RemoveDrawable(Drawable& _drawable);
     vector<Drawable*> GetDrawables();
-    void DrawCanvas(RenderTarget &renderTarget);
+    void DrawCanvas(RenderTarget& renderTarget);
 
 protected:
     string value_;
@@ -36,3 +36,6 @@ protected:
     Canvas(const string& value) : value_(value) {}; // constructor
 
 };
+
+
+

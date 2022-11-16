@@ -7,13 +7,13 @@
 using namespace sf;
 using namespace std;
 
-GameObject::GameObject(Shape& drawShape) 
+GameObject::GameObject(Shape& drawShape)
 {
 	transform = &drawShape;
 	Canvas::GetInstance("")->AddDrawable(drawShape);
 }
 
-GameObject::GameObject(Shape& drawShape, Component& _component) 
+GameObject::GameObject(Shape& drawShape, Component& _component)
 {
 	transform = &drawShape;
 	Canvas::GetInstance("")->AddDrawable(drawShape);
@@ -43,20 +43,26 @@ void GameObject::CheckComponentType(Component& _component)
 
 	if (s == "class Rigidbody")
 	{
-		dynamic_cast<Rigidbody&>(_component).transform = transform; 
+		dynamic_cast<Rigidbody&>(_component).transform = transform;
 		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
 }
 
-void GameObject::AddComponent(Component& _component) 
+void GameObject::AddComponent(Component& _component)
 {
 	//cout << typeid(_component).name();
 	string s = typeid(_component).name(); // something to do with inline makes it not work directly
 
 	if (s == "class Rigidbody")
 	{
-		dynamic_cast<Rigidbody&>(_component).transform = transform; 
-		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
+		dynamic_cast<Rigidbody&>(_component).transform = transform;
+		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component)); // this feels so skethy my dude
+	}
+	else if (s == "class CircleCollider") // check if it contains collider in string
+	{
+		cout << "Added a collider pog";
+		dynamic_cast<Collider&>(_component).transform = transform;
+		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component));
 	}
 	components.push_back(&_component);
 }
@@ -72,7 +78,7 @@ void GameObject::RemoveComponent(Component& _component)
 	}
 }
 
-Component GameObject::GetComponent(Component& _component) 
+Component GameObject::GetComponent(Component& _component)
 {
 	for (size_t i = 0; i < components.size(); i++)
 	{
