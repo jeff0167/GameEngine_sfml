@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Canvas.h"
 
 using namespace sf;
 using namespace std;
@@ -14,6 +15,7 @@ public:
 		m_lifetime(seconds(3.f)),
 		m_emitter(0.f, 0.f)
 	{
+		Canvas::GetInstance("")->AddDrawable(*this);
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
 			m_vertices[i].color = color;

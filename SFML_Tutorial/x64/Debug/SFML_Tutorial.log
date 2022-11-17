@@ -1,6 +1,13 @@
-﻿  Physics.cpp
+﻿  CircleCollider.cpp
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\CircleCollider.h(25,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Mathf.cpp
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\CircleCollider.h(25,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Physics.cpp
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\CircleCollider.h(25,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   main.cpp
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\ParticleSystem.h(75,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(90,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\ParticleSystem.h(77,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\CircleCollider.h(25,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\main.cpp(76,41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating Code...
+C:\Users\Bobby\source\repos\GameEngine_sfml\SFML_Tutorial\CircleCollider.h(22): warning C4715: 'CircleCollider::Collision': not all control paths return a value
   SFML_Tutorial.vcxproj -> C:\Users\Bobby\source\repos\GameEngine_sfml\x64\Debug\SFML_Tutorial.exe

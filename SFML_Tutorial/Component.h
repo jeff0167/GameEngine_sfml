@@ -10,9 +10,8 @@ public:
 	int Member;
 
 	Component();
-	virtual void Yo() 
+	virtual void AbstractNullFunc() 
 	{
-
 	}
 
 	bool operator == (const Component& Ref) const

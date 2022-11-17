@@ -1,5 +1,6 @@
 #include "Physics.h"
 #include "Canvas.h"
+#include "Mathf.h"
 #include <iostream>
 
 using namespace sf;
@@ -70,9 +71,9 @@ void Physics::PhysicsCollisionUpdate()
 	//cout << colliders.size();
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
-		for (size_t j = 0; j < colliders.size(); j++) // currently you can check collision against yourself
+		for (size_t j = 0; j < colliders.size(); j++) 
 		{
-			if (i == j) continue;
+			if (i == j) continue; // don't check against itself
 			//cout << "\n";
 			//cout << colliders[i]->transform->getPosition().x;
 			//cout << "\n";
@@ -85,7 +86,7 @@ void Physics::PhysicsCollisionUpdate()
 
 			if (colliders[i]->Collision(*colliders[j]))  // ok we collided, now what?!?! we should move the objekt that moved into it in the oposite direction of it's velocity vector just so it touches the static collider
 			{
-				cout << "Something collided, pog"; // how would you do it if 2 colliders move into each other!?!?
+				cout << "Collide "; // what would you do if 2 colliders move into each other!?!?
 			}
 		}
 	}

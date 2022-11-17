@@ -11,6 +11,7 @@
 #include "Collider.h"
 #include "CircleCollider.h"
 #include "Input.h"
+#include "Mathf.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
 #include <thread>
@@ -24,17 +25,6 @@ void MouseInput();
 void CollisionChecking();
 void PlayerAnimState();
 void Shoot();
-
-Vector2f normalize(const Vector2f& source)
-{
-	float length = sqrt((source.x * source.x) + (source.y * source.y));
-
-	if (source.x != 0 && source.y != 0) {
-		return Vector2f(source.x / length, source.y / length);
-	}
-	else
-		return source;
-}
 
 int windowHeight = 1200;
 int windowWidth = 1200;
@@ -64,21 +54,17 @@ vector<CircleShape> proj = vector<CircleShape>();
 Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
 Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
 
-// i need a physics collision system that takes colliders and checks for collisions on them
-// first you move then check collision and based on collision you will change the movement on rigidbodies
+// first you move then check collision and based on collision you will change the position on rigidbodies                        
 // in the future, physics simulation should happen on it's own thread
 
 GameObject go;
 Rigidbody rb;
 
-RectangleShape _dog(Vector2f(100, 100));
-
 int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
 	// When not used in declaration, it act as a dereference operator.
-	cout << myCanvas->value() + "\n";
-	cout << myPhysics->value();
+	cout << myCanvas->value() + "\n" + myPhysics->value();
 
 	hero.loadFromFile("_sprites_heroes.png");
 
@@ -94,15 +80,13 @@ int main()
 	_playerIdle = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
 	ParticleSystem particles(10000, Color::Black);
-	myCanvas->AddDrawable(particles);
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
-	myCanvas->AddDrawable(particlesPlayer);
 
-	go = Monobehaviour::Instantiate(GameObject(_player, rb)); // auto is the same as var in C#, or at least somewhat similar
+	go = Monobehaviour::Instantiate(GameObject(_player, rb)); 
 
 	CircleCollider cool = CircleCollider();
 	cool.size = 50;
-	cool.offsetPos = Vector2f(50, 50);
+	cool.offsetPos = Vector2f(0, 0);
 	go.AddComponent(cool);
 
 	RectangleShape Supp(Vector2f(1, 1));
@@ -112,34 +96,18 @@ int main()
 	Supp.setFillColor(Color::Blue);
 
 	CircleCollider circle = CircleCollider();
-	circle.offsetPos = Vector2f(0, 0);
+	circle.offsetPos = Vector2f(0, 0);              // offset works, hurray!!!
 	circle.size = 25;           
 
 	GameObject zoro(Supp, circle);
-
 	Rigidbody rbd = Rigidbody();
-
 	zoro.AddComponent(rbd);
-
-	_dog.setSize(Vector2f(50,50));
-	_dog.setOrigin(25, 25);
-	_dog.setPosition(Vector2f(300,300));
-	_dog.setFillColor(Color::Blue);
-
-	CircleCollider circle2 = CircleCollider(); // every game object should have a reference to it's parent gameobject, then you can call func on it or remove components from it
-	circle2.offsetPos = Vector2f(0, 0);
-	circle2.size = 25;           
-
-	GameObject zoro2 = GameObject(_dog, circle2); // maybe use floatRect to get local bounds of objects                                          
-
-	Rigidbody rbd2 = Rigidbody();
-
-	zoro2.AddComponent(rbd2);
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
 	{
-		Time t = _clock.restart();
+		Time t = _clock.getElapsedTime();
+		_clock.restart();
 		deltaTime = t.asSeconds(); // this will get the time between frames
 
 		Event _event;
@@ -238,8 +206,7 @@ void MouseInput()
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		_dog.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
@@ -266,7 +233,7 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	rb.velocity = normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	rb.velocity = Mathf::normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

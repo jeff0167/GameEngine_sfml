@@ -5,7 +5,7 @@
 using namespace sf;
 using namespace std;
 
-class Collider : public Component // collider needs to be inherited, like a circle collider or a box collider
+class Collider : public Component 
 {
 public:
     Vector2f offsetPos = Vector2f(0,0);
@@ -13,7 +13,7 @@ public:
     float rotation;
 
     Collider() {}
-    virtual bool Collision(Collider& _ohter) = 0;  // set virtual func equal to 0 to make it a pure virtual/abstract func
+    virtual bool Collision(Collider& _other) = 0;  // set virtual func equal to 0 to make it a pure virtual/abstract func
 
     bool operator == (const Collider& Ref) const
     {

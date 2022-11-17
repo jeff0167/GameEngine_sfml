@@ -153,6 +153,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mathf.cpp" />
     <ClCompile Include="Monobehaviour.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Physics.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Mathf.h" />
     <ClInclude Include="Monobehaviour.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Physics.h" />

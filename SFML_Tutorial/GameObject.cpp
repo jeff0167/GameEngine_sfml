@@ -51,16 +51,16 @@ void GameObject::CheckComponentType(Component& _component)
 void GameObject::AddComponent(Component& _component)
 {
 	//cout << typeid(_component).name();
-	string s = typeid(_component).name(); // something to do with inline makes it not work directly
+	string classType = typeid(_component).name(); // something to do with inline makes it not work directly
 
-	if (s == "class Rigidbody")
+	if (classType == "class Rigidbody")
 	{
 		dynamic_cast<Rigidbody&>(_component).transform = transform;
 		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component)); // this feels so skethy my dude
 	}
-	else if (s == "class CircleCollider") // check if it contains collider in string
+	else if (classType == "class CircleCollider") // check if it contains collider in string
 	{
-		cout << "Added a collider pog";
+		cout << "Added a collider";
 		dynamic_cast<Collider&>(_component).transform = transform;
 		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component));
 	}
