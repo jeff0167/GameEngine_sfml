@@ -2,7 +2,7 @@
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"
-#include <iostream>
+#include "Debug.h"
 
 using namespace sf;
 using namespace std;
@@ -60,11 +60,37 @@ void GameObject::AddComponent(Component& _component)
 	}
 	else if (classType == "class CircleCollider") // check if it contains collider in string
 	{
-		cout << "Added a collider";
+		Debug::GetInstance("")->Log("Added a Circle Collider");
 		dynamic_cast<Collider&>(_component).transform = transform;
 		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component));
 	}
+	else if (classType == "class BoxCollider") // check if it contains collider in string
+	{
+		Debug::GetInstance("")->Log("Added a Box Collider");
+		dynamic_cast<Collider&>(_component).transform = transform;
+
+		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component)); // where the hell does it get the collider include from?!?
+	}
 	components.push_back(&_component);
+}
+
+Component* GameObject::GetComponentType(Component& _component) 
+{
+	string classType = typeid(_component).name(); 
+
+	if (classType == "class Rigidbody")
+	{
+		return &(dynamic_cast<Rigidbody&>(_component));
+	}
+	else if (classType == "class CircleCollider") 
+	{
+		return &(dynamic_cast<Collider&>(_component));
+	}
+	else if (classType == "class BoxCollider") 
+	{
+		return &(dynamic_cast<Collider&>(_component)); 
+	}
+	return nullptr;
 }
 
 void GameObject::RemoveComponent(Component& _component)
@@ -78,13 +104,26 @@ void GameObject::RemoveComponent(Component& _component)
 	}
 }
 
-Component GameObject::GetComponent(Component& _component)
+template <typename T>
+T* GameObject::GetComponent(T _component)
 {
 	for (size_t i = 0; i < components.size(); i++)
 	{
-		if (components[i] == &_component)
+		if (components[i] == _component)
 		{
-			return _component;
+			 
+		/*	string name = typeid(_component).name();
+
+			Vector2f d(0, 0);
+
+			if (name.find("Box") != string::npos)
+			{
+				d.x = 1;
+			}
+
+			return GetComponentType(_component);*/
+			return components[i]; 
 		}
 	}
+	return nullptr;
 }

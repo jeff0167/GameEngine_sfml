@@ -1,7 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
-#include <cmath>
-#include <fstream> 
+#include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
 #include "Physics.h"
@@ -12,9 +10,10 @@
 #include "CircleCollider.h"
 #include "Input.h"
 #include "Mathf.h"
+#include "Debug.h"
 #include "GameObject.h"
 #include "Rigidbody.h"
-#include <thread>
+
 
 using namespace sf;
 using namespace std;
@@ -53,27 +52,27 @@ vector<CircleShape> proj = vector<CircleShape>();
 
 Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
 Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
+Debug* debug = Debug::GetInstance("MyFirstDebugLog");
 
 // first you move then check collision and based on collision you will change the position on rigidbodies                        
 // in the future, physics simulation should happen on it's own thread
 
-GameObject go;
-Rigidbody rb;
+GameObject go, zoro2, g;
+Rigidbody rb, rb2;
 
 int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
 	// When not used in declaration, it act as a dereference operator.
-	cout << myCanvas->value() + "\n" + myPhysics->value();
+	debug->Log(myCanvas->value() + "\n" + myPhysics->value());
 
 	hero.loadFromFile("_sprites_heroes.png");
-
 	textureSize = hero.getSize(); // 9 * 8
 	textureSize.x /= 9;
 	textureSize.y /= 8;
 
 	_player.setPosition(600, 600);
-	_player.setOrigin((float)textureSize.x * 3.5, (float)hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
+	_player.setOrigin((double)textureSize.x * 3.5, (double)hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
 
@@ -95,13 +94,31 @@ int main()
 	Supp.setPosition(Vector2f(500,500));
 	Supp.setFillColor(Color::Blue);
 
-	CircleCollider circle = CircleCollider();
-	circle.offsetPos = Vector2f(0, 0);              // offset works, hurray!!!
-	circle.size = 25;           
+	//CircleCollider circle = CircleCollider();
+	//circle.offsetPos = Vector2f(0, 0);              // offset works, hurray!!!
+	//circle.size = 25;     
 
-	GameObject zoro(Supp, circle);
-	Rigidbody rbd = Rigidbody();
-	zoro.AddComponent(rbd);
+	BoxCollider box = BoxCollider();
+	box.offsetPos = Vector2f(0, 0);
+	box.size = 25;
+
+	zoro2 = GameObject(Supp, box);
+	//Rigidbody rbd = Rigidbody();
+	//zoro.AddComponent(rbd);
+
+	RectangleShape Supp2(Vector2f(1, 1));
+	Supp2.setSize(Vector2f(50, 50));
+	Supp2.setOrigin(25, 25);
+	Supp2.setPosition(Vector2f(300, 300));
+	Supp2.setFillColor(Color::Blue);
+
+	BoxCollider box2 = BoxCollider();
+	box2.offsetPos = Vector2f(0, 0);
+	box2.size = 25;
+
+	g = GameObject(Supp2, box2);
+	rb2 = Rigidbody();
+	g.AddComponent(rb2);
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -206,7 +223,8 @@ void MouseInput()
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		zoro2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
@@ -233,7 +251,8 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	rb.velocity = Mathf::normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	rb2.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	//rb.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

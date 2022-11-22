@@ -13,6 +13,7 @@ public:
     Transformable* transform;
 
     Rigidbody() {}
+    double Magnitude();
     void AddForce(float force);
 
     bool operator == (const Rigidbody& Ref) const

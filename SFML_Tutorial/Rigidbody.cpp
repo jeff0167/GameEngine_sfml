@@ -7,3 +7,8 @@ void Rigidbody::AddForce(float force)
 {
 	
 }
+
+double Rigidbody::Magnitude() 
+{
+	return sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
+}
