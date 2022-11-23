@@ -10,6 +10,7 @@ using namespace std;
 GameObject::GameObject(Shape& drawShape)
 {
 	transform = &drawShape;
+	components = vector<Component*>();
 	Canvas::GetInstance("")->AddDrawable(drawShape);
 }
 
@@ -62,6 +63,11 @@ void GameObject::AddComponent(Component& _component)
 	{
 		Debug::GetInstance("")->Log("Added a Circle Collider");
 		dynamic_cast<Collider&>(_component).transform = transform;
+
+		auto s = GetComponents();
+		auto d = GetComponent(s, Rigidbody());
+		dynamic_cast<Collider&>(_component).rb = dynamic_cast<Rigidbody*>(d);
+
 		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component));
 	}
 	else if (classType == "class BoxCollider") // check if it contains collider in string
@@ -69,26 +75,34 @@ void GameObject::AddComponent(Component& _component)
 		Debug::GetInstance("")->Log("Added a Box Collider");
 		dynamic_cast<Collider&>(_component).transform = transform;
 
+		auto s = GetComponents();
+		auto d = GetComponent(s, Rigidbody());
+		dynamic_cast<Collider&>(_component).rb = dynamic_cast<Rigidbody*>(d);
+
+		//Debug::GetInstance("")->Log(dynamic_cast<Collider&>(_component).rb->Magnitude()); // gets added, i suppose, just not alloweed to read it right now, can't remember why things are sometimes not allowed to be read
+
 		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component)); // where the hell does it get the collider include from?!?
 	}
 	components.push_back(&_component);
+	Debug::GetInstance("")->Log(to_string(GetComponents().size())); // the game object is being set correctly
+	_component.gameObject = this; // im a buqing genius ^^, actually i'm not, i totaly over saw that i didn't set the gameobject and had other issues which didn't directly link me what the issue was, leading to hours of try and error until i realized the problem right here :)
 }
 
-Component* GameObject::GetComponentType(Component& _component) 
+Component* GameObject::GetComponentType(Component& _component)
 {
-	string classType = typeid(_component).name(); 
+	string classType = typeid(_component).name();
 
 	if (classType == "class Rigidbody")
 	{
 		return &(dynamic_cast<Rigidbody&>(_component));
 	}
-	else if (classType == "class CircleCollider") 
+	else if (classType == "class CircleCollider")
 	{
 		return &(dynamic_cast<Collider&>(_component));
 	}
-	else if (classType == "class BoxCollider") 
+	else if (classType == "class BoxCollider")
 	{
-		return &(dynamic_cast<Collider&>(_component)); 
+		return &(dynamic_cast<Collider&>(_component));
 	}
 	return nullptr;
 }
@@ -104,26 +118,10 @@ void GameObject::RemoveComponent(Component& _component)
 	}
 }
 
-template <typename T>
-T* GameObject::GetComponent(T _component)
+
+vector<Component*> GameObject::GetComponents()
 {
-	for (size_t i = 0; i < components.size(); i++)
-	{
-		if (components[i] == _component)
-		{
-			 
-		/*	string name = typeid(_component).name();
+	//if (components.empty()) return vector<Component*>(); // we will never return null
 
-			Vector2f d(0, 0);
-
-			if (name.find("Box") != string::npos)
-			{
-				d.x = 1;
-			}
-
-			return GetComponentType(_component);*/
-			return components[i]; 
-		}
-	}
-	return nullptr;
+	return components;
 }

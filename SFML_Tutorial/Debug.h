@@ -26,15 +26,15 @@ public:
 
 	void Log(float line) 
 	{
-		Log(line);
+		Log(to_string(line));
 	}
 	void Log(double line) 
 	{
-		Log(line);
+		Log(to_string(line));
 	}
 	void Log(int line) 
 	{
-		Log(line);
+		Log(to_string(line));
 	}
 
 	void Log(string line)

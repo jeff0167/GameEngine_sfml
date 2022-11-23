@@ -95,7 +95,7 @@ int main()
 	Supp.setFillColor(Color::Blue);
 
 	//CircleCollider circle = CircleCollider();
-	//circle.offsetPos = Vector2f(0, 0);              // offset works, hurray!!!
+	//circle.offsetPos = Vector2f(0, 0);             
 	//circle.size = 25;     
 
 	BoxCollider box = BoxCollider();
@@ -103,8 +103,8 @@ int main()
 	box.size = 25;
 
 	zoro2 = GameObject(Supp, box);
-	//Rigidbody rbd = Rigidbody();
-	//zoro.AddComponent(rbd);
+	Rigidbody rbd = Rigidbody();
+	zoro2.AddComponent(rbd);
 
 	RectangleShape Supp2(Vector2f(1, 1));
 	Supp2.setSize(Vector2f(50, 50));
@@ -117,9 +117,11 @@ int main()
 	box2.size = 25;
 
 	g = GameObject(Supp2, box2);
-	rb2 = Rigidbody();
 	g.AddComponent(rb2);
 
+	debug->Log("g has this many components" + to_string(g.GetComponents().size()));
+	debug->Log("g's collider has this many components" + to_string(box2.gameObject->GetComponents().size()));
+	
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
 	{
@@ -251,8 +253,10 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	rb2.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
-	//rb.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed;
+	Vector2f v = Vector2f(velocityX, velocityY);
+
+	rb2.velocity = Mathf::Normalize(v) * moveSpeed;
+	//rb.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed; // why the helll can i multiply a vector here!?
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object

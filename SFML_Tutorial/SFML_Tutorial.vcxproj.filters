@@ -66,6 +66,9 @@
     <ClCompile Include="Pch.cpp">
       <Filter>PrecompiledHeader</Filter>
     </ClCompile>
+    <ClCompile Include="EmptyComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="Pch.h">
       <Filter>PrecompiledHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

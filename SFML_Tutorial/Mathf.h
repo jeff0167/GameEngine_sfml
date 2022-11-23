@@ -11,12 +11,14 @@ using namespace std;
 class Mathf
 {
 public:
-	static Vector2f Normalize(const Vector2f& source)
+	static Vector2f Normalize(Vector2f& source)
 	{
 		float length = sqrt((source.x * source.x) + (source.y * source.y));
 
 		if (source.x != 0 && source.y != 0) {
-			return Vector2f(source.x / length, source.y / length);
+
+			source.x = source.x / length;
+			source.y = source.y / length;
 		}
 		else
 			return source;
@@ -26,8 +28,6 @@ public:
 	{
 		string firstName = typeid(first).name();
 		string secondName = typeid(second).name();
-		//Debug::GetInstance("")->Log(firstName);
-		//Debug::GetInstance("")->Log(secondName);
 
 		Vector2f d(0, 0);
 
