@@ -13,14 +13,14 @@ public:
 		m_particles(count),
 		m_vertices(Points, count),
 		m_lifetime(seconds(3.f)),
-		m_emitter(0.f, 0.f)
+		m_emitter(0.f, 0.f),
+		m_particleSpeed(speed)
 	{
 		Canvas::GetInstance("")->AddDrawable(*this);
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
-			m_vertices[i].color = color;
-			m_particleSpeed = speed;
-			resetParticle(i);
+			m_vertices[i].color = color; // couldn't you somehow set the color once!??
+			resetParticle(i); // this tough needs to be called
 		}
 	}
 

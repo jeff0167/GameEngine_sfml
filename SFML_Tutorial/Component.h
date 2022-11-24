@@ -11,7 +11,7 @@ public:
 	int Member;
 	GameObject* gameObject;
 
-	Component();
+	Component() {};
 	virtual void AbstractNullFunc() 
 	{
 	}

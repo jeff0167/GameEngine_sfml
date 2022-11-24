@@ -25,13 +25,13 @@ public:
 	}
 
 	vector<Rigidbody*> rigidbodies;
-	vector<Rigidbody*> GetRigidbodies();
+	const vector<Rigidbody*>& GetRigidbodies();
 	void AddRigidbody(Rigidbody& _rigidbody);
 	void RemoveRigidbody(Rigidbody& _rigidbody);
 	void PhysicsUpdate();
 
 	vector<Collider*> colliders; // need to use dynamic programming when checking for collisions, though for a simple test with only a handfull of colliders it will do fine
-	vector<Collider*> GetColliders();
+	const vector<Collider*>& GetColliders();
 	void AddCollider(Collider& _collider);
 	void RemoveCollider(Collider& _collider);
 	void PhysicsCollisionUpdate();

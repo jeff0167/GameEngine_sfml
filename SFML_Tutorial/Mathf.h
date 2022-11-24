@@ -60,10 +60,13 @@ public:
 			return CircleXCircle(dynamic_cast<CircleCollider&>(first), dynamic_cast<CircleCollider&>(second));
 		}
 		
-		if ((d.x == 1 && d.y == 2) || (d.x == 2 && d.y == 1)) // circle x box,     this one doesn't work, gives error
+		if ((d.x == 2 && d.y == 1)) // circle x box
 		{
-			return false;
-			//return CircleXBox(dynamic_cast<CircleCollider&>(first), dynamic_cast<BoxCollider&>(second));
+			return CircleXBox(dynamic_cast<CircleCollider&>(first), dynamic_cast<BoxCollider&>(second));
+		}	
+		if ((d.x == 1 && d.y == 2)) 
+		{
+			return CircleXBox(dynamic_cast<CircleCollider&>(second), dynamic_cast<BoxCollider&>(first));
 		}
 		return false;
 	}
@@ -128,13 +131,13 @@ private:
 	}	
 	static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x circle
 	{
-	/*	double distance = sqrt(pow((_other.transform->getPosition().x + _other.offsetPos.x) -
-			(transform->getPosition().x + offsetPos.x), 2) + pow((_other.transform->getPosition().y + _other.offsetPos.y) - (transform->getPosition().y + offsetPos.y), 2));
+		double distance = sqrt(pow((first.transform->getPosition().x + first.offsetPos.x) -
+			(second.transform->getPosition().x + second.offsetPos.x), 2) + pow((first.transform->getPosition().y + first.offsetPos.y) - (second.transform->getPosition().y + second.offsetPos.y), 2));
 
-		if (distance < abs(_other.size + size))
+		if (distance < abs(first.size + second.size))
 		{
 			return true;
-		}*/
+		}
 		return false;
 	}
 

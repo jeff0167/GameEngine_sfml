@@ -34,7 +34,7 @@ void Physics::RemoveRigidbody(Rigidbody& _rigidbody)
 	}
 }
 
-vector<Rigidbody*> Physics::GetRigidbodies()
+const vector<Rigidbody*>& Physics::GetRigidbodies()
 {
 	return rigidbodies;
 }
@@ -43,7 +43,7 @@ void Physics::PhysicsUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity); // original
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
 	}
 }
 
@@ -63,14 +63,13 @@ void Physics::RemoveCollider(Collider& _collider)
 	}
 }
 
-vector<Collider*> Physics::GetColliders()
+const vector<Collider*>& Physics::GetColliders()
 {
 	return colliders;
 }
 
 void Physics::PhysicsCollisionUpdate()
 {
-	//cout << colliders.size();
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
 		for (size_t j = 0; j < colliders.size(); j++)  // really need to aply dynamic programming real soon
@@ -85,34 +84,15 @@ void Physics::PhysicsCollisionUpdate()
 
 				double xi, xj;
 
-				auto ci = colliders[i]->gameObject->components;
-				auto cj = colliders[j]->gameObject->GetComponents();
-
-				for (size_t l = 0; l < ci.size(); l++)
-				{
-					Debug::GetInstance("")->Log(typeid(ci[l]).name());
-				}
-
-				xi = colliders[i]->rb->Magnitude();
-				xj = colliders[j]->rb->Magnitude();
-
-
-				//xi = (colliders[i]->gameObject->GetComponent(ci, Rigidbody()) != nullptr) ? dynamic_cast<Rigidbody&>(*colliders[i]->gameObject->GetComponent(ci, Rigidbody())).Magnitude() : 0; // the compiler can't compile these lines
-				//xj = (colliders[j]->gameObject->GetComponent(cj, Rigidbody()) != nullptr) ? dynamic_cast<Rigidbody&>(*colliders[j]->gameObject->GetComponent(cj, Rigidbody())).Magnitude() : 0; // rigidbody something?!!?
-
-				//if (colliders[i]->gameObject->GetComponent(ci, Rigidbody()) == NULL || colliders[j]->gameObject->GetComponent(cj, Rigidbody()) == NULL) return;
-
-				//Debug::GetInstance("")->Log(dynamic_cast<Rigidbody&>(*colliders[i]->gameObject->GetComponent(ci, Rigidbody())).Magnitude());
-				//Debug::GetInstance("")->Log(dynamic_cast<Rigidbody&>(*colliders[j]->gameObject->GetComponent(cj, Rigidbody())).Magnitude());
+				xi = (colliders[i]->rigidbody != NULL) ? colliders[i]->rigidbody->Magnitude() : 0; 
+				xj = (colliders[j]->rigidbody != NULL) ? colliders[j]->rigidbody->Magnitude() : 0; 
 
 				if (xi < xj)  // j/right is greater    //we want the  i to move away from j
 				{
-					Debug::GetInstance("")->Log("Let's move something");
-					//auto d = dynamic_cast<Rigidbody&>(*colliders[j]->gameObject->GetComponent(cj, Rigidbody())).velocity;
+					auto d = colliders[j]->rigidbody->velocity; // if press x and y at the same time then it disapears!!
 
-					//Vector2f v = Mathf::Normalize(d); // the * operator doesn't work even tough in the documentation it does have the template for it
-
-					//colliders[i]->transform->move(Vector2f(v.x * 25, v.y * 25));
+					// dude i'm just moving it at the same paze as the other collider, that's why they don't ever touch
+					colliders[i]->transform->move(Mathf::Normalize(d)); // i think this happens twice, hence why it's not acurate or maybe the collider is a bit off   
 				}
 
 				// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 

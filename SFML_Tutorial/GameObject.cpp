@@ -2,30 +2,35 @@
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"
+#include "BoxCollider.h"
+#include "CircleCollider.h"
 #include "Debug.h"
 
 using namespace sf;
 using namespace std;
 
-GameObject::GameObject(Shape& drawShape)
+GameObject::GameObject(Shape& drawShape) :
+	transform(&drawShape),
+	components(vector<Component*>())
 {
-	transform = &drawShape;
-	components = vector<Component*>();
 	Canvas::GetInstance("")->AddDrawable(drawShape);
 }
 
-GameObject::GameObject(Shape& drawShape, Component& _component)
+GameObject::GameObject(Shape& drawShape, Component& _component) :
+	transform(&drawShape)
 {
-	transform = &drawShape;
 	Canvas::GetInstance("")->AddDrawable(drawShape);
 	AddComponent(_component);
 }
 
-GameObject::GameObject(Shape& drawShape, vector<Component*>& _components)
+GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) :
+	transform(&drawShape)
 {
-	transform = &drawShape;
+	for (size_t i = 0; i < _components.size(); i++)
+	{
+		AddComponent(*_components[i]);
+	}
 	Canvas::GetInstance("")->AddDrawable(drawShape);
-	components = _components;
 	CheckComponentType(components);
 }
 
@@ -57,35 +62,24 @@ void GameObject::AddComponent(Component& _component)
 	if (classType == "class Rigidbody")
 	{
 		dynamic_cast<Rigidbody&>(_component).transform = transform;
+
+		auto cc = GetComponent(Collider()); // couldn't i get the collider and add it's rigidbody!?? but it says I can't dynamic cast a abstract class, cause it has a pure virtual func
+		if(cc != nullptr) dynamic_cast<Collider&>(*cc).rigidbody = &dynamic_cast<Rigidbody&>(_component);
+
 		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component)); // this feels so skethy my dude
 	}
-	else if (classType == "class CircleCollider") // check if it contains collider in string
+	else if (classType == "class CircleCollider" || classType == "class BoxCollider") // check if it contains collider in string
 	{
-		Debug::GetInstance("")->Log("Added a Circle Collider");
-		dynamic_cast<Collider&>(_component).transform = transform;
+		dynamic_cast<Collider&>(_component).transform = transform; // need to figure out how to override existing libraries functions, find simple contains func for string and make it work in one line
 
-		auto s = GetComponents();
-		auto d = GetComponent(s, Rigidbody());
-		dynamic_cast<Collider&>(_component).rb = dynamic_cast<Rigidbody*>(d);
-
-		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component));
-	}
-	else if (classType == "class BoxCollider") // check if it contains collider in string
-	{
-		Debug::GetInstance("")->Log("Added a Box Collider");
-		dynamic_cast<Collider&>(_component).transform = transform;
-
-		auto s = GetComponents();
-		auto d = GetComponent(s, Rigidbody());
-		dynamic_cast<Collider&>(_component).rb = dynamic_cast<Rigidbody*>(d);
-
-		//Debug::GetInstance("")->Log(dynamic_cast<Collider&>(_component).rb->Magnitude()); // gets added, i suppose, just not alloweed to read it right now, can't remember why things are sometimes not allowed to be read
+		auto d = GetComponent(Rigidbody());
+		dynamic_cast<Collider&>(_component).rigidbody = &dynamic_cast<Rigidbody&>(*d);
 
 		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component)); // where the hell does it get the collider include from?!?
 	}
+
 	components.push_back(&_component);
-	Debug::GetInstance("")->Log(to_string(GetComponents().size())); // the game object is being set correctly
-	_component.gameObject = this; // im a buqing genius ^^, actually i'm not, i totaly over saw that i didn't set the gameobject and had other issues which didn't directly link me what the issue was, leading to hours of try and error until i realized the problem right here :)
+	_component.gameObject = this; 
 }
 
 Component* GameObject::GetComponentType(Component& _component)
@@ -119,9 +113,7 @@ void GameObject::RemoveComponent(Component& _component)
 }
 
 
-vector<Component*> GameObject::GetComponents()
+const vector<Component*>& GameObject::GetComponents()
 {
-	//if (components.empty()) return vector<Component*>(); // we will never return null
-
 	return components;
 }

@@ -9,7 +9,7 @@ public:
 	IntRect uvRect;
 
 	Animation();
-	Animation(Texture* texture, Vector2u imageCount, float switchTime);
+	Animation(Texture* texture, Vector2u _imageCount, float _switchTime);
 
 	void Update(int row, float deltaTime);
 	void Update(int row, int rowStartFrame, int fowEndFrame, float deltaTime);
@@ -19,6 +19,6 @@ private:
 	Vector2u imageCount;
 	Vector2u currentImage;
 
-	float totalTime;
+	float totalTime = 0;
 	float switchTime;
 };

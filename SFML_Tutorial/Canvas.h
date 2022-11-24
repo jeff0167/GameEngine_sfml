@@ -22,11 +22,11 @@ public:
         return value_;
     }
 
-	vector<Drawable*> drawables;
+	 vector<Drawable*> drawables;
 
 	void AddDrawable(Drawable& drawable);
 	void RemoveDrawable(Drawable& _drawable);
-    vector<Drawable*> GetDrawables();
+    const vector<Drawable*>& GetDrawables();
     void DrawCanvas(RenderTarget& renderTarget);
 
 protected:

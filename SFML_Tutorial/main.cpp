@@ -14,7 +14,6 @@
 #include "GameObject.h"
 #include "Rigidbody.h"
 
-
 using namespace sf;
 using namespace std;
 
@@ -52,9 +51,8 @@ vector<CircleShape> proj = vector<CircleShape>();
 
 Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
 Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
-Debug* debug = Debug::GetInstance("MyFirstDebugLog");
+Debug& debug = *Debug::GetInstance("MyFirstDebugLog");
 
-// first you move then check collision and based on collision you will change the position on rigidbodies                        
 // in the future, physics simulation should happen on it's own thread
 
 GameObject go, zoro2, g;
@@ -64,9 +62,9 @@ int main()
 {
 	// When used in declaration(string * ptr), it creates a pointer variable.
 	// When not used in declaration, it act as a dereference operator.
-	debug->Log(myCanvas->value() + "\n" + myPhysics->value());
+	debug.Log(myCanvas->value() + "\n" + myPhysics->value());
 
-	hero.loadFromFile("_sprites_heroes.png");
+	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive
 	textureSize = hero.getSize(); // 9 * 8
 	textureSize.x /= 9;
 	textureSize.y /= 8;
@@ -81,7 +79,7 @@ int main()
 	ParticleSystem particles(10000, Color::Black);
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
 
-	go = Monobehaviour::Instantiate(GameObject(_player, rb)); 
+	go = Monobehaviour::Instantiate(GameObject(_player, rb));
 
 	CircleCollider cool = CircleCollider();
 	cool.size = 50;
@@ -89,14 +87,10 @@ int main()
 	go.AddComponent(cool);
 
 	RectangleShape Supp(Vector2f(1, 1));
-	Supp.setSize(Vector2f(50,50));
-	Supp.setOrigin(25,25);
-	Supp.setPosition(Vector2f(500,500));
-	Supp.setFillColor(Color::Blue);
-
-	//CircleCollider circle = CircleCollider();
-	//circle.offsetPos = Vector2f(0, 0);             
-	//circle.size = 25;     
+	Supp.setSize(Vector2f(50, 50));
+	Supp.setOrigin(25, 25);
+	Supp.setPosition(Vector2f(500, 500));
+	Supp.setFillColor(Color::Blue);  
 
 	BoxCollider box = BoxCollider();
 	box.offsetPos = Vector2f(0, 0);
@@ -119,9 +113,9 @@ int main()
 	g = GameObject(Supp2, box2);
 	g.AddComponent(rb2);
 
-	debug->Log("g has this many components" + to_string(g.GetComponents().size()));
-	debug->Log("g's collider has this many components" + to_string(box2.gameObject->GetComponents().size()));
-	
+	//debug.Log("g has this many components " + to_string(g.GetComponents().size())); 2
+	//debug.Log("g's collider has this many components " + to_string(box2.gameObject->GetComponents().size())); 0, should be the same
+
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
 	{
@@ -198,7 +192,7 @@ void PlayerAnimState() // would like to set the animation from the outside, this
 	_player.setTextureRect(_playerIdle.uvRect);
 }
 
-void Yomama() 
+void Yomama()
 {
 	cout << "shoot";
 }
@@ -244,7 +238,7 @@ void KeyBoardInput()
 	{
 		velocityX = 1;
 	}
-	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld)) 
+	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld))
 	{
 		velocityY = -1;
 	}

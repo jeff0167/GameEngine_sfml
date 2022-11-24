@@ -29,7 +29,7 @@ void Canvas::RemoveDrawable(Drawable &_drawable)
 	}
 }
 
-vector<Drawable*> Canvas::GetDrawables() 
+const vector<Drawable*>& Canvas::GetDrawables() 
 {
 	return drawables;
 }
