@@ -1,6 +1,18 @@
 # Prerequisites
 *.d
 
+# Personal Added for sfml, might make it hard to reuse the repo, but serves no functional purpose for me
+*.vsidx
+*.suo
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.ipch
+*.tlog
+*.idb
+*.pdb
+
 # Compiled Object files
 *.slo
 *.lo
