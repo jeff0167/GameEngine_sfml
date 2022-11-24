@@ -43,3 +43,15 @@
 *.exe
 *.out
 *.app
+*.vsidx
+*.vsidx
+.vs/SFML_Tutorial/v17/.suo
+*.db
+*.ipch
+*.vcxproj
+*.obj
+*.ilk
+*.tlog
+*.idb
+*.exe
+*.pdb
