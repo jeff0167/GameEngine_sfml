@@ -12,6 +12,7 @@
 *.tlog
 *.idb
 *.pdb
+*.ilk
 
 # Compiled Object files
 *.slo
