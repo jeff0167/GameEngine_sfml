@@ -19,17 +19,22 @@ public:
 		Canvas::GetInstance("")->AddDrawable(*this);
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
-			m_vertices[i].color = color; // couldn't you somehow set the color once!??
-			resetParticle(i); // this tough needs to be called
+			m_vertices[i].color = color; 
+			ResetParticle(i); // this needs to be called
 		}
 	}
 
-	void setEmitter(::Vector2f position)
+	void SetEmitterVector(::Vector2f position)
 	{
 		m_emitter = position;
 	}
 
-	void update(Time elapsed)
+	void SetEmitterTransform(Transformable& transform)
+	{
+		m_TargetTransform = &transform;
+	}
+
+	void Update(Time elapsed)
 	{
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
@@ -39,7 +44,7 @@ public:
 
 			// if the particle is dead, respawn it
 			if (p.lifetime <= Time::Zero)
-				resetParticle(i);
+				ResetParticle(i);
 
 			// update the position of the corresponding vertex
 			m_vertices[i].position += p.velocity * elapsed.asSeconds();
@@ -51,16 +56,16 @@ public:
 	}
 
 private:
-	virtual void draw(RenderTarget& target, RenderStates states) const
+	virtual void draw(RenderTarget& target, RenderStates states) const //can't capitalize draw as it inherits from another class, do people not use capitalization for classes in c++?
 	{
-		// apply the tranorm
+		// apply the transform
 		states.transform *= getTransform();
 
 		// our particles don't use a texture
 	   // states.texture = NULL;
 
 		// draw the vertex array
-		target.draw(m_vertices, states);
+		target.draw(m_vertices, states);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
 	}
 
 private:
@@ -70,7 +75,7 @@ private:
 		Time lifetime;
 	};
 
-	void resetParticle(size_t index)
+	void ResetParticle(size_t index)
 	{
 		// give a random velocity and lifetime to the particle
 		float angle = (rand() % 360) * 3.14f / 180.f;
@@ -79,11 +84,17 @@ private:
 		m_particles[index].lifetime = milliseconds((rand() % 2000) + 1000);
 
 		// reset the position of the corresponding vertex
-		m_vertices[index].position = m_emitter;
+		if (m_TargetTransform) // would at some point want to get rid of checking this every frame, can't really see where it could go right now tough
+		{
+			m_vertices[index].position = m_TargetTransform->getPosition();
+		}
+		else
+			m_vertices[index].position = m_emitter;
 	}
 
 	vector<Particle> m_particles;
 	VertexArray m_vertices;
 	Time m_lifetime;
+	Transformable* m_TargetTransform;
 	Vector2f m_emitter;
 };

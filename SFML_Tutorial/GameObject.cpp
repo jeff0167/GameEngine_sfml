@@ -11,6 +11,7 @@ using namespace std;
 
 GameObject::GameObject(Shape& drawShape) :
 	transform(&drawShape),
+	//shape(&drawShape),
 	components(vector<Component*>())
 {
 	Canvas::GetInstance("")->AddDrawable(drawShape);
@@ -18,6 +19,7 @@ GameObject::GameObject(Shape& drawShape) :
 
 GameObject::GameObject(Shape& drawShape, Component& _component) :
 	transform(&drawShape)
+	//shape(&drawShape)
 {
 	Canvas::GetInstance("")->AddDrawable(drawShape);
 	AddComponent(_component);
@@ -25,6 +27,7 @@ GameObject::GameObject(Shape& drawShape, Component& _component) :
 
 GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) :
 	transform(&drawShape)
+	//shape(&drawShape)
 {
 	for (size_t i = 0; i < _components.size(); i++)
 	{

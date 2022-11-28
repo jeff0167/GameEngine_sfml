@@ -70,6 +70,7 @@ const vector<Collider*>& Physics::GetColliders()
 
 void Physics::PhysicsCollisionUpdate()
 {
+	//Debug::GetInstance("")->Log(colliders.size());
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
 		for (size_t j = 0; j < colliders.size(); j++)  // really need to aply dynamic programming real soon
@@ -78,22 +79,12 @@ void Physics::PhysicsCollisionUpdate()
 
 			if (Mathf::Collision(*colliders[i], *colliders[j]))  // ok we collided, now what?!?! we should move the object that moved into it in the oposite direction of it's velocity vector just so it touches the static collider
 			{
+				// would want to add that we subsscibe delegates to this func on gameobjects so we can call stuff when it collides with onCollision()
+
+
 				// if one is static, meaning it will never move, the other will move in the opposite direction of it's velocity until the point the colliders just touch
 
 				// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
-
-				double xi, xj;
-
-				xi = (colliders[i]->rigidbody != NULL) ? colliders[i]->rigidbody->Magnitude() : 0; 
-				xj = (colliders[j]->rigidbody != NULL) ? colliders[j]->rigidbody->Magnitude() : 0; 
-
-				if (xi < xj)  // j/right is greater    //we want the  i to move away from j
-				{
-					auto d = colliders[j]->rigidbody->velocity; // if press x and y at the same time then it disapears!!
-
-					// dude i'm just moving it at the same paze as the other collider, that's why they don't ever touch
-					colliders[i]->transform->move(Mathf::Normalize(d)); // i think this happens twice, hence why it's not acurate or maybe the collider is a bit off   
-				}
 
 				// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
 

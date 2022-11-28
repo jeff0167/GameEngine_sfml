@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-class Collider : public Component 
+class Collider : public Component, public Shape
 {
 public:
     Vector2f offsetPos = Vector2f(0,0); // would maybe have to cach rigidbody, instead of getting the reference through the gameobject and getcomponent
@@ -15,6 +15,11 @@ public:
     float rotation;
 
     Collider() {}
+
+    virtual std::size_t getPointCount() const override;
+
+    virtual Vector2f getPoint(std::size_t index) const  override;
+
     virtual bool Collision(Collider& _other) { return false; };  // set virtual func equal to 0 to make it a pure virtual/abstract func
 
     bool operator == (const Collider& Ref) const

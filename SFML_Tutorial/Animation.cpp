@@ -5,8 +5,8 @@ Animation::Animation() // give texture, specify rows and size and switchTime
 
 }
 
-Animation::Animation(Texture* texture, Vector2u _imageCount, float _switchTime):
-	imageCount(_imageCount), switchTime(_switchTime)
+Animation::Animation(Texture* texture, Vector2u _imageCount, float _switchFrameTime):
+	imageCount(_imageCount), switchFrameTime(_switchFrameTime)
 {
 	currentImage.x = 0;
 
@@ -19,9 +19,9 @@ void Animation::Update(int row, float deltaTime)
 	currentImage.y = row;
 	totalTime += deltaTime;
 
-	if (totalTime >= switchTime)
+	if (totalTime >= switchFrameTime)
 	{
-		totalTime -= switchTime;
+		totalTime -= switchFrameTime;
 		currentImage.x++;
 
 		if (currentImage.x >= imageCount.x)
@@ -40,9 +40,9 @@ void Animation::Update(int row, int rowStartFrame, int rowEndFrame, float deltaT
 	currentImage.y = row;
 	totalTime += deltaTime;
 
-	if (totalTime >= switchTime) 
+	if (totalTime >= switchFrameTime) 
 	{
-		totalTime -= switchTime;
+		totalTime -= switchFrameTime;
 		currentImage.x++;
 
 		if (currentImage.x >= rowEndFrame)

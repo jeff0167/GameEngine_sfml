@@ -15,7 +15,7 @@ public:
 	GameObject(Shape& drawShape, Component& _component);
 	GameObject(Shape& drawShape, const vector<Component*>& _components);
 
-	Transformable* transform;
+	Transformable* transform; // suppose you could even use this as an id, would really just want to use the memory adress of the gameobject as an identifier, but no, that is terrible hard
 	vector<Component*> components; // you can only have one of each component type pr gameObject
 
 	void AddComponent(Component& component);

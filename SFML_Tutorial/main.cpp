@@ -43,7 +43,7 @@ Vector2u textureSize;
 float deltaTime = 0;
 Clock _clock;
 
-Animation _playerIdle;
+Animation _playerAnim;
 
 bool idle = true;
 
@@ -74,10 +74,12 @@ int main()
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
 
-	_playerIdle = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
+	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
-	ParticleSystem particles(10000, Color::Black);
+	ParticleSystem particles(10000, Color::Blue);
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
+
+	particlesPlayer.SetEmitterTransform(_player);
 
 	go = Monobehaviour::Instantiate(GameObject(_player, rb));
 
@@ -90,15 +92,15 @@ int main()
 	Supp.setSize(Vector2f(50, 50));
 	Supp.setOrigin(25, 25);
 	Supp.setPosition(Vector2f(500, 500));
-	Supp.setFillColor(Color::Blue);  
+	Supp.setFillColor(Color::Blue);
 
 	BoxCollider box = BoxCollider();
 	box.offsetPos = Vector2f(0, 0);
 	box.size = 25;
 
-	zoro2 = GameObject(Supp, box);
-	Rigidbody rbd = Rigidbody();
-	zoro2.AddComponent(rbd);
+	//zoro2 = GameObject(Supp, box);
+	//Rigidbody rbd = Rigidbody();
+	//zoro2.AddComponent(rbd);
 
 	RectangleShape Supp2(Vector2f(1, 1));
 	Supp2.setSize(Vector2f(50, 50));
@@ -110,11 +112,59 @@ int main()
 	box2.offsetPos = Vector2f(0, 0);
 	box2.size = 25;
 
-	g = GameObject(Supp2, box2);
-	g.AddComponent(rb2);
+	//g = GameObject(Supp2, box2);
+	//g.AddComponent(rb2);
+
+	//float sizev = 1;
+	//float sizev2 = 1;
+
+	//Vector2f v = Vector2f(2.5, 1.5);
+	//Vector2f v2 = Vector2f(3.25, 2.25);
+
+	//Vector2f moveDir = Vector2f(0.4,0); // this we will normalize
+	//moveDir = Mathf::Normalize(moveDir); // 1,0
+	//debug.Log(moveDir);
+
+	//Vector2f distanceDir = Mathf::DirectionVector(Vector2f(v2.x +(sizev / 2) + (sizev2 / 2), v2.y + (sizev / 2) + (sizev2 / 2)), Vector2f(v.x + (sizev / 2) + (sizev2 / 2), v.y + (sizev / 2) + (sizev2 / 2)));
+	//debug.Log(distanceDir);
+
+	//// find allowed distance then minus actual distance
+	//Vector2f allowedDistance = Vector2f(sizev / 2 + sizev2 / 2, sizev / 2 + sizev2 / 2) - distanceDir;
+	//debug.Log(allowedDistance);
+
+	//Vector2f FinalDir = Vector2f(moveDir.x * allowedDistance.x, moveDir.y * allowedDistance.y);
+	//debug.Log(FinalDir);
+
+	//Vector2f finalDestination = Vector2f(v2.x + FinalDir.x, v2.y + FinalDir.y);
+	//debug.Log(finalDestination);
+
+	//debug.Log(Vector2f(1, 1));
+	//debug.Log(g);
 
 	//debug.Log("g has this many components " + to_string(g.GetComponents().size())); 2
-	//debug.Log("g's collider has this many components " + to_string(box2.gameObject->GetComponents().size())); 0, should be the same
+	//debug.Log("g's collider has this many components " + to_string(box2.gameObject->GetComponents().size())); 0, should be the same    // we have a pointer to a pointer
+
+
+	// Here we simply do bound/collision overlap testing
+
+	//model.getGlobalBounds().intersects(rect.getGlobalBounds())
+	//sf::Rect<T>
+	//sf::Rect< T >::Intersects(const Rect< T > &rectangle   )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	window.setFramerateLimit(120); // smooth constant fps
 	while (window.isOpen()) // checking window events
@@ -144,15 +194,14 @@ int main()
 		MouseInput();
 		KeyBoardInput();  // first check for input
 
-		myPhysics->PhysicsUpdate(); //* is a pointer, & is a reference,    how would you have a physics loop that loops at a fixed time?
+		myPhysics->PhysicsUpdate();
 		myPhysics->PhysicsCollisionUpdate();
 
 		//Vector2i mouse = Mouse::getPosition(window);
-		//particles.setEmitter(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); // would like for it to update itself on it's own, once instantiated
-		//particles.update(t); // would really just like to set the speed, my dude!!
+		//particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); 
+		//particles.Update(t); 
 
-		//particlesPlayer.setEmitter(_player.getPosition()); // player origin doesn't move with the player?
-		//particlesPlayer.update(t);
+		particlesPlayer.Update(t);
 
 		PlayerAnimState(); // then animate based on input
 		CollisionChecking(); // last check for collisions
@@ -161,35 +210,35 @@ int main()
 	return 0;
 }
 
-void PlayerAnimState() // would like to set the animation from the outside, this func will just call the animation
+void PlayerAnimState()
 {
-	if (velocityX < 0 && _player.getScale().x > 0) { // what way are we facing?
+	if (rb.velocity.x < 0 && _player.getScale().x > 0) { // what way are we facing?
 		_player.setScale(-1, _player.getScale().y);
 	}
-	else if (velocityX > 0 && _player.getScale().x < 0) {
+	else if (rb.velocity.x > 0 && _player.getScale().x < 0) {
 		_player.setScale(1, _player.getScale().y);
 	}
 
-	if (velocityX != 0 || velocityY != 0) // we are moving
+	if (rb.velocity != Mathf::Zero()) // we are moving
 	{
 		if (idle) {
 			idle = false;
-			_playerIdle.NextAnim();
+			_playerAnim.NextAnim();
 
 		}
-		_playerIdle.Update(7, 3, 6, deltaTime);
+		_playerAnim.Update(7, 3, 6, deltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
 	}
-	else // this way it still waits for the next frame before it will switch to the next animation, which makes it a little unresponsive
+	else
 	{
 		if (!idle)
 		{
 			idle = true;
-			_playerIdle.NextAnim();
+			_playerAnim.NextAnim();
 		}
 
-		_playerIdle.Update(7, 0, 3, deltaTime);
+		_playerAnim.Update(7, 0, 3, deltaTime);
 	}
-	_player.setTextureRect(_playerIdle.uvRect);
+	_player.setTextureRect(_playerAnim.uvRect);
 }
 
 void Yomama()
@@ -219,8 +268,8 @@ void MouseInput()
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		zoro2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		//zoro2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
@@ -247,10 +296,10 @@ void KeyBoardInput()
 		velocityY = 1;
 	}
 
-	Vector2f v = Vector2f(velocityX, velocityY);
+	Vector2f v = Vector2f(velocityX, velocityY); // how can I make an function for an existing library class, would very much want vector2.Zero
 
-	rb2.velocity = Mathf::Normalize(v) * moveSpeed;
-	//rb.velocity = Mathf::Normalize(Vector2f(velocityX, velocityY)) * moveSpeed; // why the helll can i multiply a vector here!?
+	//rb2.velocity = Mathf::Normalize(v) * moveSpeed;
+	rb.velocity = Mathf::Normalize(v) * moveSpeed; // why the helll can i multiply a vector here!?
 }
 
 void CollisionChecking() // now this is a hard part, here we are just doing it for one object
