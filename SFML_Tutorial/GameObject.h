@@ -9,8 +9,11 @@ class Component;
 
 class GameObject
 {
+protected:
+
 public:
 	GameObject() {};
+	~GameObject();
 	GameObject(Shape& drawShape);
 	GameObject(Shape& drawShape, Component& _component);
 	GameObject(Shape& drawShape, const vector<Component*>& _components);

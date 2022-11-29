@@ -5,7 +5,7 @@
 using namespace sf;
 using namespace std;
 
-class ParticleSystem : public Drawable, public Transformable
+class ParticleSystem : public Drawable, public Transformable // supposedly a particle sytem should also be a simple gameobject, or rather a component you could add to a gameObject
 {
 public:
 	int m_particleSpeed;
@@ -14,9 +14,10 @@ public:
 		m_vertices(Points, count),
 		m_lifetime(seconds(3.f)),
 		m_emitter(0.f, 0.f),
-		m_particleSpeed(speed)
+		m_particleSpeed(speed),
+		m_TargetTransform(nullptr)
 	{
-		Canvas::GetInstance("")->AddDrawable(*this);
+		Canvas::GetInstance()->AddDrawable(*this);
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
 			m_vertices[i].color = color; 
@@ -24,7 +25,7 @@ public:
 		}
 	}
 
-	void SetEmitterVector(::Vector2f position)
+	void SetEmitterVector(Vector2f position)
 	{
 		m_emitter = position;
 	}
@@ -68,7 +69,6 @@ private:
 		target.draw(m_vertices, states);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
 	}
 
-private:
 	struct Particle
 	{
 		Vector2f velocity;
@@ -79,7 +79,7 @@ private:
 	{
 		// give a random velocity and lifetime to the particle
 		float angle = (rand() % 360) * 3.14f / 180.f;
-		float speed = (rand() % m_particleSpeed);
+		float speed = (float)(rand() % m_particleSpeed);
 		m_particles[index].velocity = Vector2f(cos(angle) * speed, sin(angle) * speed);
 		m_particles[index].lifetime = milliseconds((rand() % 2000) + 1000);
 

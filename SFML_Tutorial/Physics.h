@@ -18,11 +18,7 @@ public:
 	// into the static field. On subsequent runs, it returns the client existing
 	// object stored in the static field
 
-	static Physics* GetInstance(const string& value);
-
-	string value() const {
-		return value_;
-	}
+	static Physics* GetInstance();
 
 	vector<Rigidbody*> rigidbodies;
 	const vector<Rigidbody*>& GetRigidbodies();
@@ -37,9 +33,8 @@ public:
 	void PhysicsCollisionUpdate();
 
 protected:
-	string value_;
 	static Physics* _physics;
 
-	Physics(const string& value) : value_(value) {}; // constructor
+	Physics() {}; // constructor
 
 };

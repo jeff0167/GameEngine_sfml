@@ -10,10 +10,10 @@ using namespace std;
 
 Physics* Physics::_physics = nullptr;
 
-Physics* Physics::GetInstance(const string& value)
+Physics* Physics::GetInstance()
 {
 	if (_physics == nullptr) {
-		_physics = new Physics(value);
+		_physics = new Physics();
 	}
 	return _physics;
 }
@@ -70,7 +70,7 @@ const vector<Collider*>& Physics::GetColliders()
 
 void Physics::PhysicsCollisionUpdate()
 {
-	//Debug::GetInstance("")->Log(colliders.size());
+	//Debug::GetInstance()->Log(colliders.size());
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
 		for (size_t j = 0; j < colliders.size(); j++)  // really need to aply dynamic programming real soon
@@ -87,8 +87,7 @@ void Physics::PhysicsCollisionUpdate()
 				// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
 
 				// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
-
-				//Debug::GetInstance("")->Log("Collide");
+				Debug::GetInstance()->Log("Collision");
 			}
 		}
 	}

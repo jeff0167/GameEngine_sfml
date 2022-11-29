@@ -5,12 +5,17 @@ using namespace std;
 
 Canvas* Canvas::_canvas = nullptr;
 
-Canvas *Canvas::GetInstance(const string& value)
+Canvas *Canvas::GetInstance()
 {
 	if (_canvas == nullptr) {
-		_canvas = new Canvas(value);
+		_canvas = new Canvas();
 	}
 	return _canvas;
+}
+
+void Canvas::AddWindow(RenderTarget& renderTarget)
+{
+	window = &renderTarget;
 }
 
 void Canvas::AddDrawable(Drawable &drawable) 
@@ -34,11 +39,11 @@ const vector<Drawable*>& Canvas::GetDrawables()
 	return drawables;
 }
 
-void Canvas::DrawCanvas(RenderTarget &renderTarget) 
+void Canvas::DrawCanvas() 
 {
 	for (size_t i = 0; i < drawables.size(); i++)
 	{
-		renderTarget.draw(*drawables[i]);
+		window->draw(*drawables[i]);
 	}
 }
 

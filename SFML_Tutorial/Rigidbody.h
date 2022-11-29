@@ -16,16 +16,6 @@ public:
     double Magnitude();
     void AddForce(float force);
 
-    bool operator == (const Rigidbody& Ref) const
-    {
-        return(this->Member == Ref.GetMember());
-    }
-
-    const int GetMember() const
-    {
-        return(this->Member);
-    }
-
 private:
-    int Member;
+
 };

@@ -23,7 +23,7 @@ public:
 
 	static Vector2f Normalize(Vector2f& source) 
 	{
-		float length = Magnitude(source); 
+		double length = Magnitude(source); 
 
 		if (source.x == 0 && source.y == 0) return source;
 
@@ -138,11 +138,11 @@ private:
 		{
 			if (first.getGlobalBounds().intersects(second.getGlobalBounds())) {
 
-			Debug::GetInstance("")->Log("bound intersect");
+			Debug::GetInstance()->Log("bound intersect");
 			}
 			else
 			{
-				Debug::GetInstance("")->Log("bound not intersect");
+				Debug::GetInstance()->Log("bound not intersect");
 			}
 
 			// technically not acurate way to do it, but works fine for now

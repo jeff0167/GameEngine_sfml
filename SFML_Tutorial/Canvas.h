@@ -16,24 +16,21 @@ public:
      // into the static field. On subsequent runs, it returns the client existing
      // object stored in the static field
 
-    static Canvas *GetInstance(const string& value);
-
-    string value() const {
-        return value_;
-    }
+    RenderTarget* window;
+    static Canvas *GetInstance();
 
 	 vector<Drawable*> drawables;
 
+    void DrawCanvas();
 	void AddDrawable(Drawable& drawable);
 	void RemoveDrawable(Drawable& _drawable);
     const vector<Drawable*>& GetDrawables();
-    void DrawCanvas(RenderTarget& renderTarget);
+    void AddWindow(RenderTarget& renderTarget);
 
 protected:
-    string value_;
 	static Canvas* _canvas;
 
-    Canvas(const string& value) : value_(value) {}; // constructor
+    Canvas() {};
 
 };
 

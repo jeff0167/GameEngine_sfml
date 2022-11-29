@@ -22,16 +22,6 @@ public:
 
     virtual bool Collision(Collider& _other) { return false; };  // set virtual func equal to 0 to make it a pure virtual/abstract func
 
-    bool operator == (const Collider& Ref) const
-    {
-        return(this->Member == Ref.GetMember());
-    }
-
-    const int GetMember() const
-    {
-        return(this->Member);
-    }
-
 private:
-    int Member;
+
 };

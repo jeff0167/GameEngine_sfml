@@ -11,6 +11,10 @@ public:
 	static GameObject Instantiate(GameObject gameObject);
 	static GameObject Instantiate(GameObject gameObject, Transformable transform);
 
-private:
+	static void Destroy(GameObject* gameObject);
 
+	static void Invoke(function<void()> function, float callDelay);
+
+private:
+	static void DelayedCall(function<void()> function, float callDelay);
 };

@@ -18,11 +18,7 @@ public:
 
 	void operator=(const Debug&) = delete;
 
-	static Debug* GetInstance(const string& value);
-
-	string value() const {
-		return value_;
-	}
+	static Debug* GetInstance();
 
 	void Log(float line) 
 	{
@@ -77,19 +73,18 @@ public:
 	}
 
 protected:
-	string value_;
 	static Debug* _debug;
 
 	vector<TextLog> ConsoleLogs = vector<TextLog>();
 
-	Debug(const string& value) : value_(value) {}; // constructor
+	Debug() {}; 
 
 	void Clear()
 	{
 		cout << "\x1B[2J\x1B[H";
 	}
 
-	void WriteAllLines() // 
+	void WriteAllLines() 
 	{
 		for (size_t i = 0; i < ConsoleLogs.size(); i++)
 		{

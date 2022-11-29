@@ -6,12 +6,10 @@
 #include "Component.h"
 #include "Monobehaviour.h"
 #include "ParticleSystem.h"
-#include "Collider.h"
 #include "CircleCollider.h"
 #include "Input.h"
 #include "Mathf.h"
 #include "Debug.h"
-#include "GameObject.h"
 #include "Rigidbody.h"
 
 using namespace sf;
@@ -22,7 +20,6 @@ void KeyBoardInput();
 void MouseInput();
 void CollisionChecking();
 void PlayerAnimState();
-void Shoot();
 
 int windowHeight = 1200;
 int windowWidth = 1200;
@@ -32,14 +29,10 @@ RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::
 RectangleShape _player(Vector2f(100, 200));
 
 float moveSpeed = 5.0f;
-float velocityX = 0;
-float velocityY = 0;
-
-int frame = 0;
 
 Texture hero;
-Vector2u textureSize;
 
+Time _time;
 float deltaTime = 0;
 Clock _clock;
 
@@ -47,30 +40,23 @@ Animation _playerAnim;
 
 bool idle = true;
 
-vector<CircleShape> proj = vector<CircleShape>();
-
-Canvas* myCanvas = Canvas::GetInstance("MyFirstCanvas");
-Physics* myPhysics = Physics::GetInstance("MyFirstPhysicsSystem");
-Debug& debug = *Debug::GetInstance("MyFirstDebugLog");
-
-// in the future, physics simulation should happen on it's own thread
+Canvas* myCanvas = Canvas::GetInstance();
+Physics* myPhysics = Physics::GetInstance(); // in the future, physics simulation should happen on it's own thread
+Debug& debug = *Debug::GetInstance();
 
 GameObject go, zoro2, g;
 Rigidbody rb, rb2;
 
-int main()
-{
-	// When used in declaration(string * ptr), it creates a pointer variable.
-	// When not used in declaration, it act as a dereference operator.
-	debug.Log(myCanvas->value() + "\n" + myPhysics->value());
-
-	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive
-	textureSize = hero.getSize(); // 9 * 8
+int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
+{	
+	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
+	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive 
+	Vector2u textureSize = hero.getSize(); // 9 * 8
 	textureSize.x /= 9;
 	textureSize.y /= 8;
 
 	_player.setPosition(600, 600);
-	_player.setOrigin((double)textureSize.x * 3.5, (double)hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
+	_player.setOrigin(textureSize.x * (float)3.5, hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
 
@@ -81,7 +67,7 @@ int main()
 
 	particlesPlayer.SetEmitterTransform(_player);
 
-	go = Monobehaviour::Instantiate(GameObject(_player, rb));
+	go = GameObject(_player, rb);
 
 	CircleCollider cool = CircleCollider();
 	cool.size = 50;
@@ -98,9 +84,9 @@ int main()
 	box.offsetPos = Vector2f(0, 0);
 	box.size = 25;
 
-	//zoro2 = GameObject(Supp, box);
-	//Rigidbody rbd = Rigidbody();
-	//zoro2.AddComponent(rbd);
+	zoro2 = GameObject(Supp, box);
+	Rigidbody rbd = Rigidbody();
+	zoro2.AddComponent(rbd);
 
 	RectangleShape Supp2(Vector2f(1, 1));
 	Supp2.setSize(Vector2f(50, 50));
@@ -112,8 +98,8 @@ int main()
 	box2.offsetPos = Vector2f(0, 0);
 	box2.size = 25;
 
-	//g = GameObject(Supp2, box2);
-	//g.AddComponent(rb2);
+	g = GameObject(Supp2, box2);
+	g.AddComponent(rb2);
 
 	//float sizev = 1;
 	//float sizev2 = 1;
@@ -138,7 +124,6 @@ int main()
 	//Vector2f finalDestination = Vector2f(v2.x + FinalDir.x, v2.y + FinalDir.y);
 	//debug.Log(finalDestination);
 
-	//debug.Log(Vector2f(1, 1));
 	//debug.Log(g);
 
 	//debug.Log("g has this many components " + to_string(g.GetComponents().size())); 2
@@ -151,27 +136,14 @@ int main()
 	//sf::Rect<T>
 	//sf::Rect< T >::Intersects(const Rect< T > &rectangle   )
 
+	//
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	window.setFramerateLimit(120); // smooth constant fps
+	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
 	while (window.isOpen()) // checking window events
 	{
-		Time t = _clock.getElapsedTime();
+		_time = _clock.getElapsedTime();
 		_clock.restart();
-		deltaTime = t.asSeconds(); // this will get the time between frames
+		deltaTime = _time.asSeconds(); // this will get the time between frames
 
 		Event _event;
 		while (window.pollEvent(_event))
@@ -199,9 +171,9 @@ int main()
 
 		//Vector2i mouse = Mouse::getPosition(window);
 		//particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); 
-		//particles.Update(t); 
+		//particles.Update(_time); 
 
-		particlesPlayer.Update(t);
+		//particlesPlayer.Update(_time); // could we not send a ref for it to use, maybe like have a global time pr frame generation, so you just need to create the object and it updates itself
 
 		PlayerAnimState(); // then animate based on input
 		CollisionChecking(); // last check for collisions
@@ -224,7 +196,6 @@ void PlayerAnimState()
 		if (idle) {
 			idle = false;
 			_playerAnim.NextAnim();
-
 		}
 		_playerAnim.Update(7, 3, 6, deltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
 	}
@@ -241,29 +212,19 @@ void PlayerAnimState()
 	_player.setTextureRect(_playerAnim.uvRect);
 }
 
-void Yomama()
-{
-	cout << "shoot";
-}
-
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
-	CircleShape s = CircleShape(5, 50);
-	s.setPosition(_player.getPosition()); // really can't seem to initialize gameobjects without them having acces violation the same frame, even with the use of threads
-	s.setOrigin(_player.getOrigin());
-	s.setFillColor(Color::Blue);
+	CircleShape* s = new CircleShape(10, 50); // dude the player origin is messed up, it like wont update with the player moving around
+	s->setPosition(_player.getPosition() + Vector2f(0,100) + Vector2f(+40, 0) + (Vector2f(50, 0) * _player.getScale().x));
+	s->setOrigin(_player.getOrigin());          
+	s->setFillColor(Color::Blue); // + is down, lol, dude it confuses me every time, have you guys not had math?
 
-	thread t(Yomama);
-	t.join();
-
-	proj.push_back(s);
-
-	if (proj.size() == 125) { // do something with particles and noise
-		proj.erase(proj.begin());
-	}
+	Rigidbody* r = new Rigidbody();
+	GameObject g = GameObject(*s, *r);
+	r->velocity = Vector2f(_player.getScale().x * 20, 0);
 }
 
-void MouseInput()
+void MouseInput() // gameObject should have a destroy method you can call
 {
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
@@ -275,36 +236,34 @@ void MouseInput()
 
 void KeyBoardInput()
 {
+	rb.velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
 	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{
-		velocityX = -1;
+		rb.velocity.x = -1;
 	}
 	if (Input::GetKey(Keyboard::Right, Input::KeyHeld) || Input::GetKey(Keyboard::D, Input::KeyHeld))
 	{
-		velocityX = 1;
+		rb.velocity.x = 1;
 	}
 	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld))
 	{
-		velocityY = -1;
+		rb.velocity.y = -1;
 	}
 	if (Input::GetKey(Keyboard::Down, Input::KeyHeld) || Input::GetKey(Keyboard::S, Input::KeyHeld))
 	{
-		velocityY = 1;
+		rb.velocity.y = 1;
 	}
 
-	Vector2f v = Vector2f(velocityX, velocityY); // how can I make an function for an existing library class, would very much want vector2.Zero
-
-	//rb2.velocity = Mathf::Normalize(v) * moveSpeed;
-	rb.velocity = Mathf::Normalize(v) * moveSpeed; // why the helll can i multiply a vector here!?
+	//rb2.velocity = Mathf::Normalize(velocity) * moveSpeed;
+	rb.velocity = Mathf::Normalize(rb.velocity) * moveSpeed;
 }
 
-void CollisionChecking() // now this is a hard part, here we are just doing it for one object
+void CollisionChecking() // this should be moved else where
 {
-	velocityX = velocityY = 0;
 	if (window.getSize().x < _player.getPosition().x + _player.getLocalBounds().width / 2) {
 		_player.setPosition(window.getSize().x - _player.getLocalBounds().width / 2, _player.getPosition().y); // checking for window x
 	}
@@ -320,16 +279,9 @@ void CollisionChecking() // now this is a hard part, here we are just doing it f
 	}
 }
 
-void Draw()
+void Draw() // window clear vs background should be changeable 
 {
 	window.clear(Color(255, 204, 92)); // could be equal to camera solid backround, how would you lerp between colors over time? it's almost like you need an update or coroutine loop^^
-
-	myCanvas->DrawCanvas(window);
-
-	for (size_t i = 0; i < proj.size(); i++) // can't safe drawables, instantiated at runtime too canvas and render them, can draw them here though
-	{
-		window.draw(proj[i]);
-	}
-
+	myCanvas->DrawCanvas();
 	window.display();
 }

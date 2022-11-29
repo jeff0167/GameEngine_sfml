@@ -14,14 +14,14 @@ GameObject::GameObject(Shape& drawShape) :
 	//shape(&drawShape),
 	components(vector<Component*>())
 {
-	Canvas::GetInstance("")->AddDrawable(drawShape);
+	Canvas::GetInstance()->AddDrawable(drawShape);
 }
 
 GameObject::GameObject(Shape& drawShape, Component& _component) :
 	transform(&drawShape)
 	//shape(&drawShape)
 {
-	Canvas::GetInstance("")->AddDrawable(drawShape);
+	Canvas::GetInstance()->AddDrawable(drawShape);
 	AddComponent(_component);
 }
 
@@ -33,7 +33,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 	{
 		AddComponent(*_components[i]);
 	}
-	Canvas::GetInstance("")->AddDrawable(drawShape);
+	Canvas::GetInstance()->AddDrawable(drawShape);
 	CheckComponentType(components);
 }
 
@@ -53,7 +53,7 @@ void GameObject::CheckComponentType(Component& _component)
 	if (s == "class Rigidbody")
 	{
 		dynamic_cast<Rigidbody&>(_component).transform = transform;
-		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
+		Physics::GetInstance()->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
 }
 
@@ -69,7 +69,7 @@ void GameObject::AddComponent(Component& _component)
 		auto cc = GetComponent(Collider()); // couldn't i get the collider and add it's rigidbody!?? but it says I can't dynamic cast a abstract class, cause it has a pure virtual func
 		if(cc != nullptr) dynamic_cast<Collider&>(*cc).rigidbody = &dynamic_cast<Rigidbody&>(_component);
 
-		Physics::GetInstance("")->AddRigidbody(dynamic_cast<Rigidbody&>(_component)); // this feels so skethy my dude
+		Physics::GetInstance()->AddRigidbody(dynamic_cast<Rigidbody&>(_component)); // this feels so skethy my dude
 	}
 	else if (classType == "class CircleCollider" || classType == "class BoxCollider") // check if it contains collider in string
 	{
@@ -78,7 +78,7 @@ void GameObject::AddComponent(Component& _component)
 		auto d = GetComponent(Rigidbody());
 		dynamic_cast<Collider&>(_component).rigidbody = &dynamic_cast<Rigidbody&>(*d);
 
-		Physics::GetInstance("")->AddCollider(dynamic_cast<Collider&>(_component)); // where the hell does it get the collider include from?!?
+		Physics::GetInstance()->AddCollider(dynamic_cast<Collider&>(_component)); // where the hell does it get the collider include from?!?
 	}
 
 	components.push_back(&_component);
@@ -115,8 +115,12 @@ void GameObject::RemoveComponent(Component& _component)
 	}
 }
 
-
 const vector<Component*>& GameObject::GetComponents()
 {
 	return components;
+}
+
+GameObject::~GameObject()
+{
+	// gameObject should delete all it's related components and references
 }
