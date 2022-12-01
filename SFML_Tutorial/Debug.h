@@ -39,7 +39,7 @@ public:
 	void Log(Vector2f& line) // apparently it is impossible to send my own added classes, "Gameobject undeclared identifier" i HAVE tried to declared it
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
-	}	
+	}		
 	void Log(FloatRect line) // apparently it is impossible to send my own added classes, "Gameobject undeclared identifier" i HAVE tried to declared it
 	{
 		Log(string_view("x: " + to_string(line.width) + ", y: " + to_string(line.height)));

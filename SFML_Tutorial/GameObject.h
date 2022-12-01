@@ -19,12 +19,16 @@ public:
 	GameObject(Shape& drawShape, const vector<Component*>& _components);
 
 	Transformable* transform; // suppose you could even use this as an id, would really just want to use the memory adress of the gameobject as an identifier, but no, that is terrible hard
+	vector<Transformable*> transformers;
 	vector<Component*> components; // you can only have one of each component type pr gameObject
+
+	void AddTransformer(Transformable& _transform) // this should be private
+	{
+		transformers.push_back(&_transform);
+	}
 
 	void AddComponent(Component& component);
 	void RemoveComponent(Component& component);
-	void CheckComponentType(Component& _component);
-	void CheckComponentType(vector<Component*>& _components);
 
 	const vector<Component*>& GetComponents();
 
@@ -46,6 +50,15 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	void MoveGameObject(Vector2f dir) 
+	{
+		transform->move(dir);
+		for (size_t i = 0; i < this->transformers.size(); i++) 
+		{
+			transformers[i]->move(dir);
+		}
 	}
 
 	bool operator == (const GameObject& Ref) const

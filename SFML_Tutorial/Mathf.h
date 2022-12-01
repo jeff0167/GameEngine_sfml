@@ -11,19 +11,19 @@ using namespace std;
 class Mathf
 {
 public:
-	static Vector2f Zero() 
+	static Vector2f Zero()
 	{
 		return Vector2f(0, 0);
 	}
-	
+
 	static double Magnitude(Vector2f& velocity)
 	{
 		return sqrt(pow(velocity.x, 2) + pow(velocity.y, 2));
 	}
 
-	static Vector2f Normalize(Vector2f& source) 
+	static Vector2f Normalize(Vector2f& source)
 	{
-		double length = Magnitude(source); 
+		double length = Magnitude(source);
 
 		if (source.x == 0 && source.y == 0) return source;
 
@@ -32,7 +32,7 @@ public:
 		return source;
 	}
 
-	static Vector2f DirectionVector(Vector2f start, Vector2f end) 
+	static Vector2f DirectionVector(Vector2f start, Vector2f end)
 	{
 		return Vector2f(start.x - end.x, start.y - end.y);
 	}
@@ -84,94 +84,69 @@ public:
 		return false;
 	}
 
-
 private:
 	static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 	{
-		float left1, right1, top1, bottom1;
-		float left2, right2, top2, bottom2;
-
-		right1 = (first.transform->getPosition().x + first.offsetPos.x) + first.size;
-		left1 = (first.transform->getPosition().x + first.offsetPos.x) - first.size;
-
-		right2 = (second.transform->getPosition().x + second.offsetPos.x) + second.size;
-		left2 = (second.transform->getPosition().x + second.offsetPos.x) - second.size;
-
-		top1 = (first.transform->getPosition().y + first.offsetPos.y) + first.size;
-		bottom1 = (first.transform->getPosition().y + first.offsetPos.y) - first.size;
-
-		top2 = (second.transform->getPosition().y + second.offsetPos.y) + second.size;
-		bottom2 = (second.transform->getPosition().y + second.offsetPos.y) - second.size;
-
-		if (left2 > right1) // x=1  x= 2
-		{
-			//Debug::GetInstance("")->Log("xbox not collided");
-			if (left1 < right2) return false;
-		}
-
-		if (left1 > right2) // x=1  x= 2
-		{
-			//Debug::GetInstance("")->Log("xbox not collided");
-			if (left2 < right1) return false;
-		}
-
-		if (top2 < bottom1) // x=1  x= 2
-		{
-			//Debug::GetInstance("")->Log("xbox not collided");
-			if (top1 > bottom2) return false;
-		}
-
-		if (top1 < bottom2) // x=1  x= 2 
-		{
-			//Debug::GetInstance("")->Log("xbox not collided");
-			if (top2 > bottom1) return false;
-		}
-
-		//Debug::GetInstance("")->Log("xbox is collided");
-
 		double xi, xj; // we would also want to not move when colliding with static objects
-
 		xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
 		xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
 
-		if (xi < xj)  // j/right is greater    //we want the  i to move away from j
-		{
-			if (first.getGlobalBounds().intersects(second.getGlobalBounds())) {
+		if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds())) {
 
-			Debug::GetInstance()->Log("bound intersect");
-			}
-			else
+			if (xi == 0 || xj == 0) return true;
+
+			if (xi > xj)
 			{
-				Debug::GetInstance()->Log("bound not intersect");
+				second.gameObject->MoveGameObject(first.rigidbody->velocity);
 			}
-
-			// technically not acurate way to do it, but works fine for now
-			first.transform->move(second.rigidbody->velocity); // i think this happens twice, hence why it's not acurate or maybe the collider is a bit off   
-		}
-
-		return true;
-	}
-
-	static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circle x circle
-	{
-		double distance = sqrt(pow((first.transform->getPosition().x + first.offsetPos.x) -
-			(second.transform->getPosition().x + second.offsetPos.x), 2) + pow((first.transform->getPosition().y + first.offsetPos.y) - (second.transform->getPosition().y + second.offsetPos.y), 2));
-
-		if (distance < abs(first.size + second.size))
-		{
+			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
 		return false;
 	}
-	static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x circle
-	{
-		double distance = sqrt(pow((first.transform->getPosition().x + first.offsetPos.x) -
-			(second.transform->getPosition().x + second.offsetPos.x), 2) + pow((first.transform->getPosition().y + first.offsetPos.y) - (second.transform->getPosition().y + second.offsetPos.y), 2));
 
-		if (distance < abs(first.size + second.size))
+	static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circle x circle
+	{
+		double xi, xj;
+		xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
+		xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
+
+		double distance = sqrt(pow((first.rect->getPosition().x + first.offsetPos.x) -
+			(second.rect->getPosition().x + second.offsetPos.x), 2) + pow((first.rect->getPosition().y + first.offsetPos.y) - (second.rect->getPosition().y + second.offsetPos.y), 2));
+
+		if (distance < abs(first.rect->getRadius() + second.rect->getRadius()))
 		{
+			if (xi == 0 || xj == 0) return true;
+
+			if (xi > xj)
+			{
+				second.gameObject->MoveGameObject(first.rigidbody->velocity);
+			}
+			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			Debug::GetInstance()->Log("Circle collision");
 			return true;
 		}
+		return false;
+	}
+	static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x box
+	{
+		double xi, xj; // we would also want to not move when colliding with static objects
+		xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
+		xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
+
+		if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds())) {
+			//if (xi == 0 || xj == 0) return true;
+
+			if (xi > xj)
+			{
+				second.gameObject->MoveGameObject(first.rigidbody->velocity);
+			}
+			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			Debug::GetInstance()->Log("bound intersect");
+			return true;
+		}
+		//Debug::GetInstance()->Log("bound not intersect");
 		return false;
 	}
 

@@ -43,7 +43,8 @@ void Physics::PhysicsUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
+		rigidbodies[i]->gameObject->MoveGameObject(rigidbodies[i]->velocity);
+		//rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
 	}
 }
 
@@ -87,7 +88,7 @@ void Physics::PhysicsCollisionUpdate()
 				// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
 
 				// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
-				Debug::GetInstance()->Log("Collision");
+				//Debug::GetInstance()->Log("Collision");
 			}
 		}
 	}

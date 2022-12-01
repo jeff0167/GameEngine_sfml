@@ -5,11 +5,16 @@
 using namespace sf;
 using namespace std;
 
-class CircleCollider : public Collider
+class CircleCollider : public Collider, public CircleShape
 {
 public:
-	float size = 1;
-	CircleCollider() {}
+	CircleShape* rect;
+
+	CircleCollider(CircleShape _rect) :
+		rect(&_rect)
+	{
+		transform = &_rect;
+	}
 
 	virtual std::size_t getPointCount() const override;
 

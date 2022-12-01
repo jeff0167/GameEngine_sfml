@@ -34,27 +34,6 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 		AddComponent(*_components[i]);
 	}
 	Canvas::GetInstance()->AddDrawable(drawShape);
-	CheckComponentType(components);
-}
-
-void GameObject::CheckComponentType(vector<Component*>& _components) // this will not work, only gets the component as a class type
-{
-	for (size_t i = 0; i < _components.size(); i++)
-	{
-		cout << typeid(_components[i]).name();
-		CheckComponentType(*_components[i]);
-	}
-}
-
-void GameObject::CheckComponentType(Component& _component)
-{
-	string s = typeid(_component).name();
-
-	if (s == "class Rigidbody")
-	{
-		dynamic_cast<Rigidbody&>(_component).transform = transform;
-		Physics::GetInstance()->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
-	}
 }
 
 void GameObject::AddComponent(Component& _component)
@@ -73,7 +52,7 @@ void GameObject::AddComponent(Component& _component)
 	}
 	else if (classType == "class CircleCollider" || classType == "class BoxCollider") // check if it contains collider in string
 	{
-		dynamic_cast<Collider&>(_component).transform = transform; // need to figure out how to override existing libraries functions, find simple contains func for string and make it work in one line
+		AddTransformer(*dynamic_cast<Collider&>(_component).transform);
 
 		auto d = GetComponent(Rigidbody());
 		dynamic_cast<Collider&>(_component).rigidbody = &dynamic_cast<Rigidbody&>(*d);

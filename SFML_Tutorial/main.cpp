@@ -47,6 +47,10 @@ Debug& debug = *Debug::GetInstance();
 GameObject go, zoro2, g;
 Rigidbody rb, rb2;
 
+Rigidbody g2rb;
+GameObject g1, g2;
+RectangleShape rect1, rect2;
+
 int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
 {	
 	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
@@ -63,80 +67,51 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
 	ParticleSystem particles(10000, Color::Blue);
-	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 100.000 particles, preferably under 50k
+	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 80.000 particles, preferably under 50k
 
 	particlesPlayer.SetEmitterTransform(_player);
 
 	go = GameObject(_player, rb);
 
-	CircleCollider cool = CircleCollider();
-	cool.size = 50;
-	cool.offsetPos = Vector2f(0, 0);
-	go.AddComponent(cool);
+	BoxCollider box = BoxCollider(RectangleShape(Vector2f(50, 50))); // the pos should be set to the gameObject pos if no pos is given
+	box.rect->setPosition(go.transform->getPosition());
+	//box.setPosition(go.transform->getPosition()); // this does not work, we still have an unecesary transform
+	go.AddComponent(box);
 
-	RectangleShape Supp(Vector2f(1, 1));
-	Supp.setSize(Vector2f(50, 50));
-	Supp.setOrigin(25, 25);
-	Supp.setPosition(Vector2f(500, 500));
-	Supp.setFillColor(Color::Blue);
-
-	BoxCollider box = BoxCollider();
-	box.offsetPos = Vector2f(0, 0);
-	box.size = 25;
-
-	zoro2 = GameObject(Supp, box);
-	Rigidbody rbd = Rigidbody();
-	zoro2.AddComponent(rbd);
-
-	RectangleShape Supp2(Vector2f(1, 1));
-	Supp2.setSize(Vector2f(50, 50));
-	Supp2.setOrigin(25, 25);
-	Supp2.setPosition(Vector2f(300, 300));
-	Supp2.setFillColor(Color::Blue);
-
-	BoxCollider box2 = BoxCollider();
-	box2.offsetPos = Vector2f(0, 0);
-	box2.size = 25;
-
-	g = GameObject(Supp2, box2);
-	g.AddComponent(rb2);
-
-	//float sizev = 1;
-	//float sizev2 = 1;
-
-	//Vector2f v = Vector2f(2.5, 1.5);
-	//Vector2f v2 = Vector2f(3.25, 2.25);
-
-	//Vector2f moveDir = Vector2f(0.4,0); // this we will normalize
-	//moveDir = Mathf::Normalize(moveDir); // 1,0
-	//debug.Log(moveDir);
-
-	//Vector2f distanceDir = Mathf::DirectionVector(Vector2f(v2.x +(sizev / 2) + (sizev2 / 2), v2.y + (sizev / 2) + (sizev2 / 2)), Vector2f(v.x + (sizev / 2) + (sizev2 / 2), v.y + (sizev / 2) + (sizev2 / 2)));
-	//debug.Log(distanceDir);
-
-	//// find allowed distance then minus actual distance
-	//Vector2f allowedDistance = Vector2f(sizev / 2 + sizev2 / 2, sizev / 2 + sizev2 / 2) - distanceDir;
-	//debug.Log(allowedDistance);
-
-	//Vector2f FinalDir = Vector2f(moveDir.x * allowedDistance.x, moveDir.y * allowedDistance.y);
-	//debug.Log(FinalDir);
-
-	//Vector2f finalDestination = Vector2f(v2.x + FinalDir.x, v2.y + FinalDir.y);
-	//debug.Log(finalDestination);
-
-	//debug.Log(g);
-
-	//debug.Log("g has this many components " + to_string(g.GetComponents().size())); 2
-	//debug.Log("g's collider has this many components " + to_string(box2.gameObject->GetComponents().size())); 0, should be the same    // we have a pointer to a pointer
+	CircleShape circleShape = CircleShape(50, 20);
+	circleShape.setPosition(Vector2f(500, 800));
+	circleShape.setFillColor(Color::Black);              // circleShape rect and circle rect are not the same ref, big issue
+	//Rigidbody rb2 = Rigidbody();
 
 
-	// Here we simply do bound/collision overlap testing
+	CircleShape circleShape2 = CircleShape(50, 20);
+	circleShape2.setPosition(Vector2f(571, 870));
+	circleShape2.setFillColor(Color::Black);              // circleShape rect and circle rect are not the same ref, big issue
+	//Rigidbody rb2 = Rigidbody();
 
-	//model.getGlobalBounds().intersects(rect.getGlobalBounds())
-	//sf::Rect<T>
-	//sf::Rect< T >::Intersects(const Rect< T > &rectangle   )
+	GameObject cg2 = GameObject(circleShape2);
+	CircleCollider circle2 = CircleCollider(circleShape2);
+	cg2.AddComponent(circle2);
+	cg2.AddComponent(g2rb);
+	
+	GameObject cg = GameObject(circleShape);
+	CircleCollider circle = CircleCollider(circleShape);
+	cg.AddComponent(circle);
+	cg.AddComponent(rb2);
 
-	//
+	rect1 = RectangleShape(Vector2f(50, 50));
+	rect1.setPosition(200, 200);
+	g1 = GameObject(rect1);
+	BoxCollider b1 = BoxCollider(rect1);
+	g1.AddComponent(b1);
+
+	//rect2 = RectangleShape(Vector2f(50, 50));   // hi
+	//rect2.setPosition(250, 250);
+	//g2 = GameObject(rect2);
+	//BoxCollider b2 = BoxCollider(rect2);
+	//g2.AddComponent(b2);
+	//g2.AddComponent(g2rb);
+
 
 	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
 	while (window.isOpen()) // checking window events
@@ -169,11 +144,11 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		myPhysics->PhysicsUpdate();
 		myPhysics->PhysicsCollisionUpdate();
 
-		//Vector2i mouse = Mouse::getPosition(window);
-		//particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); 
-		//particles.Update(_time); 
+		Vector2i mouse = Mouse::getPosition(window);
+		particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); 
+		particles.Update(_time); 
 
-		//particlesPlayer.Update(_time); // could we not send a ref for it to use, maybe like have a global time pr frame generation, so you just need to create the object and it updates itself
+		particlesPlayer.Update(_time); // could we not send a ref for it to use, maybe like have a global time pr frame generation, so you just need to create the object and it updates itself
 
 		PlayerAnimState(); // then animate based on input
 		CollisionChecking(); // last check for collisions
@@ -229,37 +204,37 @@ void MouseInput() // gameObject should have a destroy method you can call
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		//zoro2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		//g2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
 void KeyBoardInput()
 {
-	rb.velocity = Mathf::Zero();
+	g2rb.velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
 	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{
-		rb.velocity.x = -1;
+		g2rb.velocity.x = -1;
 	}
 	if (Input::GetKey(Keyboard::Right, Input::KeyHeld) || Input::GetKey(Keyboard::D, Input::KeyHeld))
 	{
-		rb.velocity.x = 1;
+		g2rb.velocity.x = 1;
 	}
 	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld))
 	{
-		rb.velocity.y = -1;
+		g2rb.velocity.y = -1;
 	}
 	if (Input::GetKey(Keyboard::Down, Input::KeyHeld) || Input::GetKey(Keyboard::S, Input::KeyHeld))
 	{
-		rb.velocity.y = 1;
+		g2rb.velocity.y = 1;
 	}
 
 	//rb2.velocity = Mathf::Normalize(velocity) * moveSpeed;
-	rb.velocity = Mathf::Normalize(rb.velocity) * moveSpeed;
+	g2rb.velocity = Mathf::Normalize(g2rb.velocity) * moveSpeed;
 }
 
 void CollisionChecking() // this should be moved else where
