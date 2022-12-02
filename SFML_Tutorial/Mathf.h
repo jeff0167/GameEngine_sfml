@@ -91,15 +91,14 @@ private:
 		xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
 		xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
 
-		if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds())) {
-
-			if (xi == 0 || xj == 0) return true;
-
+		if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds())) 
+		{
+			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.gameObject->MoveGameObject(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity);
 			}
-			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity);
 			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
@@ -107,7 +106,7 @@ private:
 	}
 
 	static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circle x circle
-	{
+	{	
 		double xi, xj;
 		xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
 		xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
@@ -117,13 +116,12 @@ private:
 
 		if (distance < abs(first.rect->getRadius() + second.rect->getRadius()))
 		{
-			if (xi == 0 || xj == 0) return true;
-
+			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.gameObject->MoveGameObject(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity);
 			}
-			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity);
 			Debug::GetInstance()->Log("Circle collision");
 			return true;
 		}
@@ -140,9 +138,9 @@ private:
 
 			if (xi > xj)
 			{
-				second.gameObject->MoveGameObject(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity);
 			}
-			else first.gameObject->MoveGameObject(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity);
 			Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}

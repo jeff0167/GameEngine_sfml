@@ -44,11 +44,8 @@ Canvas* myCanvas = Canvas::GetInstance();
 Physics* myPhysics = Physics::GetInstance(); // in the future, physics simulation should happen on it's own thread
 Debug& debug = *Debug::GetInstance();
 
-GameObject go, zoro2, g;
-Rigidbody rb, rb2;
-
-Rigidbody g2rb;
-GameObject g1, g2;
+Rigidbody rb, g2rb, crb;
+GameObject go, g1, g2, circleThing;
 RectangleShape rect1, rect2;
 
 int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
@@ -71,46 +68,56 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 	particlesPlayer.SetEmitterTransform(_player);
 
-	go = GameObject(_player, rb);
+	go = GameObject(_player, g2rb); // you should be able to make a gameobject with collider, shape and rigid body in one line
 
-	BoxCollider box = BoxCollider(RectangleShape(Vector2f(50, 50))); // the pos should be set to the gameObject pos if no pos is given
-	box.rect->setPosition(go.transform->getPosition());
-	//box.setPosition(go.transform->getPosition()); // this does not work, we still have an unecesary transform
-	go.AddComponent(box);
+	BoxCollider box_ = BoxCollider(_player); // the pos should be set to the gameObject pos if no pos is given
+	//go.AddComponent(rb);
+	go.AddComponent(box_);
 
-	CircleShape circleShape = CircleShape(50, 20);
-	circleShape.setPosition(Vector2f(500, 800));
-	circleShape.setFillColor(Color::Black);              // circleShape rect and circle rect are not the same ref, big issue
-	//Rigidbody rb2 = Rigidbody();
+	RectangleShape abox = RectangleShape(Vector2f(800, 800));
+	abox.setPosition(200, 200);
+	BoxCollider aboxC = BoxCollider(abox); // the pos should be set to the gameObject pos if no pos is given
+	aboxC.rect->setPosition(800, 800);
+	GameObject g = GameObject(abox);
+	g.AddComponent(aboxC);
+	Rigidbody r = Rigidbody();
+	g.AddComponent(r);
 
 
-	CircleShape circleShape2 = CircleShape(50, 20);
-	circleShape2.setPosition(Vector2f(571, 870));
-	circleShape2.setFillColor(Color::Black);              // circleShape rect and circle rect are not the same ref, big issue
-	//Rigidbody rb2 = Rigidbody();
+	// we make a shape
+	// we make a collider that inherits the shapes rect
+	// we make a gameobject that inherits the rect from the collider 
 
-	GameObject cg2 = GameObject(circleShape2);
-	CircleCollider circle2 = CircleCollider(circleShape2);
-	cg2.AddComponent(circle2);
-	cg2.AddComponent(g2rb);
+
+	box_.rect->setPosition(go.transform->getPosition()); // this does not work, we still have an unecesary transform
+	//go.AddComponent(box_);
+
+	CircleCollider circle = CircleCollider(*new CircleShape(50, 50));
+	circle.rect->setFillColor(Color::Black);
+	circle.rect->setOrigin(50, 50);
+	circle.rect->setPosition(400, 400);
+	circleThing = GameObject(*circle.s);
+	circleThing.AddComponent(circle);
+	circleThing.AddComponent(rb);
 	
-	GameObject cg = GameObject(circleShape);
-	CircleCollider circle = CircleCollider(circleShape);
-	cg.AddComponent(circle);
-	cg.AddComponent(rb2);
+	CircleShape shapeC = CircleShape(50,50);
+	CircleCollider circle2 = CircleCollider(shapeC);
+	circle2.rect->setFillColor(Color::Black);
+	circle2.rect->setOrigin(50, 50);
+	circle2.rect->setPosition(500, 500);
+	GameObject c = GameObject(shapeC);
+	c.AddComponent(circle2);
+	crb = Rigidbody();
+	c.AddComponent(crb);
 
-	rect1 = RectangleShape(Vector2f(50, 50));
-	rect1.setPosition(200, 200);
-	g1 = GameObject(rect1);
-	BoxCollider b1 = BoxCollider(rect1);
-	g1.AddComponent(b1);
 
-	//rect2 = RectangleShape(Vector2f(50, 50));   // hi
-	//rect2.setPosition(250, 250);
-	//g2 = GameObject(rect2);
-	//BoxCollider b2 = BoxCollider(rect2);
-	//g2.AddComponent(b2);
-	//g2.AddComponent(g2rb);
+	// you should be able to make a collider with all it's properties on creation
+	// you should be able to make a gameObject with all it's components, at least 3 then have to make list, on one line
+
+
+	// make existing collider
+	// make rigidbody
+	// make gameObject with thje collider and rigidbody
 
 
 	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
@@ -204,7 +211,7 @@ void MouseInput() // gameObject should have a destroy method you can call
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		//g2.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		//circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
