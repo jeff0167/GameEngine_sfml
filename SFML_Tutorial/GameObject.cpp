@@ -4,6 +4,18 @@
 #include "Canvas.h"
 #include "Collider.h"
 #include "Debug.h"
+#include <type_traits>
+#include <typeinfo>
+
+template <typename T> class remove_all_pointers {
+public:
+	typedef T type;
+};
+
+template <typename T> class remove_all_pointers<T*> {
+public:
+	typedef typename remove_all_pointers<T>::type type;
+};
 
 using namespace sf;
 using namespace std;
@@ -20,6 +32,23 @@ GameObject::GameObject(Shape& drawShape, Component& _component) :
 {
 	Canvas::GetInstance()->AddDrawable(drawShape);
 	AddComponent(_component);
+}
+
+GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2) :
+	transform(&drawShape)
+{
+	Canvas::GetInstance()->AddDrawable(drawShape);
+	AddComponent(_component);
+	AddComponent(_component2);
+}
+
+GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2, Component& _component3) :
+	transform(&drawShape)
+{
+	Canvas::GetInstance()->AddDrawable(drawShape);
+	AddComponent(_component);
+	AddComponent(_component2);
+	AddComponent(_component3);
 }
 
 GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) :
@@ -39,13 +68,10 @@ void GameObject::AddComponent(Component& _component)
 
 	if (classType == "class Rigidbody")
 	{
-		dynamic_cast<Rigidbody&>(_component).transform = transform;
+		dynamic_cast<Rigidbody&>(_component).transform = transform; // Must manually cast by each class type, super anoying
 
 		auto cc = GetComponent(Collider()); 
-		if (cc != nullptr) 
-		{
-			dynamic_cast<Collider&>(*cc).rigidbody = &dynamic_cast<Rigidbody&>(_component);
-		}
+		if (cc != nullptr) dynamic_cast<Collider&>(*cc).rigidbody = &dynamic_cast<Rigidbody&>(_component);
 
 		Physics::GetInstance()->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
@@ -76,11 +102,14 @@ Component* GameObject::GetComponentType(Component& _component)
 	return nullptr;
 }
 
-void GameObject::RemoveComponent(Component& _component)
+void GameObject::RemoveComponent(Component& _component) // sure it's no longer in it's list but the component still exist in memory and has shares the same info with gameObject as before
 {
-	for (size_t i = 0; i < components.size(); i++)
+	string removeComponentType = typeid(_component).name();
+	for (size_t i = 0; i < components.size(); i++) // it needs to use templates as well to remove components by type and certainly not purely by the memory adress
 	{
-		if (components[i] == &_component)
+		string currentComponentType = typeid(*components[i]).name();
+		//Debug::GetInstance()->Log("to remove: " + removeComponentType + " current: " + currentComponentType);
+		if (removeComponentType == currentComponentType) 
 		{
 			components.erase(next(components.begin(), i), next(components.begin(), i + 1));
 		}

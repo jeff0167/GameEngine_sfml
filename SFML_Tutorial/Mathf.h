@@ -122,7 +122,7 @@ private:
 				second.rigidbody->transform->move(first.rigidbody->velocity);
 			}
 			else first.rigidbody->transform->move(second.rigidbody->velocity);
-			Debug::GetInstance()->Log("Circle collision");
+			//Debug::GetInstance()->Log("Circle collision");
 			return true;
 		}
 		return false;
@@ -141,7 +141,7 @@ private:
 				second.rigidbody->transform->move(first.rigidbody->velocity);
 			}
 			else first.rigidbody->transform->move(second.rigidbody->velocity);
-			Debug::GetInstance()->Log("bound intersect");
+			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
 		//Debug::GetInstance()->Log("bound not intersect");

@@ -81,7 +81,7 @@ protected:
 
 	void Clear()
 	{
-		cout << "\x1B[2J\x1B[H";
+		cout << "\x1B[2J\x1B[H"; // this doesn't actually clear the window altough it makes it look like it
 	}
 
 	void WriteAllLines() 

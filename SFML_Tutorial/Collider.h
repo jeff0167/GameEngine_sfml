@@ -11,7 +11,7 @@ class Collider : public Component
 public:
     Vector2f offsetPos = Vector2f(0,0); // would maybe have to cach rigidbody, instead of getting the reference through the gameobject and getcomponent
    // Transformable* transform;
-    Shape* s;
+    Shape* shape;
     Rigidbody* rigidbody;
     float rotation;
 

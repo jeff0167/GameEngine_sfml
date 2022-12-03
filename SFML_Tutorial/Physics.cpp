@@ -1,7 +1,6 @@
 #include "Physics.h"
 #include "Canvas.h"
 #include "Mathf.h"
-#include "EmptyComponent.h"
 #include "Debug.h"
 #include "Pch.h"
 
@@ -43,8 +42,7 @@ void Physics::PhysicsUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->gameObject->MoveGameObject(rigidbodies[i]->velocity);
-		//rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
 	}
 }
 
@@ -72,24 +70,40 @@ const vector<Collider*>& Physics::GetColliders()
 void Physics::PhysicsCollisionUpdate()
 {
 	//Debug::GetInstance()->Log(colliders.size());
-	for (size_t i = 0; i < colliders.size(); i++)
+	vector<Collider*> tempColliderList = colliders;
+
+	for (size_t i = 0; i < tempColliderList.size(); i++)
 	{
-		for (size_t j = 0; j < colliders.size(); j++)  // really need to aply dynamic programming real soon
+		for (size_t j = 0; j < tempColliderList.size(); j++)
 		{
-			if (i == j) continue; // don't check against itself
-
-			if (Mathf::Collision(*colliders[i], *colliders[j]))  // ok we collided, now what?!?! we should move the object that moved into it in the oposite direction of it's velocity vector just so it touches the static collider
+			if (i == j) continue; // but the above line should remove itself also
+			//Debug::GetInstance()->Log("Calling cool, dyn");
+			if (Mathf::Collision(*colliders[i], *colliders[j]))
 			{
-				// would want to add that we subsscibe delegates to this func on gameobjects so we can call stuff when it collides with onCollision()
-
-
-				// if one is static, meaning it will never move, the other will move in the opposite direction of it's velocity until the point the colliders just touch
-
-				// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
-
-				// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
 				//Debug::GetInstance()->Log("Collision");
 			}
 		}
+		tempColliderList.erase(next(tempColliderList.begin(), i), next(tempColliderList.begin(), i + 1));
 	}
+
+	//for (size_t i = 0; i < colliders.size(); i++) // 16,670 vs 40k with 4 colliders  2.4 x difference
+	//{
+	//	for (size_t j = 0; j < colliders.size(); j++) 
+	//	{
+	//		if (i == j) continue; // don't check against itself
+
+	//		Debug::GetInstance()->Log("Calling cool, no dyn");
+	//		//if (Mathf::Collision(*colliders[i], *colliders[j]))  // ok we collided, now what?!?! we should move the object that moved into it in the oposite direction of it's velocity vector just so it touches the static collider
+	//		//{
+	//		//	// would want to add that we subsscibe delegates to this func on gameobjects so we can call stuff when it collides with onCollision()
+
+	//		//	// if one is static, meaning it will never move, the other will move in the opposite direction of it's velocity until the point the colliders just touch
+
+	//		//	// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
+
+	//		//	// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
+	//		//	//Debug::GetInstance()->Log("Collision");
+	//		//}
+	//	}
+	//}
 }

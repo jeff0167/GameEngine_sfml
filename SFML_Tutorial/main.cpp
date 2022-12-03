@@ -42,10 +42,10 @@ bool idle = true;
 
 Canvas* myCanvas = Canvas::GetInstance();
 Physics* myPhysics = Physics::GetInstance(); // in the future, physics simulation should happen on it's own thread
-Debug& debug = *Debug::GetInstance();
+Debug* debug = Debug::GetInstance();
 
 Rigidbody rb, g2rb, crb;
-GameObject go, g1, g2, circleThing;
+GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
 int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
@@ -68,57 +68,21 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 	particlesPlayer.SetEmitterTransform(_player);
 
-	go = GameObject(_player, g2rb); // you should be able to make a gameobject with collider, shape and rigid body in one line
+	go = GameObject(_player, rb); // you should be able to make a gameobject with collider, shape and rigid body in one line
 
-	BoxCollider box_ = BoxCollider(_player); // the pos should be set to the gameObject pos if no pos is given
-	//go.AddComponent(rb);
+	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
+	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go.AddComponent(box_);
 
-	RectangleShape abox = RectangleShape(Vector2f(800, 800));
-	abox.setPosition(200, 200);
-	BoxCollider aboxC = BoxCollider(abox); // the pos should be set to the gameObject pos if no pos is given
-	aboxC.rect->setPosition(800, 800);
-	GameObject g = GameObject(abox);
-	g.AddComponent(aboxC);
-	Rigidbody r = Rigidbody();
-	g.AddComponent(r);
+	BoxCollider aboxC = BoxCollider(* new RectangleShape(Vector2f(100, 100)), Vector2f(1100,1000)); // there we go, a gameObject in 2 lines, though not super pretty
+	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
 
-
-	// we make a shape
-	// we make a collider that inherits the shapes rect
-	// we make a gameobject that inherits the rect from the collider 
-
-
-	box_.rect->setPosition(go.transform->getPosition()); // this does not work, we still have an unecesary transform
-	//go.AddComponent(box_);
-
-	CircleCollider circle = CircleCollider(*new CircleShape(50, 50));
-	circle.rect->setFillColor(Color::Black);
-	circle.rect->setOrigin(50, 50);
-	circle.rect->setPosition(400, 400);
-	circleThing = GameObject(*circle.s);
-	circleThing.AddComponent(circle);
-	circleThing.AddComponent(rb);
+	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400,400));
+	circleThing = GameObject(*circle.shape, circle);
+	circleThing.AddComponent(g2rb); // you can add after gameObect creation, pog
 	
-	CircleShape shapeC = CircleShape(50,50);
-	CircleCollider circle2 = CircleCollider(shapeC);
-	circle2.rect->setFillColor(Color::Black);
-	circle2.rect->setOrigin(50, 50);
-	circle2.rect->setPosition(500, 500);
-	GameObject c = GameObject(shapeC);
-	c.AddComponent(circle2);
-	crb = Rigidbody();
-	c.AddComponent(crb);
-
-
-	// you should be able to make a collider with all it's properties on creation
-	// you should be able to make a gameObject with all it's components, at least 3 then have to make list, on one line
-
-
-	// make existing collider
-	// make rigidbody
-	// make gameObject with thje collider and rigidbody
-
+	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(500,500), Color::Red);
+	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
 
 	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
 	while (window.isOpen()) // checking window events
@@ -211,37 +175,36 @@ void MouseInput() // gameObject should have a destroy method you can call
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		//circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
 void KeyBoardInput()
 {
-	g2rb.velocity = Mathf::Zero();
+	rb.velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
 	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{
-		g2rb.velocity.x = -1;
+		rb.velocity.x = -1;
 	}
 	if (Input::GetKey(Keyboard::Right, Input::KeyHeld) || Input::GetKey(Keyboard::D, Input::KeyHeld))
 	{
-		g2rb.velocity.x = 1;
+		rb.velocity.x = 1;
 	}
 	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld))
 	{
-		g2rb.velocity.y = -1;
+		rb.velocity.y = -1;
 	}
 	if (Input::GetKey(Keyboard::Down, Input::KeyHeld) || Input::GetKey(Keyboard::S, Input::KeyHeld))
 	{
-		g2rb.velocity.y = 1;
+		rb.velocity.y = 1;
 	}
-
 	//rb2.velocity = Mathf::Normalize(velocity) * moveSpeed;
-	g2rb.velocity = Mathf::Normalize(g2rb.velocity) * moveSpeed;
+	rb.velocity = Mathf::Normalize(rb.velocity) * moveSpeed;
 }
 
 void CollisionChecking() // this should be moved else where
