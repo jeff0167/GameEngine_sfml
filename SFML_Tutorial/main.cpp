@@ -2,6 +2,7 @@
 #include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
+#include "Scene.h"
 #include "Physics.h"
 #include "Component.h"
 #include "Monobehaviour.h"
@@ -20,6 +21,7 @@ void KeyBoardInput();
 void MouseInput();
 void CollisionChecking();
 void PlayerAnimState();
+void SceneWindow();
 
 int windowHeight = 1200;
 int windowWidth = 1200;
@@ -38,6 +40,14 @@ Clock _clock;
 
 Animation _playerAnim;
 
+enum ApplicationState
+{
+	Running_GameWindow,
+	RunningSceneWindow
+};
+
+ApplicationState myApplication = ApplicationState::Running_GameWindow;
+
 bool idle = true;
 
 Canvas* myCanvas = Canvas::GetInstance();
@@ -49,7 +59,16 @@ GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
 int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
-{	
+{
+	switch (myApplication)
+	{
+	case Running_GameWindow:
+		break;
+	case RunningSceneWindow:
+		SceneWindow(); // this will run it's own loop, and we will never continue in main here, well I mean technically we could return
+		break;
+	}
+
 	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
 	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive 
 	Vector2u textureSize = hero.getSize(); // 9 * 8
@@ -64,33 +83,67 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
 	ParticleSystem particles(10000, Color::Blue);
-	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 80.000 particles, preferably under 50k
+	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
 
 	particlesPlayer.SetEmitterTransform(_player);
 
-	go = GameObject(_player, rb); // you should be able to make a gameobject with collider, shape and rigid body in one line
-
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
-	go.AddComponent(box_);
+	go = GameObject(_player, rb, box_); // you should be able to make a gameobject with collider, shape and rigid body in one line
 
-	BoxCollider aboxC = BoxCollider(* new RectangleShape(Vector2f(100, 100)), Vector2f(1100,1000)); // there we go, a gameObject in 2 lines, though not super pretty
+	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); // there we go, a gameObject in 2 lines, though not super pretty
 	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
 
-	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400,400));
+	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400, 400));
 	circleThing = GameObject(*circle.shape, circle);
 	circleThing.AddComponent(g2rb); // you can add after gameObect creation, pog
-	
-	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(500,500), Color::Red);
+
+	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 100), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
+
+	//debug->Log(c.transform->getPosition().x);
+
+	//c.MyPos = c.transform->getPosition();
+	//ofstream file_obj;
+	//file_obj.open("Scene01.txt", ios::app);
+	//file_obj.write((char*)&c, sizeof(c));
+
+	//ifstream file_obj;
+	//file_obj.open("Scene01.txt", ios::in);
+
+	//// Object of class contestant to input data in file
+	//GameObject obj;
+
+	//// Reading from file into object "obj"
+	//file_obj.read((char*)&obj, sizeof(obj));
+
+	//while (!file_obj.eof()) {
+	//	// Checking further
+	//	file_obj.read((char*)&obj, sizeof(obj));
+	//}
+	//file_obj.close();
+
+	//c.transform->setPosition(obj.MyPos);
+	//debug->Log(obj.MyPos); // whenever we save the scene we save all the pos and ref and all the objects
+
+
+	// might need scene classes 
+	// need to know how to make copy(instantiation) of class from a file
+	// need to clear when writing again to scene file
+	// need like a scene window system, where you choose to run the scene
+
+	// the big question is, how hard would it be to save a gameObject to a file and create it from a scene
+	// for creation them again we cannot be using their pointers
+	// currently have nothing that keeps track of gameObjects in the scene
 
 	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
 	while (window.isOpen()) // checking window events
 	{
-		_time = _clock.getElapsedTime();
+		_time = _clock.getElapsedTime(); // show fps, with debug info or something
 		_clock.restart();
 		deltaTime = _time.asSeconds(); // this will get the time between frames
 
+		//debug->DisplayFrameRate(_time);
 		Event _event;
 		while (window.pollEvent(_event))
 		{
@@ -116,8 +169,8 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		myPhysics->PhysicsCollisionUpdate();
 
 		Vector2i mouse = Mouse::getPosition(window);
-		particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y))); 
-		particles.Update(_time); 
+		particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
+		particles.Update(_time); // we would add particle systems to physics for it to update
 
 		particlesPlayer.Update(_time); // could we not send a ref for it to use, maybe like have a global time pr frame generation, so you just need to create the object and it updates itself
 
@@ -161,8 +214,8 @@ void PlayerAnimState()
 void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
 {
 	CircleShape* s = new CircleShape(10, 50); // dude the player origin is messed up, it like wont update with the player moving around
-	s->setPosition(_player.getPosition() + Vector2f(0,100) + Vector2f(+40, 0) + (Vector2f(50, 0) * _player.getScale().x));
-	s->setOrigin(_player.getOrigin());          
+	s->setPosition(_player.getPosition() + Vector2f(0, 100) + Vector2f(+40, 0) + (Vector2f(50, 0) * _player.getScale().x));
+	s->setOrigin(_player.getOrigin());
 	s->setFillColor(Color::Blue); // + is down, lol, dude it confuses me every time, have you guys not had math?
 
 	Rigidbody* r = new Rigidbody();
@@ -175,8 +228,8 @@ void MouseInput() // gameObject should have a destroy method you can call
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-		//_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		//circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
 	}
 }
 
@@ -229,4 +282,9 @@ void Draw() // window clear vs background should be changeable
 	window.clear(Color(255, 204, 92)); // could be equal to camera solid backround, how would you lerp between colors over time? it's almost like you need an update or coroutine loop^^
 	myCanvas->DrawCanvas();
 	window.display();
+}
+
+void SceneWindow()
+{
+
 }

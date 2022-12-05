@@ -29,7 +29,7 @@ public:
 	const vector<Component*>& GetComponents();
 
 	template <class T>
-	Component* GetComponent(T type) 
+	Component* GetComponent(T type)
 	{
 		for (size_t i = 0; i < this->components.size(); i++)
 		{
@@ -57,6 +57,10 @@ public:
 	{
 		return(this->Member);
 	}
+
+	Vector2f MyPos;
+
+	string ToString();
 
 private:
 	int Member;

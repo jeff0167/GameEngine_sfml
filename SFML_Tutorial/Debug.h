@@ -36,7 +36,7 @@ public:
 	{
 		Log(to_string(line));
 	}
-	void Log(Vector2f& line) // apparently it is impossible to send my own added classes, "Gameobject undeclared identifier" i HAVE tried to declared it
+	inline void Log(Vector2f& line) // apparently it is impossible to send my own added classes, "Gameobject undeclared identifier" i HAVE tried to declared it
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
 	}		
@@ -45,7 +45,7 @@ public:
 		Log(string_view("x: " + to_string(line.width) + ", y: " + to_string(line.height)));
 	}
 
-	void Log(string_view line)
+	inline void Log(string_view line)
 	{
 		Clear();
 
@@ -70,6 +70,33 @@ public:
 		}
 
 		WriteAllLines();
+	}
+	double fps_ms = 0;
+	Int32 ms;
+	vector<double> fpsTimes;
+
+	void DisplayFrameRate(Time _time) // were would you actually put this tough?!?
+	{
+		if (fps_ms < 1000)
+		{
+			ms = _time.asMilliseconds();
+			fps_ms += ms;
+			fpsTimes.push_back(ms); // show fps, with debug info or something
+		}
+		else if (fps_ms >= 1000)
+		{
+			double totalTime = 0; // technically want be 1, but around there
+			for (size_t i = 0; i < fpsTimes.size(); i++)     // 1.1 s 60 frames
+			{
+				totalTime += fpsTimes[i];
+			}
+			double averageFps = (1000 / totalTime) * fpsTimes.size();  // this is not really necesary at high refesh rate, the higher the rate the closer to 1000 the less deviance
+
+			string averagefp = "My calculated fps: " + to_string(int(averageFps)); // it's like 1 fps off when having 100 fps
+			Log(averagefp);
+			fpsTimes.clear(); // well i do want to clear the values
+			fps_ms = 0;
+		}
 	}
 
 protected:

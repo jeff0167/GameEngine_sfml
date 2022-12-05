@@ -26,6 +26,11 @@ public:
 		return(this->Member);
 	}
 
+	string ToString() 
+	{
+		return "Im a component";
+	}
+
 private:
 
 };

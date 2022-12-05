@@ -19,7 +19,7 @@ public:
     RenderTarget* window;
     static Canvas *GetInstance();
 
-	 vector<Drawable*> drawables;
+	vector<Drawable*> drawables;
 
     void DrawCanvas();
 	void AddDrawable(Drawable& drawable);
@@ -33,6 +33,3 @@ protected:
     Canvas() {};
 
 };
-
-
-

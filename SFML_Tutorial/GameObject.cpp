@@ -2,6 +2,7 @@
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"
+#include "Scene.h"
 #include "Collider.h"
 #include "Debug.h"
 #include <type_traits>
@@ -20,16 +21,23 @@ public:
 using namespace sf;
 using namespace std;
 
+string GameObject::ToString() 
+{
+	return to_string(transform->getPosition().x);
+}
+
 GameObject::GameObject(Shape& drawShape) :
 	transform(&drawShape),
 	components(vector<Component*>())
 {
+	Scene::GetInstance()->AddGameObject(*this); // we also need to remove from the scene hiearchy again
 	Canvas::GetInstance()->AddDrawable(drawShape);
 }
 
 GameObject::GameObject(Shape& drawShape, Component& _component) :
 	transform(&drawShape)
 {
+	Scene::GetInstance()->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 	AddComponent(_component);
 }
@@ -37,6 +45,7 @@ GameObject::GameObject(Shape& drawShape, Component& _component) :
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2) :
 	transform(&drawShape)
 {
+	Scene::GetInstance()->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
@@ -45,6 +54,7 @@ GameObject::GameObject(Shape& drawShape, Component& _component, Component& _comp
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2, Component& _component3) :
 	transform(&drawShape)
 {
+	Scene::GetInstance()->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
@@ -58,6 +68,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 	{
 		AddComponent(*_components[i]);
 	}
+	Scene::GetInstance()->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 }
 
