@@ -5,7 +5,7 @@
 using namespace sf;
 using namespace std;
 
-class ParticleSystem : public Drawable, public Transformable // supposedly a particle sytem should also be a simple gameobject, or rather a component you could add to a gameObject
+class ParticleSystem : public Drawable, public Transformable, public Component
 {
 public:
 	int m_particleSpeed;

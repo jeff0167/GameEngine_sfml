@@ -24,7 +24,7 @@ public:
 	{
 		Log(to_string(line));
 	}
-	void Log(double line) 
+	inline void Log(double line) 
 	{
 		Log(to_string(line));
 	}

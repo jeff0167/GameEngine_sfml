@@ -24,18 +24,19 @@ void PlayerAnimState();
 void SceneWindow();
 
 int windowHeight = 1200;
-int windowWidth = 1200;
+int windowWidth = 3200;
 
 RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::Close | Style::Titlebar | Style::Resize);
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 5.0f;
+float moveSpeed = 5.0f; // MoveSpeed was 5.0f as default
+Vector2f velocity;
 
 Texture hero;
 
 Time _time;
-float deltaTime = 0;
+double deltaTime = 0; // these should be publicly available to everyone 
 Clock _clock;
 
 Animation _playerAnim;
@@ -69,6 +70,8 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		break;
 	}
 
+	myPhysics->InitializePhysicsUpdate();
+
 	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
 	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive 
 	Vector2u textureSize = hero.getSize(); // 9 * 8
@@ -82,14 +85,13 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
 
-	ParticleSystem particles(10000, Color::Blue);
+	//ParticleSystem particles(10000, Color::Blue);
 	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
-
-	particlesPlayer.SetEmitterTransform(_player);
 
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go = GameObject(_player, rb, box_); // you should be able to make a gameobject with collider, shape and rigid body in one line
+	go.AddComponent(particlesPlayer);
 
 	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); // there we go, a gameObject in 2 lines, though not super pretty
 	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
@@ -98,7 +100,7 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	circleThing = GameObject(*circle.shape, circle);
 	circleThing.AddComponent(g2rb); // you can add after gameObect creation, pog
 
-	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 100), Color::Red);
+	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
 
 	//debug->Log(c.transform->getPosition().x);
@@ -142,8 +144,9 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		_time = _clock.getElapsedTime(); // show fps, with debug info or something
 		_clock.restart();
 		deltaTime = _time.asSeconds(); // this will get the time between frames
+		Monobehaviour::GetInstance()->DeltaTime = deltaTime;
 
-		//debug->DisplayFrameRate(_time);
+		debug->DisplayFrameRate(_time);
 		Event _event;
 		while (window.pollEvent(_event))
 		{
@@ -165,14 +168,8 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		MouseInput();
 		KeyBoardInput();  // first check for input
 
-		myPhysics->PhysicsUpdate();
-		myPhysics->PhysicsCollisionUpdate();
-
-		Vector2i mouse = Mouse::getPosition(window);
-		particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
-		particles.Update(_time); // we would add particle systems to physics for it to update
-
-		particlesPlayer.Update(_time); // could we not send a ref for it to use, maybe like have a global time pr frame generation, so you just need to create the object and it updates itself
+		//Vector2i mouse = Mouse::getPosition(window);
+		//particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
 
 		PlayerAnimState(); // then animate based on input
 		CollisionChecking(); // last check for collisions
@@ -235,29 +232,29 @@ void MouseInput() // gameObject should have a destroy method you can call
 
 void KeyBoardInput()
 {
-	rb.velocity = Mathf::Zero();
+	velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
 	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{
-		rb.velocity.x = -1;
+		velocity.x = -1;
 	}
 	if (Input::GetKey(Keyboard::Right, Input::KeyHeld) || Input::GetKey(Keyboard::D, Input::KeyHeld))
 	{
-		rb.velocity.x = 1;
+		velocity.x = 1;
 	}
 	if (Input::GetKey(Keyboard::Up, Input::KeyHeld) || Input::GetKey(Keyboard::W, Input::KeyHeld))
 	{
-		rb.velocity.y = -1;
+		velocity.y = -1;
 	}
 	if (Input::GetKey(Keyboard::Down, Input::KeyHeld) || Input::GetKey(Keyboard::S, Input::KeyHeld))
 	{
-		rb.velocity.y = 1;
+		velocity.y = 1;
 	}
 	//rb2.velocity = Mathf::Normalize(velocity) * moveSpeed;
-	rb.velocity = Mathf::Normalize(rb.velocity) * moveSpeed;
+	rb.velocity = Mathf::Normalize(velocity) * moveSpeed;
 }
 
 void CollisionChecking() // this should be moved else where
@@ -284,7 +281,7 @@ void Draw() // window clear vs background should be changeable
 	window.display();
 }
 
-void SceneWindow()
+void SceneWindow() // should be putting this elsewhere
 {
 
 }

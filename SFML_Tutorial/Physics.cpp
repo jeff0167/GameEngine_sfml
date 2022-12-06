@@ -3,6 +3,8 @@
 #include "Mathf.h"
 #include "Debug.h"
 #include "Pch.h"
+#include <atomic>
+#include <chrono>
 
 using namespace sf;
 using namespace std;
@@ -15,6 +17,47 @@ Physics* Physics::GetInstance()
 		_physics = new Physics();
 	}
 	return _physics;
+}
+
+void Physics::InitializePhysicsUpdate() 
+{
+	thread t = std::thread([this] { this->PhysicsUpdate(); });
+	t.detach();
+}
+
+void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really really really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
+{
+	// it might just be that you cant call it at a constant interval
+	// you would have to take deltatime into considerration always when moving objects
+	// perhaps you could check for a maximum time for which if the calculation takes longer than that we just stop and calculate them next frame
+	while (true) // 120 fps is around 0.008333 in ms
+	{
+		auto step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
+
+		PhysicsMovementUpdate();
+		ParticleUpdate();            // can't comment this line out, without getting heap error
+		PhysicsCollisionUpdate();
+
+		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
+
+		//_clock.restart();
+
+		//PhysicsMovementUpdate();
+		//ParticleUpdate(); 
+		//PhysicsCollisionUpdate();
+
+		//_time = _clock.getElapsedTime();
+		//double remainingTime = PhysicsTimeStep - _time.asSeconds(); 
+		//if (remainingTime >= 0)
+		//{		
+		//	this_thread::sleep_for(chrono::microseconds((long)remainingTime));
+		//}
+	}
+}
+
+void Physics::AddParticleSystem(ParticleSystem& _particleSystem) 
+{
+	particleSystems.push_back(&_particleSystem);
 }
 
 void Physics::AddRigidbody(Rigidbody& _rigidbody)
@@ -38,7 +81,7 @@ const vector<Rigidbody*>& Physics::GetRigidbodies()
 	return rigidbodies;
 }
 
-void Physics::PhysicsUpdate()
+void Physics::PhysicsMovementUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
@@ -65,6 +108,15 @@ void Physics::RemoveCollider(Collider& _collider)
 const vector<Collider*>& Physics::GetColliders()
 {
 	return colliders;
+}
+
+void Physics::ParticleUpdate() // this will run it's own time and loop and particel system update will get that deltatime, or no the time will be constant and independent of the framerate
+{
+	for (size_t i = 0; i < particleSystems.size(); i++)
+	{
+		//Debug::GetInstance()->Log(PhysicsStepTime);
+		particleSystems[i]->Update(sf::milliseconds(ParticleTime * 10)); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
+	}
 }
 
 void Physics::PhysicsCollisionUpdate()
