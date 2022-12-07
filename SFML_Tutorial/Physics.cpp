@@ -30,12 +30,24 @@ void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr sec
 	// it might just be that you cant call it at a constant interval
 	// you would have to take deltatime into considerration always when moving objects
 	// perhaps you could check for a maximum time for which if the calculation takes longer than that we just stop and calculate them next frame
+
+	// the movement should be the same regardless of the physics update
+	// the physics update is just gonna make the movement more acurate and more responsive
+	// 1/0.008333   1/0.002
+	// say we want to move 500 pixels a second x velocity = 1
+	// if we have 1 physics update we then move by 500 pixels pr update
+	// if we have 50 physics update we then move by 10 pixels pr update
+	// would have to say 1/timeStep = x   then 500/x = delta      which is what we want to move by
+
+	double x = 1 / PhysicsTimeStep.count();
+	deltaSpeed = 500.0 / x;
+
 	while (true) // 120 fps is around 0.008333 in ms
 	{
 		auto step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
 
-		PhysicsMovementUpdate();
-		ParticleUpdate();            // can't comment this line out, without getting heap error
+		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
+		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
 		PhysicsCollisionUpdate();
 
 		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
@@ -85,7 +97,7 @@ void Physics::PhysicsMovementUpdate()
 {
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity * (float)deltaSpeed); // do we lose precision?
 	}
 }
 
@@ -115,7 +127,7 @@ void Physics::ParticleUpdate() // this will run it's own time and loop and parti
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		//Debug::GetInstance()->Log(PhysicsStepTime);
-		particleSystems[i]->Update(sf::milliseconds(ParticleTime * 10)); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
+		particleSystems[i]->Update(sf::milliseconds(ParticleTime * deltaSpeed)); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
 	}
 }
 

@@ -12,6 +12,7 @@
 #include "Mathf.h"
 #include "Debug.h"
 #include "Rigidbody.h"
+#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
@@ -24,16 +25,16 @@ void PlayerAnimState();
 void SceneWindow();
 
 int windowHeight = 1200;
-int windowWidth = 3200;
+int windowWidth = 1200;
 
 RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::Close | Style::Titlebar | Style::Resize);
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 5.0f; // MoveSpeed was 5.0f as default
+float moveSpeed = 1.0f; // MoveSpeed was 5.0f as default
 Vector2f velocity;
 
-Texture hero;
+Texture hero, particle;
 
 Time _time;
 double deltaTime = 0; // these should be publicly available to everyone 
@@ -74,6 +75,7 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
 	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive 
+	particle.loadFromFile("ParticleDefault.png");
 	Vector2u textureSize = hero.getSize(); // 9 * 8
 	textureSize.x /= 9;
 	textureSize.y /= 8;
@@ -98,7 +100,7 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400, 400));
 	circleThing = GameObject(*circle.shape, circle);
-	circleThing.AddComponent(g2rb); // you can add after gameObect creation, pog
+	circleThing.AddComponent(g2rb); 
 
 	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
@@ -138,6 +140,20 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	// for creation them again we cannot be using their pointers
 	// currently have nothing that keeps track of gameObjects in the scene
 
+	//Texture t;
+	//t.loadFromFile("_sprites_heroes.png");
+	//
+	//CircleShape myR(50,50);
+	////myR.setTexture(_player);
+
+	/*Particle p(10, particle);
+	p.setVelocity(1, 1);*/
+	//myCanvas->AddDrawable(p.dot);
+
+	MyParticleSystem p(&_player, 1500, 5, particle, 2, Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+
+	// need to be able to set the mouse pos as a transformable and move/inject it to other classes, like the particle system
+
 	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
 	while (window.isOpen()) // checking window events
 	{
@@ -173,6 +189,7 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 
 		PlayerAnimState(); // then animate based on input
 		CollisionChecking(); // last check for collisions
+		p.Update();
 		Draw();
 	}
 	return 0;
@@ -217,7 +234,7 @@ void Shoot() // set it so you can destroy after an interval, basicly an invoke f
 
 	Rigidbody* r = new Rigidbody();
 	GameObject g = GameObject(*s, *r);
-	r->velocity = Vector2f(_player.getScale().x * 20, 0);
+	r->velocity = Vector2f(_player.getScale().x * 8, 0);
 }
 
 void MouseInput() // gameObject should have a destroy method you can call
@@ -257,7 +274,7 @@ void KeyBoardInput()
 	rb.velocity = Mathf::Normalize(velocity) * moveSpeed;
 }
 
-void CollisionChecking() // this should be moved else where
+void CollisionChecking() // this should be moved into physics
 {
 	if (window.getSize().x < _player.getPosition().x + _player.getLocalBounds().width / 2) {
 		_player.setPosition(window.getSize().x - _player.getLocalBounds().width / 2, _player.getPosition().y); // checking for window x

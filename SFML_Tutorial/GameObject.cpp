@@ -8,16 +8,6 @@
 #include <type_traits>
 #include <typeinfo>
 
-template <typename T> class remove_all_pointers {
-public:
-	typedef T type;
-};
-
-template <typename T> class remove_all_pointers<T*> {
-public:
-	typedef typename remove_all_pointers<T>::type type;
-};
-
 using namespace sf;
 using namespace std;
 

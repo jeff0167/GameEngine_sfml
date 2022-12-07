@@ -59,14 +59,7 @@ public:
 private:
 	virtual void draw(RenderTarget& target, RenderStates states) const //can't capitalize draw as it inherits from another class, do people not use capitalization for classes in c++?
 	{
-		// apply the transform
-		states.transform *= getTransform();
-
-		// our particles don't use a texture
-	   // states.texture = NULL;
-
-		// draw the vertex array
-		target.draw(m_vertices, states);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
+		target.draw(m_vertices);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
 	}
 
 	struct Particle

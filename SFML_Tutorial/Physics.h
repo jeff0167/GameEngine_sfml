@@ -41,10 +41,11 @@ public:
 	void AddParticleSystem(ParticleSystem& _particleSystem);
 	void RemoveParticleSystem(ParticleSystem& _particleSystem);
 
+	double deltaSpeed;
 protected:
 	static Physics* _physics;
 	//const double PhysicsTimeStep2 = 0.02;
-	const chrono::duration<double> PhysicsTimeStep = 0.008333s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit
+	const chrono::duration<double> PhysicsTimeStep = 0.01s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit
 	double ParticleTime = 2.5;
 	Time _time;
 	Clock _clock;

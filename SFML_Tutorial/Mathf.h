@@ -3,6 +3,7 @@
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "Collider.h"
+#include "Physics.h"
 #include "Debug.h"
 
 using namespace sf;
@@ -96,9 +97,9 @@ private:
 			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
@@ -119,9 +120,9 @@ private:
 			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			//Debug::GetInstance()->Log("Circle collision");
 			return true;
 		}
@@ -138,9 +139,9 @@ private:
 
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity);
+				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
 			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
