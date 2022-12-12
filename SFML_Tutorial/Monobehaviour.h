@@ -21,7 +21,16 @@ public:
 
 	static void Invoke(function<void()> function, float callDelay);
 
+	Time _time;
+	Clock _clock;
 	float DeltaTime;
+
+	void UpdateTime() 
+	{
+		_time = _clock.getElapsedTime(); 
+		_clock.restart();
+		DeltaTime = _time.asSeconds();
+	}
 
 private:
 	static void DelayedCall(function<void()> function, float callDelay);

@@ -20,7 +20,7 @@ public:
 
 	static Debug* GetInstance();
 
-	void Log(float line) 
+	inline void Log(float line) 
 	{
 		Log(to_string(line));
 	}
@@ -28,11 +28,11 @@ public:
 	{
 		Log(to_string(line));
 	}
-	void Log(int line) 
+	inline void Log(int line) 
 	{
 		Log(to_string(line));
 	}	
-	void Log(size_t line)
+	inline void Log(size_t line)
 	{
 		Log(to_string(line));
 	}
@@ -48,7 +48,7 @@ public:
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
 	}	
-	void Log(FloatRect line) 
+	inline void Log(FloatRect line) 
 	{
 		Log(string_view("x: " + to_string(line.width) + ", y: " + to_string(line.height)));
 	}
@@ -93,7 +93,7 @@ public:
 		}
 		else if (fps_ms >= 1000)
 		{
-			double totalTime = 0; // technically want be 1, but around there
+			double totalTime = 0; // technically wont be 1, but around there
 			for (size_t i = 0; i < fpsTimes.size(); i++)     // 1.1 s 60 frames
 			{
 				totalTime += fpsTimes[i];

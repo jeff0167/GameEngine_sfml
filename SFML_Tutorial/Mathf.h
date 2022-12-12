@@ -73,7 +73,6 @@ public:
 		{
 			return CircleXCircle(dynamic_cast<CircleCollider&>(first), dynamic_cast<CircleCollider&>(second));
 		}
-
 		if ((d.x == 2 && d.y == 1)) // circle x box
 		{
 			return CircleXBox(dynamic_cast<CircleCollider&>(first), dynamic_cast<BoxCollider&>(second));

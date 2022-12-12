@@ -36,45 +36,42 @@ Vector2f velocity;
 
 Texture hero, particle;
 
-Time _time;
-double deltaTime = 0; // these should be publicly available to everyone 
-Clock _clock;
-
 Animation _playerAnim;
 
 enum ApplicationState
 {
 	Running_GameWindow,
-	RunningSceneWindow
+	Running_SceneWindow
 };
 
 ApplicationState myApplication = ApplicationState::Running_GameWindow;
 
 bool idle = true;
 
-Canvas* myCanvas = Canvas::GetInstance();
-Physics* myPhysics = Physics::GetInstance(); // in the future, physics simulation should happen on it's own thread
-Debug* debug = Debug::GetInstance();
+Monobehaviour* m_Monobehavior = Monobehaviour::GetInstance();
+Canvas* m_Canvas = Canvas::GetInstance();
+Physics* m_Physics = Physics::GetInstance(); 
+Debug* m_Debug = Debug::GetInstance();
 
 Rigidbody rb, g2rb, crb;
 GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
-int main() // When used in declaration(string * ptr), it creates a pointer variable, when not used in declaration, it act as a dereference operator.
+int main()
 {
+	m_Canvas->AddWindow(window);
 	switch (myApplication)
 	{
 	case Running_GameWindow:
 		break;
-	case RunningSceneWindow:
+	case Running_SceneWindow:
 		SceneWindow(); // this will run it's own loop, and we will never continue in main here, well I mean technically we could return
 		break;
 	}
 
-	myPhysics->InitializePhysicsUpdate();
+	m_Physics->InitializePhysicsUpdate();
 
-	myCanvas->AddWindow(window); // could you somehow send it on initialize!?
-	hero.loadFromFile("_sprites_heroes.png"); // unsigned int means the int can only be positive 
+	hero.loadFromFile("_sprites_heroes.png");
 	particle.loadFromFile("ParticleDefault.png");
 	Vector2u textureSize = hero.getSize(); // 9 * 8
 	textureSize.x /= 9;
@@ -85,17 +82,17 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	_player.setTexture(&hero);
 	_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
 
-	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); // the whole tileset is now the same framerate :/
+	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); 
 
 	//ParticleSystem particles(10000, Color::Blue);
-	ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
+	//ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
 
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
-	go = GameObject(_player, rb, box_); // you should be able to make a gameobject with collider, shape and rigid body in one line
-	go.AddComponent(particlesPlayer);
+	go = GameObject(_player, rb, box_);
+	//go.AddComponent(particlesPlayer);
 
-	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); // there we go, a gameObject in 2 lines, though not super pretty
+	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); 
 	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
 
 	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400, 400));
@@ -150,19 +147,16 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 	p.setVelocity(1, 1);*/
 	//myCanvas->AddDrawable(p.dot);
 
-	MyParticleSystem p(&_player, 1500, 5, particle, 2, Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	MyParticleSystem p(&_player, 50, 5, particle, 2, Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 
 	// need to be able to set the mouse pos as a transformable and move/inject it to other classes, like the particle system
 
-	window.setFramerateLimit(120); // smooth constant fps, this should also be changeable
+	window.setFramerateLimit(120); // this should also be changeable
 	while (window.isOpen()) // checking window events
 	{
-		_time = _clock.getElapsedTime(); // show fps, with debug info or something
-		_clock.restart();
-		deltaTime = _time.asSeconds(); // this will get the time between frames
-		Monobehaviour::GetInstance()->DeltaTime = deltaTime;
+		m_Monobehavior->UpdateTime();
 
-		debug->DisplayFrameRate(_time);
+		m_Debug->DisplayFrameRate(m_Monobehavior->_time);
 		Event _event;
 		while (window.pollEvent(_event))
 		{
@@ -187,7 +181,7 @@ int main() // When used in declaration(string * ptr), it creates a pointer varia
 		//Vector2i mouse = Mouse::getPosition(window);
 		//particles.SetEmitterVector(Vector2f(static_cast<float>(mouse.x), static_cast<float>(mouse.y)));
 
-		PlayerAnimState(); // then animate based on input
+		PlayerAnimState(); // animate based on input
 		CollisionChecking(); // last check for collisions
 		p.Update();
 		Draw();
@@ -210,7 +204,7 @@ void PlayerAnimState()
 			idle = false;
 			_playerAnim.NextAnim();
 		}
-		_playerAnim.Update(7, 3, 6, deltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
+		_playerAnim.Update(7, 3, 6, m_Monobehavior->DeltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
 	}
 	else
 	{
@@ -220,30 +214,29 @@ void PlayerAnimState()
 			_playerAnim.NextAnim();
 		}
 
-		_playerAnim.Update(7, 0, 3, deltaTime);
+		_playerAnim.Update(7, 0, 3, m_Monobehavior->DeltaTime);
 	}
 	_player.setTextureRect(_playerAnim.uvRect);
 }
 
-void Shoot() // set it so you can destroy after an interval, basicly an invoke from unity or a coroutine 
+void Shoot() 
 {
-	CircleShape* s = new CircleShape(10, 50); // dude the player origin is messed up, it like wont update with the player moving around
+	CircleShape* s = new CircleShape(10, 50); 
 	s->setPosition(_player.getPosition() + Vector2f(0, 100) + Vector2f(+40, 0) + (Vector2f(50, 0) * _player.getScale().x));
 	s->setOrigin(_player.getOrigin());
-	s->setFillColor(Color::Blue); // + is down, lol, dude it confuses me every time, have you guys not had math?
+	s->setFillColor(Color::Blue);
 
 	Rigidbody* r = new Rigidbody();
 	GameObject g = GameObject(*s, *r);
-	r->velocity = Vector2f(_player.getScale().x * 8, 0);
+	r->velocity = Vector2f(_player.getScale().x * 7, 0);
 }
 
-void MouseInput() // gameObject should have a destroy method you can call
+void MouseInput() 
 {
 	if (Mouse::isButtonPressed(Mouse::Left))
 	{
 		Vector2i mousePos = Mouse::getPosition(window);
-		//circleThing.transform->setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-		_player.setPosition(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)); // can also be put outside the if statement for constant follow of mouse, love it
+		_player.setPosition((mousePos.x), (mousePos.y));
 	}
 }
 
@@ -270,7 +263,6 @@ void KeyBoardInput()
 	{
 		velocity.y = 1;
 	}
-	//rb2.velocity = Mathf::Normalize(velocity) * moveSpeed;
 	rb.velocity = Mathf::Normalize(velocity) * moveSpeed;
 }
 
@@ -291,14 +283,14 @@ void CollisionChecking() // this should be moved into physics
 	}
 }
 
-void Draw() // window clear vs background should be changeable 
+void Draw() 
 {
-	window.clear(Color(255, 204, 92)); // could be equal to camera solid backround, how would you lerp between colors over time? it's almost like you need an update or coroutine loop^^
-	myCanvas->DrawCanvas();
+	window.clear(Color(255, 204, 92)); 
+	m_Canvas->DrawCanvas();
 	window.display();
 }
 
 void SceneWindow() // should be putting this elsewhere
 {
-
+	Scene::GetInstance()->DisplaySceneWindow(window);
 }

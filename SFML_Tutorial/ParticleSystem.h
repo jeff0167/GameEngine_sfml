@@ -9,7 +9,7 @@ class ParticleSystem : public Drawable, public Transformable, public Component
 {
 public:
 	int m_particleSpeed;
-	ParticleSystem(unsigned int count, Color color, int speed = 50) : // a particle is literally only a point, which is just a pixel and can't just be increased in size
+	ParticleSystem(unsigned int count, Color color, int speed = 50) : 
 		m_particles(count),
 		m_vertices(Points, count),
 		m_lifetime(seconds(3.f)),
@@ -21,7 +21,7 @@ public:
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
 			m_vertices[i].color = color; 
-			ResetParticle(i); // this needs to be called
+			ResetParticle(i); 
 		}
 	}
 
@@ -37,7 +37,7 @@ public:
 
 	void Update(Time elapsed)
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i)
+		for (size_t i = 0; i < m_particles.size(); ++i) // use async
 		{
 			// update the particle lifetime
 			Particle& p = m_particles[i];
@@ -57,7 +57,7 @@ public:
 	}
 
 private:
-	virtual void draw(RenderTarget& target, RenderStates states) const //can't capitalize draw as it inherits from another class, do people not use capitalization for classes in c++?
+	virtual void draw(RenderTarget& target, RenderStates states) const 
 	{
 		target.draw(m_vertices);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
 	}

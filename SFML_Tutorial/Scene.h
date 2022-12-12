@@ -5,14 +5,13 @@
 using namespace sf;
 using namespace std;
 
-class Scene // needs to be a singleton and have an observer pattern
+class Scene 
 {
 public:
-    Scene(Scene& other) = delete; // Singletons should not be assignable
+    Scene(Scene& other) = delete;
 
     void operator=(const Scene&) = delete;
 
-   // RenderTarget* window;
     static Scene* GetInstance();
 
     vector<GameObject*> m_GameObjects;
@@ -21,6 +20,8 @@ public:
     void AddGameObject(GameObject& drawable);
     void RemoveGameObject(GameObject& _drawable);
     const vector<GameObject*>& GetGameObjects();
+
+    void DisplaySceneWindow(RenderWindow& window);
 
 protected:
     static Scene* _Scene;

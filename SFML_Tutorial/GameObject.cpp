@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include <type_traits>
 #include <typeinfo>
+#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
@@ -88,7 +89,6 @@ void GameObject::AddComponent(Component& _component)
 		dynamic_cast<ParticleSystem&>(_component).SetEmitterTransform(*transform);
 		Physics::GetInstance()->AddParticleSystem(dynamic_cast<ParticleSystem&>(_component)); 
 	}
-
 	components.push_back(&_component);
 	_component.gameObject = this; 
 }

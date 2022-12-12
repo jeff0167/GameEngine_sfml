@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Canvas.h"
+#include "Debug.h"
 
 using namespace sf;
 using namespace std;
@@ -16,16 +17,17 @@ public:
 	Particle(float radius, Texture& texture);
 	~Particle();
 
-	void setVelocity(float x, float y);
-	void setPosition(float x, float y);
+	void SetVelocity(float x, float y);
+	void SetPosition(float x, float y);
 	Vector2f GetTargetPos();
-	void update();
-	void applyForce(Vector2f);
-	Vector2f getVelocity();
+	void Update();
+	void ApplyForce(Vector2f);
+	Vector2f GetVelocity();
 	void SetParticleSystem(MyParticleSystem& ps);
-	bool isDead();
-	Color setColor(int, float, float);
-	int lifespan;
+	bool IsDead();
+	Color SetColor(int, float, float, float);
+	int lifespan; // this should be in seconds
+	int Maxlifespan; // this should be in seconds ///TODO
 protected:
 	Vector2f velocity;
 	Vector2f acceleration;
@@ -34,7 +36,7 @@ protected:
 
 };
 
-class MyParticleSystem
+class MyParticleSystem : public Component
 {
 public:
 	MyParticleSystem() {};
@@ -42,16 +44,17 @@ public:
 		m_TargetTransform(targetTransform),
 		m_particles(particleCount)
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i)
+		for (size_t i = 0; i < m_particles.size(); ++i) // dude this is a huge function, duuuuuude async!!
 		{
 			m_particles[i].dot.setTexture(&texture);
-			m_particles[i].dot.setRadius(radius);
+			float size = (rand() % 3) * radius;
+			m_particles[i].dot.setRadius(size);
 			m_particles[i].SetParticleSystem(*this);
 			float angle = (rand() % 360) * 3.14f / 180.f;
-			float speed = (float)(rand() % (int)_speed);
-			m_particles[i].setVelocity(cos(angle) * speed, sin(angle) * speed);
+			float speed = (rand() % 50) * 0.01 * _speed + 0.05; // takes a long time for it to generate these numbers
+			m_particles[i].SetVelocity(cos(angle) * speed, sin(angle) * speed);
 
-			m_particles[i].lifespan = (rand() % 200) + 100;
+			m_particles[i].Maxlifespan = (rand() % 200) + 100;
 
 			Canvas::GetInstance()->AddDrawable(m_particles[i].dot);
 		}
@@ -69,9 +72,9 @@ public:
 
 	void Update()
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i)
+		for (size_t i = 0; i < m_particles.size(); ++i) // dude, I could literally use async for this loop!!!!
 		{
-			m_particles[i].update();
+			m_particles[i].Update();
 		}
 	}
 

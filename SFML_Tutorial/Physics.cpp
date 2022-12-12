@@ -5,6 +5,7 @@
 #include "Pch.h"
 #include <atomic>
 #include <chrono>
+#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
@@ -25,26 +26,15 @@ void Physics::InitializePhysicsUpdate()
 	t.detach();
 }
 
-void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really really really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
+void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
 {
-	// it might just be that you cant call it at a constant interval
-	// you would have to take deltatime into considerration always when moving objects
-	// perhaps you could check for a maximum time for which if the calculation takes longer than that we just stop and calculate them next frame
-
-	// the movement should be the same regardless of the physics update
-	// the physics update is just gonna make the movement more acurate and more responsive
-	// 1/0.008333   1/0.002
-	// say we want to move 500 pixels a second x velocity = 1
-	// if we have 1 physics update we then move by 500 pixels pr update
-	// if we have 50 physics update we then move by 10 pixels pr update
-	// would have to say 1/timeStep = x   then 500/x = delta      which is what we want to move by
-
 	double x = 1 / PhysicsTimeStep.count();
 	deltaSpeed = 500.0 / x;
+	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
 
 	while (true) // 120 fps is around 0.008333 in ms
 	{
-		auto step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
+		step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
 
 		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
 		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
@@ -122,7 +112,7 @@ const vector<Collider*>& Physics::GetColliders()
 	return colliders;
 }
 
-void Physics::ParticleUpdate() // this will run it's own time and loop and particel system update will get that deltatime, or no the time will be constant and independent of the framerate
+void Physics::ParticleUpdate()
 {
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
@@ -140,7 +130,7 @@ void Physics::PhysicsCollisionUpdate()
 	{
 		for (size_t j = 0; j < tempColliderList.size(); j++)
 		{
-			if (i == j) continue; // but the above line should remove itself also
+			if (i == j) continue; 
 			//Debug::GetInstance()->Log("Calling cool, dyn");
 			if (Mathf::Collision(*colliders[i], *colliders[j]))
 			{
