@@ -1,11 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Canvas.h"
+#include "Monobehaviour.h"
 
 using namespace sf;
 using namespace std;
 
-class ParticleSystem : public Drawable, public Transformable, public Component
+class ParticleSystem : public Drawable, public Transformable, public Component, public ParticleSystemUpdate
 {
 public:
 	int m_particleSpeed;
@@ -30,25 +31,25 @@ public:
 		m_emitter = position;
 	}
 
-	void SetEmitterTransform(Transformable& transform)
+	void SetEmitterTransform(Transformable& transform) override
 	{
 		m_TargetTransform = &transform;
 	}
 
-	void Update(Time elapsed)
+	void Update() override
 	{
 		for (size_t i = 0; i < m_particles.size(); ++i) // use async
 		{
 			// update the particle lifetime
 			Particle& p = m_particles[i];
-			p.lifetime -= elapsed;
+			p.lifetime -= milliseconds(p.lifetime.asMicroseconds() - Monobehaviour::GetInstance()->DeltaTime);
 
 			// if the particle is dead, respawn it
 			if (p.lifetime <= Time::Zero)
 				ResetParticle(i);
 
 			// update the position of the corresponding vertex
-			m_vertices[i].position += p.velocity * elapsed.asSeconds();
+			m_vertices[i].position += p.velocity * Monobehaviour::GetInstance()->DeltaTime; // this might not be working as intended with delta instead of elapsed as seconds
 
 			// update the alpha (transparency) of the particle according to its lifetime
 			float ratio = p.lifetime.asSeconds() / m_lifetime.asSeconds();

@@ -57,7 +57,7 @@ void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr sec
 	}
 }
 
-void Physics::AddParticleSystem(ParticleSystem& _particleSystem) 
+void Physics::AddParticleSystem(ParticleSystemUpdate& _particleSystem) 
 {
 	particleSystems.push_back(&_particleSystem);
 }
@@ -116,8 +116,12 @@ void Physics::ParticleUpdate()
 {
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
-		//Debug::GetInstance()->Log(PhysicsStepTime);
-		particleSystems[i]->Update(sf::milliseconds(ParticleTime * deltaSpeed)); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
+		//Debug::GetInstance()->Log(PhysicsStepTime); 
+
+		// milliseconds(ParticleTime * deltaSpeed) was put in update before, the movement should technically be dependent on the physics time step
+		// for now it is realying on the delta time between frames
+
+		particleSystems[i]->Update(); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
 	}
 }
 

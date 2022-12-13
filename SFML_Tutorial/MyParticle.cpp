@@ -1,4 +1,5 @@
 #include "MyParticle.h"
+#include "Monobehaviour.h"
 
 float Umapi(float value, float istart, float istop, float ostart, float ostop)
 {
@@ -9,7 +10,7 @@ Particle::Particle(float radius, Texture& texture)
 {
 	dot.setRadius(radius);
 	dot.setTexture(&texture);
-	lifespan = 255;
+	lifespan = maxLifespan;
 }
 
 Particle::~Particle()
@@ -20,13 +21,13 @@ void Particle::Update()
 {
 	if (IsDead())
 	{
-		lifespan = -1; // also reset it 
+		lifespan = Time::Zero; // also reset it 
 	}
-	float alpha = (lifespan / (Maxlifespan / 100)) * 2;
-	dot.setFillColor(SetColor(Umapi(lifespan, 255, 0, 360, 0), 1, 1, alpha));
-	if (lifespan == -1)
+	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds() / 100)) * 2;
+	dot.setFillColor(SetColor(Umapi(lifespan.asMilliseconds(), 255, 0, 360, 0), 1, 1, alpha));
+	if (lifespan.asSeconds() == 0)
 	{
-		lifespan = Maxlifespan;
+		lifespan = maxLifespan;
 		position.x = 0;
 		position.y = 0;
 
@@ -37,8 +38,7 @@ void Particle::Update()
 	dot.setPosition(position + startPos);
 
 	acceleration = acceleration * 0.f;
-	lifespan -= 1;
-
+	lifespan = milliseconds(lifespan.asMilliseconds() - Monobehaviour::GetInstance()->DeltaTime);
 }
 
 void Particle::SetPosition(float x, float y)
@@ -77,7 +77,7 @@ Vector2f Particle::GetVelocity()
 
 bool Particle::IsDead()
 {
-	if (lifespan < 0) {
+	if (lifespan.asSeconds() < 0) {
 		return true;
 	}
 	else {

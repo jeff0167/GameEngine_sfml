@@ -84,10 +84,10 @@ void GameObject::AddComponent(Component& _component)
 
 		Physics::GetInstance()->AddCollider(dynamic_cast<Collider&>(_component)); 
 	}
-	else if (classType == "class ParticleSystem")
+	else if (classType == "class ParticleSystem" || classType == "class MyParticleSystem")
 	{
-		dynamic_cast<ParticleSystem&>(_component).SetEmitterTransform(*transform);
-		Physics::GetInstance()->AddParticleSystem(dynamic_cast<ParticleSystem&>(_component)); 
+		dynamic_cast<ParticleSystemUpdate&>(_component).SetEmitterTransform(*transform);
+		Physics::GetInstance()->AddParticleSystem(dynamic_cast<ParticleSystemUpdate&>(_component)); 
 	}
 	components.push_back(&_component);
 	_component.gameObject = this; 

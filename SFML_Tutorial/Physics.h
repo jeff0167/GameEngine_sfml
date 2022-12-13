@@ -28,10 +28,10 @@ public:
 	void AddCollider(Collider& _collider);
 	void RemoveCollider(Collider& _collider);
 
-	vector<ParticleSystem*> particleSystems;
-	const vector<ParticleSystem*>& GetParticleSystems();
-	void AddParticleSystem(ParticleSystem& _particleSystem);
-	void RemoveParticleSystem(ParticleSystem& _particleSystem);
+	vector<ParticleSystemUpdate*> particleSystems;
+	const vector<ParticleSystemUpdate*>& GetParticleSystems();
+	void AddParticleSystem(ParticleSystemUpdate& _particleSystem);
+	void RemoveParticleSystem(ParticleSystemUpdate& _particleSystem);
 
 	double deltaSpeed;
 protected:

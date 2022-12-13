@@ -147,7 +147,8 @@ int main()
 	p.setVelocity(1, 1);*/
 	//myCanvas->AddDrawable(p.dot);
 
-	MyParticleSystem p(&_player, 50, 5, particle, 2, Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	MyParticleSystem p(&_player, 5000, 5, particle, 2, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	go.AddComponent(p);
 
 	// need to be able to set the mouse pos as a transformable and move/inject it to other classes, like the particle system
 
@@ -183,7 +184,6 @@ int main()
 
 		PlayerAnimState(); // animate based on input
 		CollisionChecking(); // last check for collisions
-		p.Update();
 		Draw();
 	}
 	return 0;
