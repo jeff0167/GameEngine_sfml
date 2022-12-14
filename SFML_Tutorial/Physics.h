@@ -4,6 +4,8 @@
 #include "Collider.h"
 #include "ParticleSystem.h"
 
+#define Science Physics::GetInstance()
+
 using namespace sf;
 using namespace std;
 
@@ -33,14 +35,27 @@ public:
 	void AddParticleSystem(ParticleSystemUpdate& _particleSystem);
 	void RemoveParticleSystem(ParticleSystemUpdate& _particleSystem);
 
-	double deltaSpeed;
+	double m_DeltaSpeed;
+	float m_PhysicsDeltaTime;
+
+	float GetDeltaTimeMili() 
+	{
+		return m_Time.asMilliseconds();
+	}
+
 protected:
 	static Physics* _physics;
 	//const double PhysicsTimeStep2 = 0.02;
-	const chrono::duration<double> PhysicsTimeStep = 0.01s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit
-	double ParticleTime = 2.5;
-	Time _time;
-	Clock _clock;
+	const chrono::duration<double> PhysicsTimeStep = 0.02s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit     //TODO this is now affecting movespeed
+	Time m_Time;
+	Clock m_Clock;
+
+	void UpdateTime()
+	{
+		m_Time = m_Clock.getElapsedTime();
+		m_Clock.restart();
+		m_PhysicsDeltaTime = m_Time.asSeconds();
+	}
 
 	Physics() {}; 
 

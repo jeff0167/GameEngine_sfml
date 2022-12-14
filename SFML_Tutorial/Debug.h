@@ -2,6 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include "Pch.h"
 
+// dude, so cool!!
+#ifdef GE_DEBUG
+#define DebugLog(x) Debug::GetInstance()->Log(x)
+#define DebugFrameRate(x) Debug::GetInstance()->DisplayFrameRate(x) 
+#else
+#define DebugLog(x) 
+#define DebugFrameRate(x) 
+#endif
+
 using namespace sf;
 using namespace std;
 
@@ -51,6 +60,10 @@ public:
 	inline void Log(FloatRect line) 
 	{
 		Log(string_view("x: " + to_string(line.width) + ", y: " + to_string(line.height)));
+	}
+	inline void Log(Time line) 
+	{
+		Log(string_view("Milliseconds: " + to_string(line.asMilliseconds())));
 	}
 
 	inline void Log(string_view line)

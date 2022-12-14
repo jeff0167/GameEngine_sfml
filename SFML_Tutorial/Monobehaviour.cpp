@@ -1,6 +1,5 @@
 #include "Monobehaviour.h"
 #include "GameObject.h"
-#include "Debug.h"
 
 using namespace sf;
 

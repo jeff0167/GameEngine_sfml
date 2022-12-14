@@ -4,9 +4,7 @@
 #include <mutex>
 #include "Canvas.h"
 #include "Debug.h"
-
-
-
+#include "Monobehaviour.h"
 
 #include <iostream>
 #include <vector>
@@ -32,6 +30,7 @@ public:
 
 	void SetVelocity(float x, float y);
 	void SetPosition(float x, float y);
+	void SetMaxLifeTime(Time time);
 	Vector2f GetTargetPos();
 	void Update();
 	void ApplyForce(Vector2f);
@@ -56,15 +55,15 @@ public:
 
 	//static mutex m_Mutex;
 
-	static void InitializeParticle(Particle* particle, unsigned int radius, float _speed, Time lifeTime) // don't need to lock with mutex here
+	static void InitializeParticle(Particle* particle, Texture* texture, unsigned int radius, float _speed, Time lifeTime) // don't need to lock with mutex here
 	{
+		particle->dot.setTexture(texture);
 		float size = (rand() % 3) * radius;
 		particle->dot.setRadius(size);
 		float angle = (rand() % 360) * 3.14f / 180.f;
-		float speed = (rand() % 50) * 0.01 * _speed + 0.05; 
+		float speed = (rand() % 50) * 0.01 * _speed + 0.05;
 		particle->SetVelocity(cos(angle) * speed, sin(angle) * speed);
-
-		particle->maxLifespan = milliseconds((rand() % 200) + 100) * lifeTime.asSeconds();
+		particle->SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));   
 
 		//lock_guard<mutex> lock(m_Mutex);
 	}
@@ -79,7 +78,13 @@ public:
 		m_LifeTime(lifeTime)
 
 	{
-		//for (size_t i = 0; i < m_particles.size(); ++i) // dude this is a huge function, duuuuuude async!!
+		//Time debugTime;
+		//Clock debugClock;
+		//float debugDeltaTime;
+
+		//debugClock.restart();
+
+		//for (size_t i = 0; i < m_particles.size(); ++i) // 630 ms - 640 with 10k particles
 		//{
 		//	m_particles[i].dot.setTexture(m_Texture);
 		//	float size = (rand() % 3) * m_Radius;
@@ -94,18 +99,24 @@ public:
 		//	Canvas::GetInstance()->AddDrawable(m_particles[i].dot);
 		//}
 
+		//debugTime = debugClock.getElapsedTime();
+		//debugDeltaTime = debugTime.asMilliseconds();
+
+		//Debug::GetInstance()->Log(debugDeltaTime);
 
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
 			Canvas::GetInstance()->AddDrawable(m_particles[i].dot);
-			m_particles[i].dot.setTexture(&texture);
 			m_particles[i].SetParticleSystem(*this);
 		}
 
-		for (size_t i = 0; i < m_particles.size(); ++i)  // now to test if it became faster
+		for (size_t i = 0; i < m_particles.size(); ++i)  // saying 90ms - 100  with 10k particles
 		{
-			m_Futures.push_back(async(launch::async, InitializeParticle, &m_particles[i], radius, speed, lifeTime));
+			m_Futures.push_back(async(launch::async, InitializeParticle, &m_particles[i], &texture, radius, speed, lifeTime));
 		}
+	/*	debugTime = debugClock.getElapsedTime();
+		debugDeltaTime = debugTime.asMilliseconds();
+		Debug::GetInstance()->Log(debugDeltaTime);*/
 	}
 
 	void SetEmitterTransform(Transformable& transform) override
@@ -120,7 +131,7 @@ public:
 
 	void Update() override
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i) // dude, I could literally use async for this loop!!!!
+		for (size_t i = 0; i < m_particles.size(); ++i) // dude, I could literally use async for this loop, did not work
 		{
 			m_particles[i].Update();
 		}

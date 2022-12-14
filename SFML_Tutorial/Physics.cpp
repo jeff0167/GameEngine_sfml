@@ -28,14 +28,15 @@ void Physics::InitializePhysicsUpdate()
 
 void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
 {
-	double x = 1 / PhysicsTimeStep.count();
-	deltaSpeed = 500.0 / x;
+	double x = 1 / PhysicsTimeStep.count(); 
+	m_DeltaSpeed = 500.0 / x; 
 	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
 
 	while (true) // 120 fps is around 0.008333 in ms
 	{
 		step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
 
+		UpdateTime();
 		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
 		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
 		PhysicsCollisionUpdate();
@@ -85,9 +86,15 @@ const vector<Rigidbody*>& Physics::GetRigidbodies()
 
 void Physics::PhysicsMovementUpdate()
 {
+	double x = m_PhysicsDeltaTime / 1 / PhysicsTimeStep.count(); // really not very clean code, the timeStep is acurate to a certain point, if keept within a reasonable range the difference is not very significant, 0.01 or 0.02 is not noticable in difference
+	m_DeltaSpeed = (500.0 / x) * 0.01f;
+
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity * (float)deltaSpeed); // do we lose precision?
+		// the deltaSpeed changes, sure, but the m_PhysicsDeltaTime should multiplied with the deltaSpeed, give the exact same value
+		// Now deltaSpeed is constant and physicsDelta is not, meaning that deltaSpeed shouldn't be constant, it should be calculated for each physics update
+
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity * (float)m_DeltaSpeed * m_PhysicsDeltaTime * 100.0f); // do we lose precision?
 	}
 }
 
@@ -116,8 +123,6 @@ void Physics::ParticleUpdate()
 {
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
-		//Debug::GetInstance()->Log(PhysicsStepTime); 
-
 		// milliseconds(ParticleTime * deltaSpeed) was put in update before, the movement should technically be dependent on the physics time step
 		// for now it is realying on the delta time between frames
 

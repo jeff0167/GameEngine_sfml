@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "Component.h" // used for particlesystem to inherit component wihtout compile issues
 
+#define Renderer Canvas::GetInstance()
+
 using namespace sf;
 using namespace std;
  

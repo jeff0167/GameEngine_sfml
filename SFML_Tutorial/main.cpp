@@ -48,18 +48,13 @@ ApplicationState myApplication = ApplicationState::Running_GameWindow;
 
 bool idle = true;
 
-Monobehaviour* m_Monobehavior = Monobehaviour::GetInstance();
-Canvas* m_Canvas = Canvas::GetInstance();
-Physics* m_Physics = Physics::GetInstance(); 
-Debug* m_Debug = Debug::GetInstance();
-
 Rigidbody rb, g2rb, crb;
 GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
 int main()
 {
-	m_Canvas->AddWindow(window);
+	Renderer->AddWindow(window);
 	switch (myApplication)
 	{
 	case Running_GameWindow:
@@ -69,7 +64,7 @@ int main()
 		break;
 	}
 
-	m_Physics->InitializePhysicsUpdate();
+	Science->InitializePhysicsUpdate();
 
 	hero.loadFromFile("_sprites_heroes.png");
 	particle.loadFromFile("ParticleDefault.png");
@@ -145,9 +140,9 @@ int main()
 
 	/*Particle p(10, particle);
 	p.setVelocity(1, 1);*/
-	//myCanvas->AddDrawable(p.dot);
+	//myCanvas->AddDrawable(p.dot);  
 
-	MyParticleSystem p(&_player, 5000, 5, particle, 2, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	go.AddComponent(p);
 
 	// need to be able to set the mouse pos as a transformable and move/inject it to other classes, like the particle system
@@ -155,9 +150,9 @@ int main()
 	window.setFramerateLimit(120); // this should also be changeable
 	while (window.isOpen()) // checking window events
 	{
-		m_Monobehavior->UpdateTime();
+		Mono->UpdateTime();
 
-		m_Debug->DisplayFrameRate(m_Monobehavior->_time);
+		DebugFrameRate(Mono->_time);
 		Event _event;
 		while (window.pollEvent(_event))
 		{
@@ -204,7 +199,7 @@ void PlayerAnimState()
 			idle = false;
 			_playerAnim.NextAnim();
 		}
-		_playerAnim.Update(7, 3, 6, m_Monobehavior->DeltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
+		_playerAnim.Update(7, 3, 6, Mono->DeltaTime); // there was a comment about it being a bit unresponsive but I don't currently see the problem
 	}
 	else
 	{
@@ -214,7 +209,7 @@ void PlayerAnimState()
 			_playerAnim.NextAnim();
 		}
 
-		_playerAnim.Update(7, 0, 3, m_Monobehavior->DeltaTime);
+		_playerAnim.Update(7, 0, 3, Mono->DeltaTime);
 	}
 	_player.setTextureRect(_playerAnim.uvRect);
 }
@@ -286,7 +281,7 @@ void CollisionChecking() // this should be moved into physics
 void Draw() 
 {
 	window.clear(Color(255, 204, 92)); 
-	m_Canvas->DrawCanvas();
+	Renderer->DrawCanvas();
 	window.display();
 }
 

@@ -1,4 +1,5 @@
 #include "MyParticle.h"
+#include "Physics.h"
 #include "Monobehaviour.h"
 
 float Umapi(float value, float istart, float istop, float ostart, float ostop)
@@ -21,10 +22,10 @@ void Particle::Update()
 {
 	if (IsDead())
 	{
-		lifespan = Time::Zero; // also reset it 
+		lifespan = Time::Zero; 
 	}
-	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds() / 100)) * 2;
-	dot.setFillColor(SetColor(Umapi(lifespan.asMilliseconds(), 255, 0, 360, 0), 1, 1, alpha));
+	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds() / 100)) * 2; // no dude, lifespan should be in the range 1-255, which it isn't //FIX this should be somewhat simple enough
+	dot.setFillColor(SetColor(Umapi(lifespan.asMilliseconds() * 0.2f, 255, 0, 360, 0), 1, 1, alpha)); //FIX the lifespan value is not acurate, which is why currently it's being multiplied to grant the desired range of colors, but it changes much quicker
 	if (lifespan.asSeconds() == 0)
 	{
 		lifespan = maxLifespan;
@@ -34,11 +35,11 @@ void Particle::Update()
 		startPos = GetTargetPos();
 	}
 	velocity += acceleration;
-	position += velocity;
+	position += velocity * (float)Physics::GetInstance()->m_DeltaSpeed * Physics::GetInstance()->m_PhysicsDeltaTime * 100.0f;
 	dot.setPosition(position + startPos);
 
 	acceleration = acceleration * 0.f;
-	lifespan = milliseconds(lifespan.asMilliseconds() - Monobehaviour::GetInstance()->DeltaTime);
+	lifespan = milliseconds(lifespan.asMilliseconds() - Physics::GetInstance()->GetDeltaTimeMili());
 }
 
 void Particle::SetPosition(float x, float y)
@@ -53,6 +54,11 @@ void Particle::SetVelocity(float x, float y)
 {
 	velocity.x = x;
 	velocity.y = y;
+}
+
+void Particle::SetMaxLifeTime(Time time) 
+{
+	maxLifespan = time;
 }
 
 void Particle::SetParticleSystem(MyParticleSystem& ps)

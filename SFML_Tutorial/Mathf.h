@@ -85,6 +85,13 @@ public:
 	}
 
 private:
+
+	// cleans up the code a bit, though not sure if it would impact the performance
+	static float FixedUpdateMovement() 
+	{
+		return (float)Physics::GetInstance()->m_DeltaSpeed * Physics::GetInstance()->m_PhysicsDeltaTime * 100.0f;
+	}
+
 	static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 	{
 		double xi, xj; // we would also want to not move when colliding with static objects
@@ -96,9 +103,10 @@ private:
 			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+				// this might need some updates values, or other values, seems to work alright atm
+				second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement()); 
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
 			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}
@@ -119,9 +127,9 @@ private:
 			//if (xi == 0 || xj == 0) return true;
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+				second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
 			//Debug::GetInstance()->Log("Circle collision");
 			return true;
 		}
@@ -138,9 +146,9 @@ private:
 
 			if (xi > xj)
 			{
-				second.rigidbody->transform->move(first.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+				second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
 			}
-			else first.rigidbody->transform->move(second.rigidbody->velocity * (float)Physics::GetInstance()->deltaSpeed);
+			else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
 			//Debug::GetInstance()->Log("bound intersect");
 			return true;
 		}

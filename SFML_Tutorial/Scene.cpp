@@ -22,10 +22,6 @@ static void Draw();
 static void MouseCreation();
 
 RenderWindow* window;
-Monobehaviour* sm_Monobehavior = Monobehaviour::GetInstance(); // can't have multiple of this with the same name!??
-Canvas* sm_Canvas = Canvas::GetInstance();
-Physics* sm_Physics = Physics::GetInstance(); 
-Debug* sm_Debug = Debug::GetInstance();
 
 GameObject circle;
 
@@ -70,8 +66,9 @@ void Scene::DisplaySceneWindow(RenderWindow& _window)
 	window->setFramerateLimit(120); 
 	while (window->isOpen()) 
 	{
-		sm_Monobehavior->UpdateTime();
-		//debug->DisplayFrameRate(_time);
+		Mono->UpdateTime();
+
+		//DebugFrameRate(Mono->_time);
 		Event _event;
 		while (window->pollEvent(_event))
 		{
@@ -100,7 +97,7 @@ static void MouseCreation()
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) // check all clickable objects for their pos, oh no, another thing that needs to keep track of a list of objects
 	{
-		sm_Debug->Log("clicked");
+		DebugLog("clicked");
 		Vector2i mousePos = Mouse::getPosition(*window);
 		circle.transform->setPosition((mousePos.x), (mousePos.y));
 	}
@@ -113,7 +110,7 @@ static void MouseCreation()
 static void Draw() 
 {
 	window->clear(Color(255, 204, 92));
-	sm_Canvas->DrawCanvas();
+	Renderer->DrawCanvas();
 	window->display();
 }
 

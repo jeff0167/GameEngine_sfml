@@ -2,6 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 
+#define Mono Monobehaviour::GetInstance()
+#define CreateObject(x, y) Instantiate(x,y)
+
 using namespace sf;
 using namespace std;
 
