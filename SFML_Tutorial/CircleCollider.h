@@ -8,9 +8,9 @@ using namespace std;
 class CircleCollider : public Collider
 {
 public:
-	CircleShape* rect;
+	CircleShape* rect = nullptr;
 	CircleCollider() {};
-	CircleCollider(CircleShape& _rect, Vector2f pos, Color color = Color::White) :
+	CircleCollider(CircleShape& _rect, Vector2f pos = Vector2f(0, 0), Color color = Color::White) :
 		rect(&_rect)
 	{
 		rect->setPosition(pos);

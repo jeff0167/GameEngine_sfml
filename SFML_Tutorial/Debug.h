@@ -41,11 +41,15 @@ public:
 	{
 		Log(to_string(line));
 	}	
+	inline void Log(unsigned int line) 
+	{
+		Log(to_string(line));
+	}	
 	inline void Log(size_t line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(Vector2f& line) // apparently it is impossible to send my own added classes, "Gameobject undeclared identifier" i HAVE tried to declared it
+	inline void Log(const Vector2f& line) 
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
 	}	
@@ -93,7 +97,7 @@ public:
 		WriteAllLines();
 	}
 	double fps_ms = 0;
-	Int32 ms;
+	Int32 ms = 0;
 	vector<double> fpsTimes;
 
 	void DisplayFrameRate(Time _time) // would also like to show memory allocations, show in game, toggle

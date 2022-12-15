@@ -44,7 +44,7 @@ enum ApplicationState
 	Running_SceneWindow
 };
 
-ApplicationState myApplication = ApplicationState::Running_GameWindow;
+ApplicationState myApplication = ApplicationState::Running_SceneWindow;
 
 bool idle = true;
 
@@ -97,32 +97,6 @@ int main()
 	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
 
-	//debug->Log(c.transform->getPosition().x);
-
-	//c.MyPos = c.transform->getPosition();
-	//ofstream file_obj;
-	//file_obj.open("Scene01.txt", ios::app);
-	//file_obj.write((char*)&c, sizeof(c));
-
-	//ifstream file_obj;
-	//file_obj.open("Scene01.txt", ios::in);
-
-	//// Object of class contestant to input data in file
-	//GameObject obj;
-
-	//// Reading from file into object "obj"
-	//file_obj.read((char*)&obj, sizeof(obj));
-
-	//while (!file_obj.eof()) {
-	//	// Checking further
-	//	file_obj.read((char*)&obj, sizeof(obj));
-	//}
-	//file_obj.close();
-
-	//c.transform->setPosition(obj.MyPos);
-	//debug->Log(obj.MyPos); // whenever we save the scene we save all the pos and ref and all the objects
-
-
 	// might need scene classes 
 	// need to know how to make copy(instantiation) of class from a file
 	// need to clear when writing again to scene file
@@ -132,20 +106,8 @@ int main()
 	// for creation them again we cannot be using their pointers
 	// currently have nothing that keeps track of gameObjects in the scene
 
-	//Texture t;
-	//t.loadFromFile("_sprites_heroes.png");
-	//
-	//CircleShape myR(50,50);
-	////myR.setTexture(_player);
-
-	/*Particle p(10, particle);
-	p.setVelocity(1, 1);*/
-	//myCanvas->AddDrawable(p.dot);  
-
 	MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	go.AddComponent(p);
-
-	// need to be able to set the mouse pos as a transformable and move/inject it to other classes, like the particle system
 
 	window.setFramerateLimit(120); // this should also be changeable
 	while (window.isOpen()) // checking window events

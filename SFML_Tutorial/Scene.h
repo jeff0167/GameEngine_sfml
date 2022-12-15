@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 
+#define Hiearchy Scene::GetInstance()
+
 using namespace sf;
 using namespace std;
 

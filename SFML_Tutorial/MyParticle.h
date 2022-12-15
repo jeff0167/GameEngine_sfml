@@ -55,7 +55,7 @@ public:
 
 	//static mutex m_Mutex;
 
-	static void InitializeParticle(Particle* particle, Texture* texture, unsigned int radius, float _speed, Time lifeTime) // don't need to lock with mutex here
+	static void InitializeParticle(Particle* particle, Texture* texture, float radius, float _speed, Time lifeTime) // don't need to lock with mutex here
 	{
 		particle->dot.setTexture(texture);
 		float size = (rand() % 3) * radius;
@@ -69,7 +69,7 @@ public:
 	}
 
 	vector<future<void>> m_Futures;
-	MyParticleSystem(Transformable* targetTransform, unsigned int particleCount, unsigned int radius, Texture& texture, float speed, Time lifeTime, Color color) :
+	MyParticleSystem(Transformable* targetTransform, unsigned int particleCount, float radius, Texture& texture, float speed, Time lifeTime, Color color) :
 		m_TargetTransform(targetTransform),
 		m_particles(particleCount),
 		m_Texture(&texture),
@@ -141,7 +141,7 @@ protected:
 	vector<Particle> m_particles;
 	Transformable* m_TargetTransform;
 	const Texture* m_Texture;
-	float m_Speed, m_Radius;
+	float m_Speed = 0, m_Radius = 0;
 	Time m_LifeTime;
 
 };

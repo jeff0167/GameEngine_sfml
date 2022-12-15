@@ -48,22 +48,11 @@ public:
 		return nullptr;
 	}
 
-	bool operator == (const GameObject& Ref) const
-	{
-		return(this->Member == Ref.GetMember());
-	}
-
-	const int GetMember() const
-	{
-		return(this->Member);
-	}
-
 	Vector2f MyPos;
 
 	string ToString();
 
 private:
-	int Member;
-
 	Component* GetComponentType(Component& component);
+
 };
