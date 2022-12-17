@@ -2,19 +2,19 @@
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 
-#define Hiearchy Scene::GetInstance()
+#define Scene SceneWindow::GetInstance()
 
 using namespace sf;
 using namespace std;
 
-class Scene 
+class SceneWindow 
 {
 public:
-    Scene(Scene& other) = delete;
+    SceneWindow(SceneWindow& other) = delete;
 
-    void operator=(const Scene&) = delete;
+    void operator=(const SceneWindow&) = delete;
 
-    static Scene* GetInstance();
+    static SceneWindow* GetInstance();
 
     vector<GameObject*> m_GameObjects;
 
@@ -26,8 +26,8 @@ public:
     void DisplaySceneWindow(RenderWindow& window);
 
 protected:
-    static Scene* _Scene;
+    static SceneWindow* _SceneWindow;
 
-    Scene() {};
+    SceneWindow() {};
 
 };

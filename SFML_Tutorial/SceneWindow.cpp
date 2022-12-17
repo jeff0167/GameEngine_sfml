@@ -1,9 +1,9 @@
 #include <SFML/Graphics.hpp>
-#include "Scene.h"
+//#include "Scene.h"
 #include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
-#include "Scene.h"
+#include "SceneWindow.h"
 #include "Physics.h"
 #include "Component.h"
 #include "Monobehaviour.h"
@@ -14,16 +14,17 @@
 #include "Debug.h"
 #include "Rigidbody.h"
 #include "MyParticle.h"
+#include <sstream>
 
 using namespace sf;
 using namespace std;
 
 static void Draw();
-static void SaveScene();
-static void LoadScene();
+static void SaveSceneWindow();
+static void LoadSceneWindow();
 static void MouseCreation();
 static void CreateGameObject();
-static void CreateDefaultSceneObjects();
+static void CreateDefaultSceneWindowObjects();
 
 RenderWindow* window;
 
@@ -34,22 +35,22 @@ Font font;
 
 bool m_DisplayMenu = false;
 
-Scene* Scene::_Scene = nullptr;
+SceneWindow* SceneWindow::_SceneWindow = nullptr;
 
-Scene* Scene::GetInstance()
+SceneWindow* SceneWindow::GetInstance()
 {
-	if (_Scene == nullptr) {
-		_Scene = new Scene();
+	if (_SceneWindow == nullptr) {
+		_SceneWindow = new SceneWindow();
 	}
-	return _Scene;
+	return _SceneWindow;
 }
 
-void Scene::AddGameObject(GameObject& gameObject)
+void SceneWindow::AddGameObject(GameObject& gameObject)
 {
 	m_GameObjects.push_back(&gameObject);
 }
 
-void Scene::RemoveGameObject(GameObject& gameObject)
+void SceneWindow::RemoveGameObject(GameObject& gameObject)
 {
 	for (size_t i = 0; i < m_GameObjects.size(); i++)
 	{
@@ -60,19 +61,19 @@ void Scene::RemoveGameObject(GameObject& gameObject)
 	}
 }
 
-const vector<GameObject*>& Scene::GetGameObjects()
+const vector<GameObject*>& SceneWindow::GetGameObjects()
 {
 	return m_GameObjects;
 }
 
-void Scene::DisplaySceneWindow(RenderWindow& _window)
+void SceneWindow::DisplaySceneWindow(RenderWindow& _window)
 {
 	window = &_window;
-	LoadScene();
-	CreateDefaultSceneObjects();
+	CreateDefaultSceneWindowObjects();
 
 	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50));
 	m_circle = GameObject(*circle2.shape, circle2, *new Rigidbody());
+	LoadSceneWindow();
 
 	window->setFramerateLimit(120);
 	while (window->isOpen())
@@ -113,7 +114,7 @@ static void MouseCreation()
 		{
 			CreateGameObject();
 			DebugLog("Clicked on menu"); // now do what the text tells you!
-			SaveScene();
+			SaveSceneWindow();
 		}
 		m_DisplayMenu = false;
 		m_circle.transform->setPosition((mousePos.x), (mousePos.y));
@@ -136,12 +137,12 @@ static void Draw()
 	window->display();
 }
 
-void Scene::DebugInfo()
+void SceneWindow::DebugInfo()
 {
-	// write debug info in game/scene window
+	// write debug info in game/Scene window
 }
 
-static void CreateDefaultSceneObjects()
+static void CreateDefaultSceneWindowObjects()
 {
 	if (!font.loadFromFile("BebasNeue-Regular.ttf"))
 	{
@@ -171,53 +172,54 @@ static void CreateGameObject()
 	GameObject g = GameObject(*s);
 }
 
-static void SaveScene() // if you use new you MUST call delete, new allocates an memory adress on the heap/stack,  it's slower but has it's uses 
+static void SaveSceneWindow() // if you use new you MUST call delete, new allocates an memory adress on the heap/stack,  it's slower but has it's uses 
 {
-	ofstream file_obj("Scene01.txt", ios::app);
+	ofstream file_obj("Scene01.txt", std::ofstream::trunc); // trunc and no ios::app will clear all contents of the file before writing
 
 	//for (size_t i = 0; i < Hiearchy->GetGameObjects().size(); i++)
 	//{
 	//	file_obj.write((char*)&Hiearchy->GetGameObjects()[i], sizeof(&Hiearchy->GetGameObjects()[i]));
 	//}
+	Vector2f mousePos = (Vector2f)Mouse::getPosition(*window);
+	string name = to_string(mousePos.x) + "," + to_string(mousePos.y);
 
-	char obj[20] = "14";
-	file_obj.write("14", sizeof(obj));
+	file_obj << name.c_str();
 
-	file_obj.close();
+	//file_obj.close();
 }
 
-static void LoadScene()
-{
-	//ofstream file_obj2("Scene01.txt", ios::app);
+vector<string> split(string s, string delimiter) {
+	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+	string token;
+	vector<string> res;
 
-	//file_obj2 << " " << 3 << " " << 7 << " " << 64 << " " << 69 << " ";
-	//file_obj2.close();
-
-	ifstream file_obj("Scene01.txt", ios::in);
-
-	char obj[3] = "14";
-
-	//float x1, x2, x3, x4;
-	//file_obj >> x1 >> x2 >> x3 >> x4; // way to clumsy
-
-	//DebugLog(x4);
-	//DebugLog(x3);
-	//DebugLog(x2);
-	//DebugLog(x1);
-
-	while (!file_obj.eof()) { // don't know why this doesn't work atm, need to figure out references and how to safe them
-		// Checking further
-		file_obj.read((char*)&obj, sizeof(obj));
+	while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+		token = s.substr(pos_start, pos_end - pos_start);
+		pos_start = pos_end + delim_len;
+		res.push_back(token);
 	}
 
-	DebugLog(obj);
+	res.push_back(s.substr(pos_start));
+	return res;
+}
 
-	//otherText = Text();
-	//otherText.setString(obj.getString());
-	//otherText.setCharacterSize(obj.getCharacterSize()); 
-	//otherText.setOrigin((obj.getString().getSize() * obj.getCharacterSize()) / 5.0f, obj.getCharacterSize() / 2); // roughly the center
-	//otherText.setFont(font);
-	//otherText.setFillColor(obj.getFillColor());
+static void LoadSceneWindow()
+{
+	ifstream file_obj("Scene01.txt", ios::in);
+	stringstream s;
+	s << file_obj.rdbuf();
+
+	string val = s.str();
+	string delimiter = ",";
+
+	vector<string> values = split(val, delimiter);
+	
+	float x = stof(values[0]);
+	float y = stof(values[1]);
+
+	DebugLog(x);
+	DebugLog(y);
+	m_circle.transform->setPosition(x, y);
 
 	file_obj.close();
 }

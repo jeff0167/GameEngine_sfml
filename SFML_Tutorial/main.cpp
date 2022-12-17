@@ -2,7 +2,7 @@
 #include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
-#include "Scene.h"
+#include "SceneWindow.h"
 #include "Physics.h"
 #include "Component.h"
 #include "Monobehaviour.h"
@@ -249,5 +249,5 @@ void Draw()
 
 void SceneWindow() // should be putting this elsewhere
 {
-	Scene::GetInstance()->DisplaySceneWindow(window);
+	Scene->DisplaySceneWindow(window);
 }
