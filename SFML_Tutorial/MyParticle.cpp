@@ -1,4 +1,4 @@
-#include "MyParticle.h"
+#include "MyParticleSystem.h"
 #include "Physics.h"
 #include "Monobehaviour.h"
 
