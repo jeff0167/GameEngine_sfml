@@ -2,19 +2,18 @@
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 
-#define Scene SceneWindow::GetInstance()
-
 using namespace sf;
 using namespace std;
 
-class SceneWindow 
+class Scene // needs to be a singleton and have an observer pattern
 {
 public:
-    SceneWindow(SceneWindow& other) = delete;
+    Scene(Scene& other) = delete; // Singletons should not be assignable
 
-    void operator=(const SceneWindow&) = delete;
+    void operator=(const Scene&) = delete;
 
-    static SceneWindow* GetInstance();
+   // RenderTarget* window;
+    static Scene* GetInstance();
 
     vector<GameObject*> m_GameObjects;
 
@@ -23,11 +22,9 @@ public:
     void RemoveGameObject(GameObject& _drawable);
     const vector<GameObject*>& GetGameObjects();
 
-    void DisplaySceneWindow(RenderWindow& window);
-
 protected:
-    static SceneWindow* _SceneWindow;
+    static Scene* _Scene;
 
-    SceneWindow() {};
+    Scene() {};
 
 };

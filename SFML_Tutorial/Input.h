@@ -4,7 +4,7 @@
 using namespace sf;
 using namespace std;
 
-class Input
+class Input 
 {
 public:
     enum Keycode
@@ -20,4 +20,3 @@ private:
     static bool GetKeyHeld(Keyboard::Key key);
     static bool GetKeyUp(Keyboard::Key key);
 };
-

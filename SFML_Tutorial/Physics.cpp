@@ -3,9 +3,6 @@
 #include "Mathf.h"
 #include "Debug.h"
 #include "Pch.h"
-#include <atomic>
-#include <chrono>
-#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
@@ -18,49 +15,6 @@ Physics* Physics::GetInstance()
 		_physics = new Physics();
 	}
 	return _physics;
-}
-
-void Physics::InitializePhysicsUpdate() 
-{
-	thread t = std::thread([this] { this->PhysicsUpdate(); });
-	t.detach();
-}
-
-void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
-{
-	double x = 1 / PhysicsTimeStep.count(); 
-	m_DeltaSpeed = 500.0 / x; 
-	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
-
-	while (true) // 120 fps is around 0.008333 in ms
-	{
-		step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
-
-		UpdateTime();
-		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
-		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
-		PhysicsCollisionUpdate();
-
-		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
-
-		//_clock.restart();
-
-		//PhysicsMovementUpdate();
-		//ParticleUpdate(); 
-		//PhysicsCollisionUpdate();
-
-		//_time = _clock.getElapsedTime();
-		//double remainingTime = PhysicsTimeStep - _time.asSeconds(); 
-		//if (remainingTime >= 0)
-		//{		
-		//	this_thread::sleep_for(chrono::microseconds((long)remainingTime));
-		//}
-	}
-}
-
-void Physics::AddParticleSystem(ParticleSystemUpdate& _particleSystem) 
-{
-	particleSystems.push_back(&_particleSystem);
 }
 
 void Physics::AddRigidbody(Rigidbody& _rigidbody)
@@ -84,17 +38,11 @@ const vector<Rigidbody*>& Physics::GetRigidbodies()
 	return rigidbodies;
 }
 
-void Physics::PhysicsMovementUpdate()
+void Physics::PhysicsUpdate()
 {
-	double x = m_PhysicsDeltaTime / 1 / PhysicsTimeStep.count(); // really not very clean code, the timeStep is acurate to a certain point, if keept within a reasonable range the difference is not very significant, 0.01 or 0.02 is not noticable in difference
-	m_DeltaSpeed = (500.0 / x) * 0.01f;
-
 	for (size_t i = 0; i < rigidbodies.size(); i++)
 	{
-		// the deltaSpeed changes, sure, but the m_PhysicsDeltaTime should multiplied with the deltaSpeed, give the exact same value
-		// Now deltaSpeed is constant and physicsDelta is not, meaning that deltaSpeed shouldn't be constant, it should be calculated for each physics update
-
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity * (float)m_DeltaSpeed * m_PhysicsDeltaTime * 100.0f); // do we lose precision?
+		rigidbodies[i]->transform->move(rigidbodies[i]->velocity);
 	}
 }
 
@@ -119,16 +67,6 @@ const vector<Collider*>& Physics::GetColliders()
 	return colliders;
 }
 
-void Physics::ParticleUpdate()
-{
-	for (const auto& particleSystem : particleSystems) // foreach
-	{
-		// milliseconds(ParticleTime * deltaSpeed) was put in update before, the movement should technically be dependent on the physics time step
-		// for now it is realying on the delta time between frames
-		particleSystem->Update(); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
-	}
-}
-
 void Physics::PhysicsCollisionUpdate()
 {
 	//Debug::GetInstance()->Log(colliders.size());
@@ -138,7 +76,7 @@ void Physics::PhysicsCollisionUpdate()
 	{
 		for (size_t j = 0; j < tempColliderList.size(); j++)
 		{
-			if (i == j) continue; 
+			if (i == j) continue; // but the above line should remove itself also
 			//Debug::GetInstance()->Log("Calling cool, dyn");
 			if (Mathf::Collision(*colliders[i], *colliders[j]))
 			{
