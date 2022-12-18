@@ -1,15 +1,16 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Canvas.h"
+#include "Monobehaviour.h"
 
 using namespace sf;
 using namespace std;
 
-class ParticleSystem : public Drawable, public Transformable // supposedly a particle sytem should also be a simple gameobject, or rather a component you could add to a gameObject
+class ParticleSystem : public Drawable, public Transformable, public Component, public ParticleSystemUpdate
 {
 public:
 	int m_particleSpeed;
-	ParticleSystem(unsigned int count, Color color, int speed = 50) : // a particle is literally only a point, which is just a pixel and can't just be increased in size
+	ParticleSystem(unsigned int count, Color color, int speed = 50) : 
 		m_particles(count),
 		m_vertices(Points, count),
 		m_lifetime(seconds(3.f)),
@@ -21,7 +22,7 @@ public:
 		for (size_t i = 0; i < m_particles.size(); ++i)
 		{
 			m_vertices[i].color = color; 
-			ResetParticle(i); // this needs to be called
+			ResetParticle(i); 
 		}
 	}
 
@@ -30,25 +31,25 @@ public:
 		m_emitter = position;
 	}
 
-	void SetEmitterTransform(Transformable& transform)
+	void SetEmitterTransform(Transformable& transform) override
 	{
 		m_TargetTransform = &transform;
 	}
 
-	void Update(Time elapsed)
+	void Update() override
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i)
+		for (size_t i = 0; i < m_particles.size(); ++i) // use async
 		{
 			// update the particle lifetime
 			Particle& p = m_particles[i];
-			p.lifetime -= elapsed;
+			p.lifetime -= milliseconds(p.lifetime.asMicroseconds() - Monobehaviour::GetInstance()->DeltaTime);
 
 			// if the particle is dead, respawn it
 			if (p.lifetime <= Time::Zero)
 				ResetParticle(i);
 
 			// update the position of the corresponding vertex
-			m_vertices[i].position += p.velocity * elapsed.asSeconds();
+			m_vertices[i].position += p.velocity * Monobehaviour::GetInstance()->DeltaTime; // this might not be working as intended with delta instead of elapsed as seconds
 
 			// update the alpha (transparency) of the particle according to its lifetime
 			float ratio = p.lifetime.asSeconds() / m_lifetime.asSeconds();
@@ -57,16 +58,9 @@ public:
 	}
 
 private:
-	virtual void draw(RenderTarget& target, RenderStates states) const //can't capitalize draw as it inherits from another class, do people not use capitalization for classes in c++?
+	virtual void draw(RenderTarget& target, RenderStates states) const 
 	{
-		// apply the transform
-		states.transform *= getTransform();
-
-		// our particles don't use a texture
-	   // states.texture = NULL;
-
-		// draw the vertex array
-		target.draw(m_vertices, states);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
+		target.draw(m_vertices);  /// TODO  particles should always be drawn in the top most layer, now that you mention it, should propably have a layer system for the canvas
 	}
 
 	struct Particle

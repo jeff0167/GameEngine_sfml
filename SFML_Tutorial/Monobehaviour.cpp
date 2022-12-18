@@ -1,8 +1,17 @@
 #include "Monobehaviour.h"
 #include "GameObject.h"
-#include "Debug.h"
 
 using namespace sf;
+
+Monobehaviour* Monobehaviour::_monobehaviour = nullptr;
+
+Monobehaviour* Monobehaviour::GetInstance()
+{
+	if (_monobehaviour == nullptr) {
+		_monobehaviour = new Monobehaviour();
+	}
+	return _monobehaviour;
+}
 
 GameObject Monobehaviour::Instantiate(GameObject gameObject)
 {
@@ -30,4 +39,3 @@ void Monobehaviour::DelayedCall(function<void()> function, float callDellay)
 	this_thread::sleep_for(chrono::milliseconds((long)callDellay));
 	function();
 }
-

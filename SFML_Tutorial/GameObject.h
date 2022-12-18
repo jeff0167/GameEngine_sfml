@@ -22,7 +22,7 @@ public:
 
 	Transformable* transform; // suppose you could even use this as an id, would really just want to use the memory adress of the gameobject as an identifier, but no, that is terrible hard
 	vector<Transformable*> transformers;
-	vector<Component*> components; // you can only have one of each component type pr gameObject
+	vector<Component*> components; 
 
 	void AddComponent(Component& component);
 	void RemoveComponent(Component& component);
@@ -48,22 +48,11 @@ public:
 		return nullptr;
 	}
 
-	bool operator == (const GameObject& Ref) const
-	{
-		return(this->Member == Ref.GetMember());
-	}
-
-	const int GetMember() const
-	{
-		return(this->Member);
-	}
-
 	Vector2f MyPos;
 
 	string ToString();
 
 private:
-	int Member;
-
 	Component* GetComponentType(Component& component);
+
 };

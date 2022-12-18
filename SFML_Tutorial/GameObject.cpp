@@ -2,21 +2,12 @@
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"
-#include "Scene.h"
+#include "SceneWindow.h"
 #include "Collider.h"
 #include "Debug.h"
 #include <type_traits>
 #include <typeinfo>
-
-template <typename T> class remove_all_pointers {
-public:
-	typedef T type;
-};
-
-template <typename T> class remove_all_pointers<T*> {
-public:
-	typedef typename remove_all_pointers<T>::type type;
-};
+#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
@@ -30,23 +21,23 @@ GameObject::GameObject(Shape& drawShape) :
 	transform(&drawShape),
 	components(vector<Component*>())
 {
-	Scene::GetInstance()->AddGameObject(*this); // we also need to remove from the scene hiearchy again
-	Canvas::GetInstance()->AddDrawable(drawShape);
+	Scene->AddGameObject(*this); // we also need to remove from the scene hiearchy again
+	Renderer->AddDrawable(drawShape);
 }
 
 GameObject::GameObject(Shape& drawShape, Component& _component) :
 	transform(&drawShape)
 {
-	Scene::GetInstance()->AddGameObject(*this);
-	Canvas::GetInstance()->AddDrawable(drawShape);
+	Scene->AddGameObject(*this);
+	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 }
 
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2) :
 	transform(&drawShape)
 {
-	Scene::GetInstance()->AddGameObject(*this);
-	Canvas::GetInstance()->AddDrawable(drawShape);
+	Scene->AddGameObject(*this);
+	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
 }
@@ -54,8 +45,8 @@ GameObject::GameObject(Shape& drawShape, Component& _component, Component& _comp
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2, Component& _component3) :
 	transform(&drawShape)
 {
-	Scene::GetInstance()->AddGameObject(*this);
-	Canvas::GetInstance()->AddDrawable(drawShape);
+	Scene->AddGameObject(*this);
+	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
 	AddComponent(_component3);
@@ -68,7 +59,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 	{
 		AddComponent(*_components[i]);
 	}
-	Scene::GetInstance()->AddGameObject(*this);
+	Scene->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 }
 
@@ -93,7 +84,11 @@ void GameObject::AddComponent(Component& _component)
 
 		Physics::GetInstance()->AddCollider(dynamic_cast<Collider&>(_component)); 
 	}
-
+	else if (classType == "class ParticleSystem" || classType == "class MyParticleSystem")
+	{
+		dynamic_cast<ParticleSystemUpdate&>(_component).SetEmitterTransform(*transform);
+		Physics::GetInstance()->AddParticleSystem(dynamic_cast<ParticleSystemUpdate&>(_component)); 
+	}
 	components.push_back(&_component);
 	_component.gameObject = this; 
 }

@@ -1,5 +1,9 @@
 # Prerequisites
 *.d
+/.vs
+.vs/
+vs/
+*.vs/
 
 # Personal Added for sfml, might make it hard to reuse the repo, but serves no functional purpose for me
 *.vsidx
@@ -55,3 +59,4 @@
 *.idb
 *.exe
 *.pdb
+
