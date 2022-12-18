@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vs/
+.git/modules/
 
 # Personal Added for sfml, might make it hard to reuse the repo, but serves no functional purpose for me
 *.vsidx
