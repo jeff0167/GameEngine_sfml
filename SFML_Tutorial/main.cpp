@@ -7,7 +7,6 @@
 #include "Component.h"
 #include "Monobehaviour.h"
 #include "ParticleSystem.h"
-#include "MyParticleSystem.h"
 #include "CircleCollider.h"
 #include "Input.h"
 #include "Mathf.h"

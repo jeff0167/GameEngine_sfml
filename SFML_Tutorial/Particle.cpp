@@ -1,4 +1,4 @@
-#include "MyParticle.h"
+#include "MyParticleSystem.h"
 #include "Physics.h"
 #include "Monobehaviour.h"
 
@@ -22,7 +22,7 @@ void Particle::Update()
 {
 	if (IsDead())
 	{
-		lifespan = Time::Zero; 
+		lifespan = Time::Zero;
 	}
 	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds() / 100)) * 2; // no dude, lifespan should be in the range 1-255, which it isn't //FIX this should be somewhat simple enough
 	dot.setFillColor(SetColor(Umapi(lifespan.asMilliseconds() * 0.2f, 255, 0, 360, 0), 1, 1, alpha)); //FIX the lifespan value is not acurate, which is why currently it's being multiplied to grant the desired range of colors, but it changes much quicker
@@ -56,7 +56,7 @@ void Particle::SetVelocity(float x, float y)
 	velocity.y = y;
 }
 
-void Particle::SetMaxLifeTime(Time time) 
+void Particle::SetMaxLifeTime(Time time)
 {
 	maxLifespan = time;
 }
@@ -120,4 +120,3 @@ Color Particle::SetColor(int hue, float sat, float colorMulti, float alpha)
 	case 5: return sf::Color(colorMulti * 255, p * 255, q * 255, alpha);
 	}
 }
-

@@ -121,7 +121,7 @@ const vector<Collider*>& Physics::GetColliders()
 
 void Physics::ParticleUpdate()
 {
-	for (const auto &particleSystem: particleSystems) // foreach
+	for (const auto& particleSystem : particleSystems) // foreach
 	{
 		// milliseconds(ParticleTime * deltaSpeed) was put in update before, the movement should technically be dependent on the physics time step
 		// for now it is realying on the delta time between frames

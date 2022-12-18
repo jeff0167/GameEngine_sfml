@@ -58,7 +58,7 @@ public:
 		float angle = (rand() % 360) * 3.14f / 180.f;
 		float speed = (rand() % 50) * 0.01 * _speed + 0.05;
 		particle->SetVelocity(cos(angle) * speed, sin(angle) * speed);
-		particle->SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));   
+		particle->SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
 
 		//lock_guard<mutex> lock(m_Mutex);
 	}
@@ -109,9 +109,9 @@ public:
 		{
 			m_Futures.push_back(async(launch::async, InitializeParticle, &m_particles[i], &texture, radius, speed, lifeTime));
 		}
-	/*	debugTime = debugClock.getElapsedTime();
-		debugDeltaTime = debugTime.asMilliseconds();
-		Debug::GetInstance()->Log(debugDeltaTime);*/
+		/*	debugTime = debugClock.getElapsedTime();
+			debugDeltaTime = debugTime.asMilliseconds();
+			Debug::GetInstance()->Log(debugDeltaTime);*/
 	}
 
 	void SetEmitterTransform(Transformable& transform) override
