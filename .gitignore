@@ -57,3 +57,5 @@
 *.exe
 *.pdb
 
+.vs/SFML_Tutorial/v17/.suo
+.vs/SFML_Tutorial/v17/Browse.VC.db
