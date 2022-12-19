@@ -21,14 +21,14 @@ GameObject::GameObject(Shape& drawShape) :
 	transform(&drawShape),
 	components(vector<Component*>())
 {
-	Scene->AddGameObject(*this); // we also need to remove from the scene hiearchy again
+	SceneManager->AddGameObject(*this); // we also need to remove from the scene hiearchy again
 	Renderer->AddDrawable(drawShape);
 }
 
 GameObject::GameObject(Shape& drawShape, Component& _component) :
 	transform(&drawShape)
 {
-	Scene->AddGameObject(*this);
+	SceneManager->AddGameObject(*this);
 	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 }
@@ -36,7 +36,7 @@ GameObject::GameObject(Shape& drawShape, Component& _component) :
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2) :
 	transform(&drawShape)
 {
-	Scene->AddGameObject(*this);
+	SceneManager->AddGameObject(*this);
 	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
@@ -45,7 +45,7 @@ GameObject::GameObject(Shape& drawShape, Component& _component, Component& _comp
 GameObject::GameObject(Shape& drawShape, Component& _component, Component& _component2, Component& _component3) :
 	transform(&drawShape)
 {
-	Scene->AddGameObject(*this);
+	SceneManager->AddGameObject(*this);
 	Renderer->AddDrawable(drawShape);
 	AddComponent(_component);
 	AddComponent(_component2);
@@ -59,7 +59,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 	{
 		AddComponent(*_components[i]);
 	}
-	Scene->AddGameObject(*this);
+	SceneManager->AddGameObject(*this);
 	Canvas::GetInstance()->AddDrawable(drawShape);
 }
 

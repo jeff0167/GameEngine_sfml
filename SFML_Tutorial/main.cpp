@@ -1,7 +1,9 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
+#include "Scene.h"
 #include "SceneWindow.h"
 #include "Physics.h"
 #include "Component.h"
@@ -52,7 +54,7 @@ Rigidbody rb, g2rb, crb;
 GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
-int main()
+int main() // main should literally be empty!!
 {
 	Renderer->AddWindow(window);
 	switch (myApplication)
@@ -249,5 +251,7 @@ void Draw()
 
 void SceneWindow() // should be putting this elsewhere
 {
-	Scene->DisplaySceneWindow(window);
+	//SceneManager->SetActiveScene("Scene02");
+	SceneManager->LoadScene();
+	SceneManager->DisplaySceneWindow(window);
 }
