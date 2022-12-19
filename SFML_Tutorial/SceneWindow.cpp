@@ -17,8 +17,6 @@
 #include "MyParticle.h"
 #include <sstream>
 
-#include "../yaml-cpp/include/yaml-cpp/yaml.h"
-
 using namespace sf;
 using namespace std;
 
@@ -77,9 +75,6 @@ void SceneWindow::DisplaySceneWindow(RenderWindow& _window)
 	window = &_window;
 	CreateDefaultSceneWindowObjects();
 
-	//CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50));
-	//m_circle = GameObject(*circle2.shape, circle2, *new Rigidbody());
-
 	window->setFramerateLimit(120);
 	while (window->isOpen())
 	{
@@ -113,8 +108,6 @@ void SceneWindow::DisplaySceneWindow(RenderWindow& _window)
 
 static void MouseCreation()
 {
-	/*YAML::Emitter out;
-	out << YAML::BeginMap;*/
 	Vector2f mousePos = (Vector2f)Mouse::getPosition(*window); // can't i manually set it so you don't ever have to touch it!??!
 	MousePos.setPosition(mousePos.x, mousePos.y); 
 	if (Mouse::isButtonPressed(Mouse::Left)) // check all clickable objects for their pos, oh no, another thing that needs to keep track of a list of objects
