@@ -113,8 +113,8 @@ void SceneWindow::DisplaySceneWindow(RenderWindow& _window)
 
 static void MouseCreation()
 {
-	YAML::Emitter out;
-	out << YAML::BeginMap;
+	/*YAML::Emitter out;
+	out << YAML::BeginMap;*/
 	Vector2f mousePos = (Vector2f)Mouse::getPosition(*window); // can't i manually set it so you don't ever have to touch it!??!
 	MousePos.setPosition(mousePos.x, mousePos.y); 
 	if (Mouse::isButtonPressed(Mouse::Left)) // check all clickable objects for their pos, oh no, another thing that needs to keep track of a list of objects
