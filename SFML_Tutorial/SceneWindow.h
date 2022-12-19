@@ -1,11 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "GameObject.h"
+#include "Scene.h"
 
-#define Scene SceneWindow::GetInstance()
+#define SceneManager SceneWindow::GetInstance()
 
 using namespace sf;
-using namespace std;
 
 class SceneWindow 
 {
@@ -19,15 +18,18 @@ public:
     vector<GameObject*> m_GameObjects;
 
     void DebugInfo();
-    void AddGameObject(GameObject& drawable);
-    void RemoveGameObject(GameObject& _drawable);
+    void LoadScene();
+    void LoadScene(string scenePath);
+    void SetActiveScene(string scenePath);
+    void AddGameObject(GameObject& gameObject);
+    void RemoveGameObject(GameObject& gameObject);
     const vector<GameObject*>& GetGameObjects();
 
     void DisplaySceneWindow(RenderWindow& window);
 
 protected:
     static SceneWindow* _SceneWindow;
-
+    Scene* m_Scene;
     SceneWindow() {};
 
 };

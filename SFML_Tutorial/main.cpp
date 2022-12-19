@@ -1,18 +1,5 @@
-#include <SFML/Graphics.hpp>
-#include "Pch.h"
-#include "Animation.h"
-#include "Canvas.h"
-#include "SceneWindow.h"
-#include "Physics.h"
-#include "Component.h"
-#include "Monobehaviour.h"
-#include "ParticleSystem.h"
-#include "CircleCollider.h"
-#include "Input.h"
-#include "Mathf.h"
-#include "Debug.h"
-#include "Rigidbody.h"
-#include "MyParticle.h"
+#pragma once
+#include "Main.h"
 
 using namespace sf;
 using namespace std;
@@ -52,7 +39,7 @@ Rigidbody rb, g2rb, crb;
 GameObject go, g1, circleThing;
 RectangleShape rect1, rect2;
 
-int main()
+int main() // main should literally be empty!!
 {
 	Renderer->AddWindow(window);
 	switch (myApplication)
@@ -249,5 +236,7 @@ void Draw()
 
 void SceneWindow() // should be putting this elsewhere
 {
-	Scene->DisplaySceneWindow(window);
+	//SceneManager->SetActiveScene("Scene02");
+	SceneManager->LoadScene();
+	SceneManager->DisplaySceneWindow(window);
 }
