@@ -17,6 +17,14 @@ string GameObject::ToString()
 	return to_string(transform->getPosition().x);
 }
 
+GameObject::GameObject(Text& drawShape) :
+	transform(&drawShape),
+	components(vector<Component*>())
+{
+	SceneManager->AddGameObject(*this); // we also need to remove from the scene hiearchy again
+	Renderer->AddDrawable(drawShape);
+}
+
 GameObject::GameObject(Shape& drawShape) :
 	transform(&drawShape),
 	components(vector<Component*>())
@@ -65,7 +73,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 
 void GameObject::AddComponent(Component& _component)
 {
-	//Debug::GetInstance()->Log(typeid(_component).name());
+	//DebugLog(typeid(_component).name());
 	string classType = typeid(_component).name(); 
 
 	if (classType == "class Rigidbody")

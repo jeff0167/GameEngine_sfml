@@ -1,5 +1,11 @@
 #pragma once
-class UI_Button
+#include <SFML/Graphics.hpp>
+#include "Component.h"
+
+using namespace sf;
+using namespace std;
+
+class UI_Button : public Component
 {
 };
 

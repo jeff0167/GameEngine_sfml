@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-//#include "Scene.h"
 #include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
@@ -13,6 +12,7 @@
 #include "Mathf.h"
 #include "Debug.h"
 #include "Rigidbody.h"
+#include "UI_Text.h"
 #include "MousePoint.h"
 #include "MyParticle.h"
 #include <sstream>
@@ -26,7 +26,7 @@ static void CreateDefaultSceneWindowObjects();
 
 RenderWindow* window;
 
-Text text;
+UI_Text text;
 Font font;
 
 bool m_DisplayMenu = false;
@@ -44,6 +44,8 @@ SceneWindow* SceneWindow::GetInstance()
 void SceneWindow::AddGameObject(GameObject& gameObject)
 {
 	m_GameObjects.push_back(&gameObject);
+	// save to scene to serialize or could just send the scenewindows gameObjects
+	//MyScene->AddGameObject(gameObject); 
 }
 
 void SceneWindow::RemoveGameObject(GameObject& gameObject)
@@ -105,6 +107,7 @@ void SceneWindow::DisplaySceneWindow(RenderWindow& _window)
 }
 
 // as a developer you would just say on mouse event and that would 
+// be called or added as a event for the mouse and will be triggered automaticly
 
 static void MouseCreation()
 {
@@ -115,10 +118,9 @@ static void MouseCreation()
 		if (text.getGlobalBounds().intersects(MousePos.getGlobalBounds()))
 		{
 			MyScene->SaveScene();
-			DebugLog("Clicked on menu"); // now do what the text tells you!
+			//DebugLog("Clicked on menu"); // now do what the text tells you!
 		}
 		m_DisplayMenu = false;
-		//m_circle.transform->setPosition((mousePos.x), (mousePos.y));
 	}
 	if (Mouse::isButtonPressed(Mouse::Right)) // spawn menu at mouse pos, here you can make a gameObject
 	{
@@ -127,7 +129,7 @@ static void MouseCreation()
 	}
 	if (!m_DisplayMenu)
 	{
-		text.setPosition((mousePos.x) + 10000, (mousePos.y) + 10000);
+		//text.setPosition((mousePos.x) + 10000, (mousePos.y) + 10000);
 	}
 }
 
@@ -164,16 +166,14 @@ void SceneWindow::SetActiveScene(string scenePath)
 
 static void CreateDefaultSceneWindowObjects()
 {
-	if (!font.loadFromFile("BebasNeue-Regular.ttf"))
+	if (!font.loadFromFile("BebasNeue-Regular.ttf")) // should also, again, be elsewhere
 	{
 		DebugLog("Could not load font");
 	}
-
-	text.setString("Menu");
-	text.setCharacterSize(50); // in pixels, not points!
-	text.setOrigin((text.getString().getSize() * text.getCharacterSize()) / 5.0f, text.getCharacterSize() / 2); // roughly the center
+	text = UI_Text(Vector2f(200,200), "Menu", 50);
 	text.setFont(font);
+	text.setOrigin((text.getString().getSize() * text.getCharacterSize()) / 5.0f, text.getCharacterSize() / 2); // roughly the center
 	text.setFillColor(Color::Black);
 
-	Renderer->AddDrawable(text);
+	GameObject g = GameObject(text);
 }

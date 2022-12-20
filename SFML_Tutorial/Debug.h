@@ -4,7 +4,7 @@
 
 // dude, so cool!!
 #ifdef GE_DEBUG
-#define DebugLog(x) Debug::GetInstance()->Log(x)
+#define DebugLog(x) Debug::GetInstance()->Log(x) // I do wonder if this actually affects performance where you first call getInstance and then log, as it does check if an instance of the class exist each time
 #define DebugFrameRate(x) Debug::GetInstance()->DisplayFrameRate(x) 
 #else
 #define DebugLog(x) 

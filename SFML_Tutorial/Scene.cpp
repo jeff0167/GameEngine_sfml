@@ -1,10 +1,13 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include "Pch.h"
 #include <sstream>
 #include "Scene.h"
+#include "SceneSerializer.h"
 #include "SceneWindow.h"
 #include "MousePoint.h"
 #include "CircleCollider.h"
 #include "Monobehaviour.h"
-#include "Pch.h"
 
 Scene* Scene::_Scene = nullptr;
 
@@ -37,13 +40,10 @@ vector<string> split(string s, string delimiter)
 void Scene::LoadScene()
 {
 	ifstream file_obj(MyScene->m_ScenePath + ".txt", ios::in);
-	stringstream s;
-	s << file_obj.rdbuf();
+	stringstream stream;
+	stream << file_obj.rdbuf();
 
-	string val = s.str();
-	string delimiter = ",";
-
-	vector<string> values = split(val, delimiter);
+	vector<string> values = split(stream.str(), ",");
 
 	float x = stof(values[0]);
 	float y = stof(values[1]);
@@ -62,44 +62,35 @@ void Scene::LoadScene(string scenePath) // well okey, we load the text file but 
 {
 	// well suppose the scene just holds all gameObjects and we try and create them by reading from the scene we load
 
-	/*ifstream file_obj(scenePath + ".txt", ios::in);
-	stringstream s;
-	s << file_obj.rdbuf();
+	ifstream file_obj(scenePath + ".txt", ios::in); // deserializing
+	stringstream stream;
+	stream << file_obj.rdbuf();
 
-	file_obj.close();*/
-
-	ifstream file_obj("Scene01.txt", ios::in); // deserializing
-	stringstream s;
-	s << file_obj.rdbuf();
-
-	string val = s.str();
-	string delimiter = ",";
-
-	vector<string> values = split(val, delimiter);
+	vector<string> values = split(stream.str(), ",");
 
 	float x = stof(values[0]);
 	float y = stof(values[1]);
 
-	DebugLog(x);
-	DebugLog(y);
-
-	file_obj.close();
+	//DebugLog(x);
+	//DebugLog(y);
 }
 
 void Scene::SaveScene() 
 {
 	ofstream file_obj(MyScene->m_ScenePath + ".txt", std::ofstream::trunc); // trunc and no ios::app will clear all contents of the file before writing
 
-	/*for (size_t i = 0; i < SceneManager->GetGameObjects().size(); i++)
-	{
-		file_obj.write((char*)&SceneManager->GetGameObjects()[i], sizeof(&SceneManager->GetGameObjects()[i]));
-	}*/
 	Vector2f mousePos = MousePos.getPosition();
 	string name = to_string(mousePos.x) + "," + to_string(mousePos.y);
 
-	file_obj << name.c_str();
+	// to hard, to much work, you really shouldn't have to make this code yourself
+	// getting weird erros that I dont truly understand, alot of structure and complexity, just not worth the time
 
-	file_obj.close();
+	//SceneSerializer s;
+	//s.SerializeScene(*this);
+
+	//file_obj << s.SerializeScene(*this);  
+
+	file_obj << name.c_str();
 }
 
 void Scene::SetActiveScene(string& scenePath)
@@ -126,6 +117,11 @@ void Scene::RemoveGameObject(GameObject& gameObject)
 const vector<GameObject*>& Scene::GetGameObjects()
 {
 	return m_GameObjects;
+}
+
+string Scene::GetScenePath()
+{
+	return m_ScenePath;
 }
 
 void Scene::InitializeSceneGameObjects()

@@ -67,19 +67,19 @@ public:
 
 		if (d.x == 1 && d.y == 1) // box x box
 		{
-			return BoxXBox(dynamic_cast<BoxCollider&>(first), dynamic_cast<BoxCollider&>(second));
+			return BoxXBox(static_cast<BoxCollider&>(first), static_cast<BoxCollider&>(second)); // dynamic cast is slower because it has to check the type and will return null if false
 		}
 		if (d.x == 2 && d.y == 2) // circle x circle
 		{
-			return CircleXCircle(dynamic_cast<CircleCollider&>(first), dynamic_cast<CircleCollider&>(second));
+			return CircleXCircle(static_cast<CircleCollider&>(first), static_cast<CircleCollider&>(second));
 		}
 		if ((d.x == 2 && d.y == 1)) // circle x box
 		{
-			return CircleXBox(dynamic_cast<CircleCollider&>(first), dynamic_cast<BoxCollider&>(second));
+			return CircleXBox(static_cast<CircleCollider&>(first), static_cast<BoxCollider&>(second));
 		}
 		if ((d.x == 1 && d.y == 2))
 		{
-			return CircleXBox(dynamic_cast<CircleCollider&>(second), dynamic_cast<BoxCollider&>(first));
+			return CircleXBox(static_cast<CircleCollider&>(second), static_cast<BoxCollider&>(first));
 		}
 		return false;
 	}

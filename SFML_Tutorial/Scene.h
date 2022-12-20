@@ -25,6 +25,8 @@ public:
     void RemoveGameObject(GameObject& gameObject);
     const vector<GameObject*>& GetGameObjects();
 
+    string GetScenePath();
+
 protected:
     static Scene* _Scene;
     string m_ScenePath = "Scene01"; // can't make static, get error
