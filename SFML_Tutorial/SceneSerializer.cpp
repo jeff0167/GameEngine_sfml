@@ -91,8 +91,8 @@ void SceneSerializer::DeSerializeScene(string& yaml)
 
 		// for now im simply only using UI_Text
 
-		UI_Text ui_Text = UI_Text(v, text, size);
-		GameObject g = GameObject(ui_Text); // it has to know it's a text element to create the UI_Text
+		//UI_Text ui_Text = UI_Text(v, text, size);
+		//GameObject g = GameObject(ui_Text); // it has to know it's a text element to create the UI_Text
 	}
 }
 

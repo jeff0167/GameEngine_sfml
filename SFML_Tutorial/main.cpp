@@ -56,6 +56,16 @@ RectangleShape rect1, rect2;
 
 int main() // main should literally be empty!!
 {
+	// What I have learned
+	// I cannot load the scene when in game mode
+	// ParticleSystem does not work cause of timing issues
+
+	// I think that I need to try and make a simple game and see what obstacles I face in doing so
+	// then I can find possible features that will improve the experience of developing games
+
+	// I really think that I am missing a layer system on the canvas for one ^
+
+
 	Renderer->AddWindow(window);
 	switch (myApplication)
 	{
@@ -81,8 +91,8 @@ int main() // main should literally be empty!!
 
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); 
 
-	//ParticleSystem particles(10000, Color::Blue);
-	//ParticleSystem particlesPlayer(10000, Color::Black); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
+	//ParticleSystem particles(10000, Color::Blue); // currently not working correctly
+	//ParticleSystem particlesPlayer(10000, Color::Blue, 10000); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
 
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
@@ -108,8 +118,8 @@ int main() // main should literally be empty!!
 	// for creation them again we cannot be using their pointers
 	// currently have nothing that keeps track of gameObjects in the scene
 
-	MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
-	go.AddComponent(p);
+	//MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	//go.AddComponent(p);
 
 	window.setFramerateLimit(120); // this should also be changeable
 	while (window.isOpen()) // checking window events

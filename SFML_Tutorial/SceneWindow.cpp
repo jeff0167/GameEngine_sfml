@@ -43,9 +43,9 @@ SceneWindow* SceneWindow::GetInstance()
 
 void SceneWindow::AddGameObject(GameObject& gameObject)
 {
-	m_GameObjects.push_back(&gameObject);
+	//m_GameObjects.push_back(&gameObject);
 	// save to scene to serialize or could just send the scenewindows gameObjects
-	//MyScene->AddGameObject(gameObject); 
+	MyScene->AddGameObject(gameObject); 
 }
 
 void SceneWindow::RemoveGameObject(GameObject& gameObject)
@@ -166,7 +166,7 @@ void SceneWindow::SetActiveScene(string scenePath)
 
 static void CreateDefaultSceneWindowObjects()
 {
-	if (!font.loadFromFile("BebasNeue-Regular.ttf")) // should also, again, be elsewhere
+	if (!font.loadFromFile("BebasNeue-Regular.ttf")) 
 	{
 		DebugLog("Could not load font");
 	}

@@ -42,7 +42,7 @@ public:
 		{
 			// update the particle lifetime
 			Particle& p = m_particles[i];
-			p.lifetime -= milliseconds(p.lifetime.asMicroseconds() - Monobehaviour::GetInstance()->DeltaTime);
+			p.lifetime -= milliseconds(p.lifetime.asMicroseconds() - Monobehaviour::GetInstance()->DeltaTime); /// TODO fix the lifetime, it seems to go down to fast so you never get to see the particles
 
 			// if the particle is dead, respawn it
 			if (p.lifetime <= Time::Zero)
