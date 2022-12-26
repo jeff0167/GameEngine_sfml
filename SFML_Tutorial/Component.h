@@ -23,9 +23,10 @@ public:
 	{
 	}
 
-	string ToString() 
+	virtual string ToString() 
 	{
-		return "Im a component";
+		string className = typeid(*this).name();
+		return "Im a " + className;
 	}
 
 private:

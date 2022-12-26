@@ -10,17 +10,24 @@
 using namespace sf;
 using namespace std;
 
+float FixedUpdateMovement();
+bool Collision(Collider& first, Collider& second);
+bool BoxXBox(BoxCollider& first, BoxCollider& second);
+bool CircleXCircle(CircleCollider& first, CircleCollider& second);
+bool CircleXBox(CircleCollider& first, BoxCollider& second);
+
 Physics* Physics::_physics = nullptr;
 
 Physics* Physics::GetInstance()
 {
-	if (_physics == nullptr) {
+	if (_physics == nullptr)
+	{
 		_physics = new Physics();
 	}
 	return _physics;
 }
 
-void Physics::InitializePhysicsUpdate() 
+void Physics::InitializePhysicsUpdate()
 {
 	thread t = std::thread([this] { this->PhysicsUpdate(); });
 	t.detach();
@@ -28,8 +35,8 @@ void Physics::InitializePhysicsUpdate()
 
 void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
 {
-	double x = 1 / PhysicsTimeStep.count(); 
-	m_DeltaSpeed = 500.0 / x; 
+	double x = 1 / PhysicsTimeStep.count();
+	m_DeltaSpeed = 500.0 / x;
 	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
 
 	while (true) // 120 fps is around 0.008333 in ms
@@ -58,7 +65,7 @@ void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr sec
 	}
 }
 
-void Physics::AddParticleSystem(ParticleSystemUpdate& _particleSystem) 
+void Physics::AddParticleSystem(ParticleSystemUpdate& _particleSystem)
 {
 	particleSystems.push_back(&_particleSystem);
 }
@@ -138,9 +145,9 @@ void Physics::PhysicsCollisionUpdate()
 	{
 		for (size_t j = 0; j < tempColliderList.size(); j++)
 		{
-			if (i == j) continue; 
+			if (i == j) continue;
 			//Debug::GetInstance()->Log("Calling cool, dyn");
-			if (Mathf::Collision(*colliders[i], *colliders[j]))
+			if (Collision(*colliders[i], *colliders[j]))
 			{
 				//Debug::GetInstance()->Log("Collision");
 			}
@@ -168,4 +175,120 @@ void Physics::PhysicsCollisionUpdate()
 	//		//}
 	//	}
 	//}
+}
+
+static bool Collision(Collider& first, Collider& second)
+{
+	string firstName = typeid(first).name();
+	string secondName = typeid(second).name();
+
+	Vector2f d(0, 0);
+
+	if (firstName.find("Box") != string::npos)
+	{
+		d.x = 1;
+	}
+
+	if (secondName.find("Box") != string::npos)
+	{
+		d.y = 1;
+	}
+
+	if (firstName.find("Circle") != string::npos)
+	{
+		d.x = 2;
+	}
+
+	if (secondName.find("Circle") != string::npos)
+	{
+		d.y = 2;
+	}
+
+	if (d.x == 1 && d.y == 1) // box x box
+	{
+		return BoxXBox(static_cast<BoxCollider&>(first), static_cast<BoxCollider&>(second)); // dynamic cast is slower because it has to check the type and will return null if false
+	}
+	if (d.x == 2 && d.y == 2) // circle x circle
+	{
+		return CircleXCircle(static_cast<CircleCollider&>(first), static_cast<CircleCollider&>(second));
+	}
+	if ((d.x == 2 && d.y == 1)) // circle x box
+	{
+		return CircleXBox(static_cast<CircleCollider&>(first), static_cast<BoxCollider&>(second));
+	}
+	if ((d.x == 1 && d.y == 2))
+	{
+		return CircleXBox(static_cast<CircleCollider&>(second), static_cast<BoxCollider&>(first));
+	}
+	return false;
+}
+
+// cleans up the code a bit, though not sure if it would impact the performance
+static float FixedUpdateMovement()
+{
+	return (float)Physics::GetInstance()->m_DeltaSpeed * Physics::GetInstance()->m_PhysicsDeltaTime * 100.0f;
+}
+
+static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
+{
+	double xi, xj; // we would also want to not move when colliding with static objects
+	xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
+	xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
+
+	if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds()))
+	{
+		//if (xi == 0 || xj == 0) return true;
+		if (xi > xj)
+		{
+			// this might need some updates values, or other values, seems to work alright atm
+			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+		}
+		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		//Debug::GetInstance()->Log("bound intersect");
+		return true;
+	}
+	return false;
+}
+static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circle x circle
+{
+	double xi, xj;
+	xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
+	xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
+
+	double distance = sqrt(pow((first.rect->getPosition().x + first.offsetPos.x) -
+		(second.rect->getPosition().x + second.offsetPos.x), 2) + pow((first.rect->getPosition().y + first.offsetPos.y) - (second.rect->getPosition().y + second.offsetPos.y), 2));
+
+	if (distance < abs(first.rect->getRadius() + second.rect->getRadius()))
+	{
+		//if (xi == 0 || xj == 0) return true;
+		if (xi > xj)
+		{
+			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+		}
+		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		//Debug::GetInstance()->Log("Circle collision");
+		return true;
+	}
+	return false;
+}
+static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x box
+{
+	double xi, xj; // we would also want to not move when colliding with static objects
+	xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
+	xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
+
+	if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds()))
+	{
+		//if (xi == 0 || xj == 0) return true;
+
+		if (xi > xj)
+		{
+			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+		}
+		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		//Debug::GetInstance()->Log("bound intersect");
+		return true;
+	}
+	//Debug::GetInstance()->Log("bound not intersect");
+	return false;
 }

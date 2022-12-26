@@ -9,7 +9,6 @@
 #include "Component.h"
 #include "Monobehaviour.h"
 #include "ParticleSystem.h"
-#include "CircleCollider.h"
 #include "Input.h"
 #include "Mathf.h"
 #include "Debug.h"
@@ -26,14 +25,14 @@ void CollisionChecking();
 void PlayerAnimState();
 void SceneWindow();
 
-int windowHeight = 1200;
-int windowWidth = 1200;
+uint32_t windowHeight = 1200; // better then unsigned int, shorter and clearer
+uint32_t windowWidth = 1200;
 
 RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::Close | Style::Titlebar | Style::Resize);
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 1.0f; // MoveSpeed was 5.0f as default
+float moveSpeed = 2.0f; // MoveSpeed was 5.0f as default
 Vector2f velocity;
 
 Texture hero, particle;
@@ -46,7 +45,7 @@ enum ApplicationState
 	Running_SceneWindow
 };
 
-ApplicationState myApplication = ApplicationState::Running_SceneWindow;
+ApplicationState myApplication = ApplicationState::Running_GameWindow;
 
 bool idle = true;
 
@@ -64,7 +63,6 @@ int main() // main should literally be empty!!
 	// then I can find possible features that will improve the experience of developing games
 
 	// I really think that I am missing a layer system on the canvas for one ^
-
 
 	Renderer->AddWindow(window);
 	switch (myApplication)
@@ -106,8 +104,9 @@ int main() // main should literally be empty!!
 	circleThing = GameObject(*circle.shape, circle);
 	circleThing.AddComponent(g2rb); 
 
-	CircleCollider circle2 = CircleCollider(*new CircleShape(50, 50), Vector2f(100, 200), Color::Red);
-	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody());
+	unique_ptr<CircleShape> d(new CircleShape(50, 50)); // hmm i don't like that i manually have to make sure that i use a unique ptr
+	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
+	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
 
 	// might need scene classes 
 	// need to know how to make copy(instantiation) of class from a file

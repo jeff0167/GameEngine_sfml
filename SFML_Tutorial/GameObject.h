@@ -23,7 +23,7 @@ public:
 
 	Transformable* transform; // suppose you could even use this as an id, would really just want to use the memory adress of the gameobject as an identifier, but no, that is terrible hard
 	vector<Transformable*> transformers;
-	vector<Component*> components; 
+	vector<Component*> components;
 
 	void AddComponent(Component& component);
 	void RemoveComponent(Component& component);
@@ -32,20 +32,19 @@ public:
 	template <class T>
 	Component* GetComponent(T type)
 	{
-		for (auto& component : this->components)
+		for (auto component : components)
 		{
-			if (typeid(component).name() == typeid(type).name()) // *this->components[i]).name(), remember the * in front!!
+			if (typeid(*component).name() == typeid(type).name()) // *this->components[i]).name(), remember the * in front!!
 			{
 				return component;
 			}
 		}
 
-		for (auto& component : this->components) // is this even necessarcy!? ok say you just want a collider, not a specifik one, then you would do this, yes
+		for (auto component : components) // is this even necessarcy!? ok say you just want a collider, not a specifik one, then you would do this, yes
 		{
-			string s = typeid(component).name();
+			string s = typeid(*component).name();
 			if (s.find("Collider") != string::npos) return component;  // specificly for collider, very bad, dont do
 		}
-
 		return nullptr;
 	}
 
