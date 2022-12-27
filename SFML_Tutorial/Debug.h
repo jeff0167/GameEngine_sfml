@@ -29,6 +29,7 @@ public:
 
 	static Debug* GetInstance();
 
+
 	inline void Log(float line) 
 	{
 		Log(to_string(line));
@@ -96,9 +97,6 @@ public:
 
 		WriteAllLines();
 	}
-	double fps_ms = 0;
-	Int32 ms = 0;
-	vector<double> fpsTimes;
 
 	void DisplayFrameRate(Time _time) // would also like to show memory allocations, show in game, toggle
 	{
@@ -131,6 +129,10 @@ protected:
 
 	Debug() {}; 
 
+	double fps_ms = 0;
+	Int32 ms = 0;
+	vector<double> fpsTimes;
+
 	void Clear()
 	{
 		cout << "\x1B[2J\x1B[H"; // this doesn't actually clear the window altough it makes it look like it
@@ -151,9 +153,10 @@ protected:
 		}
 	}
 
-	void WriteLine(string line)
+	void WriteLine(string_view line)
 	{
-		cout << "\n" + line;
+		cout << "\n";
+		cout << line;
 	}
 
 };

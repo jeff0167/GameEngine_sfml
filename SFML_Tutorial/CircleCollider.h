@@ -19,11 +19,6 @@ public:
 		shape = &_rect;
 	};
 
-	virtual bool Collision(Collider& _other)
-	{
-		return false;
-	}
-
 private:
 
 };

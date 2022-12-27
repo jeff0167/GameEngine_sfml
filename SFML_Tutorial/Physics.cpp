@@ -1,8 +1,9 @@
 #include "Physics.h"
-#include "Canvas.h"
+#include "Pch.h"
 #include "Mathf.h"
 #include "Debug.h"
-#include "Pch.h"
+#include "BoxCollider.h"
+#include "CircleCollider.h"
 #include <atomic>
 #include <chrono>
 #include "MyParticle.h"
@@ -96,12 +97,13 @@ void Physics::PhysicsMovementUpdate()
 	double x = m_PhysicsDeltaTime / 1 / PhysicsTimeStep.count(); // really not very clean code, the timeStep is acurate to a certain point, if keept within a reasonable range the difference is not very significant, 0.01 or 0.02 is not noticable in difference
 	m_DeltaSpeed = (500.0 / x) * 0.01f;
 
-	for (size_t i = 0; i < rigidbodies.size(); i++)
+	float finalDeltaSpeed = (float)m_DeltaSpeed * m_PhysicsDeltaTime * 100.0f;
+
+	for (const auto& rigidbody : rigidbodies)
 	{
 		// the deltaSpeed changes, sure, but the m_PhysicsDeltaTime should multiplied with the deltaSpeed, give the exact same value
 		// Now deltaSpeed is constant and physicsDelta is not, meaning that deltaSpeed shouldn't be constant, it should be calculated for each physics update
-
-		rigidbodies[i]->transform->move(rigidbodies[i]->velocity * (float)m_DeltaSpeed * m_PhysicsDeltaTime * 100.0f); // do we lose precision?
+		rigidbody->transform->move(rigidbody->velocity * finalDeltaSpeed);
 	}
 }
 
@@ -138,7 +140,7 @@ void Physics::ParticleUpdate()
 
 void Physics::PhysicsCollisionUpdate()
 {
-	//Debug::GetInstance()->Log(colliders.size());
+	//DebugLog(colliders.size());
 	vector<Collider*> tempColliderList = colliders;
 
 	for (size_t i = 0; i < tempColliderList.size(); i++)
@@ -146,35 +148,14 @@ void Physics::PhysicsCollisionUpdate()
 		for (size_t j = 0; j < tempColliderList.size(); j++)
 		{
 			if (i == j) continue;
-			//Debug::GetInstance()->Log("Calling cool, dyn");
+			//DebugLog("Calling cool, dynamic");
 			if (Collision(*colliders[i], *colliders[j]))
 			{
-				//Debug::GetInstance()->Log("Collision");
+				//DebugLog("Collision");
 			}
 		}
 		tempColliderList.erase(next(tempColliderList.begin(), i), next(tempColliderList.begin(), i + 1));
 	}
-
-	//for (size_t i = 0; i < colliders.size(); i++) // 16,670 vs 40k with 4 colliders  2.4 x difference
-	//{
-	//	for (size_t j = 0; j < colliders.size(); j++) 
-	//	{
-	//		if (i == j) continue; // don't check against itself
-
-	//		Debug::GetInstance()->Log("Calling cool, no dyn");
-	//		//if (Mathf::Collision(*colliders[i], *colliders[j]))  // ok we collided, now what?!?! we should move the object that moved into it in the oposite direction of it's velocity vector just so it touches the static collider
-	//		//{
-	//		//	// would want to add that we subsscibe delegates to this func on gameobjects so we can call stuff when it collides with onCollision()
-
-	//		//	// if one is static, meaning it will never move, the other will move in the opposite direction of it's velocity until the point the colliders just touch
-
-	//		//	// if both can move, but only one is moving, the one that stays still will be moved in the opposite direction of the velocity until the point the colliders just touch
-
-	//		//	// if both can move and they both move, the one with the higher velocity will move the other by it's velocity minus the others velocity, 
-	//		//	//Debug::GetInstance()->Log("Collision");
-	//		//}
-	//	}
-	//}
 }
 
 static bool Collision(Collider& first, Collider& second)

@@ -34,8 +34,8 @@ void Monobehaviour::Invoke(function<void()> function, float callDelay)
 	t.detach();
 }
 
-void Monobehaviour::DelayedCall(function<void()> function, float callDellay)
+void Monobehaviour::DelayedCall(function<void()> function, float callDellay) 
 {
-	this_thread::sleep_for(chrono::milliseconds((long)callDellay));
+	this_thread::sleep_for(chrono::milliseconds((long)callDellay)); // should I call stop on the thread? will the thread keep existing? it should be going out of scope tough
 	function();
 }

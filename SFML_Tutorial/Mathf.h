@@ -1,9 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "Collider.h"
-#include "Physics.h"
 #include "Debug.h"
 
 using namespace sf;

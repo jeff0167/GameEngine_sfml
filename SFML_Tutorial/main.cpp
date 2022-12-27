@@ -8,6 +8,8 @@
 #include "Physics.h"
 #include "Component.h"
 #include "Monobehaviour.h"
+#include "BoxCollider.h"
+#include "CircleCollider.h"
 #include "ParticleSystem.h"
 #include "Input.h"
 #include "Mathf.h"
@@ -32,7 +34,7 @@ RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 2.0f; // MoveSpeed was 5.0f as default
+float moveSpeed = 1.0f; // MoveSpeed was 5.0f as default
 Vector2f velocity;
 
 Texture hero, particle;
@@ -107,15 +109,6 @@ int main() // main should literally be empty!!
 	unique_ptr<CircleShape> d(new CircleShape(50, 50)); // hmm i don't like that i manually have to make sure that i use a unique ptr
 	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
-
-	// might need scene classes 
-	// need to know how to make copy(instantiation) of class from a file
-	// need to clear when writing again to scene file
-	// need like a scene window system, where you choose to run the scene
-
-	// the big question is, how hard would it be to save a gameObject to a file and create it from a scene
-	// for creation them again we cannot be using their pointers
-	// currently have nothing that keeps track of gameObjects in the scene
 
 	//MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	//go.AddComponent(p);

@@ -46,4 +46,3 @@ void Canvas::DrawCanvas()
 		window->draw(*drawables[i]);
 	}
 }
-

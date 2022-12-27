@@ -16,8 +16,6 @@ public:
 
     Collider() {};
 
-    virtual bool Collision(Collider& _other) { return false; }; 
-
 private:
 
 };

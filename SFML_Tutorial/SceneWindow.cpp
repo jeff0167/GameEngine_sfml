@@ -1,12 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include "Pch.h"
-#include "Animation.h"
 #include "Canvas.h"
 #include "SceneWindow.h"
-#include "Physics.h"
-#include "Component.h"
 #include "Monobehaviour.h"
-#include "ParticleSystem.h"
 #include "CircleCollider.h"
 #include "Input.h"
 #include "Mathf.h"
@@ -15,7 +11,6 @@
 #include "UI_Text.h"
 #include "MousePoint.h"
 #include "MyParticle.h"
-#include <sstream>
 
 using namespace sf;
 using namespace std;

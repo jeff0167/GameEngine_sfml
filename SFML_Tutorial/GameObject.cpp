@@ -12,11 +12,6 @@
 using namespace sf;
 using namespace std;
 
-string GameObject::ToString() 
-{
-	return to_string(transform->getPosition().x);
-}
-
 GameObject::GameObject(Text& drawShape) :
 	transform(&drawShape),
 	components(vector<Component*>())
