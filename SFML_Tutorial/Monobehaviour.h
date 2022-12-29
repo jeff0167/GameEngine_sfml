@@ -8,10 +8,23 @@
 using namespace sf;
 using namespace std;
 
+struct MeasureTime
+{
+	chrono::time_point<chrono::steady_clock> start;
+	MeasureTime()
+	{
+		start = chrono::high_resolution_clock::now();
+	}
+	~MeasureTime()
+	{
+		DebugLog(to_string(chrono::duration<float>(chrono::high_resolution_clock::now() - start).count() * 1000.0f) + "ms");
+	}
+};
+
 class Monobehaviour
 {
 public:
-	Monobehaviour(Monobehaviour& other) = delete; 
+	Monobehaviour(Monobehaviour& other) = delete;
 
 	void operator=(const Monobehaviour&) = delete;
 
@@ -28,9 +41,14 @@ public:
 	Clock _clock;
 	float DeltaTime;
 
-	void UpdateTime() 
+	MeasureTime Timer()
 	{
-		_time = _clock.getElapsedTime(); 
+		return MeasureTime();
+	}
+
+	void UpdateTime()
+	{
+		_time = _clock.getElapsedTime();
 		_clock.restart();
 		DeltaTime = _time.asSeconds();
 	}

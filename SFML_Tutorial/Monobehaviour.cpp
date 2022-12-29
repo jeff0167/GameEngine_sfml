@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 using namespace sf;
+using namespace std;
 
 Monobehaviour* Monobehaviour::_monobehaviour = nullptr;
 

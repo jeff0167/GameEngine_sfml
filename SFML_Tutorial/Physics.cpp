@@ -11,6 +11,7 @@
 using namespace sf;
 using namespace std;
 
+void AddForce(Rigidbody* rb, Vector2f force);
 float FixedUpdateMovement();
 bool Collision(Collider& first, Collider& second);
 bool BoxXBox(BoxCollider& first, BoxCollider& second);
@@ -50,19 +51,6 @@ void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr sec
 		PhysicsCollisionUpdate();
 
 		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
-
-		//_clock.restart();
-
-		//PhysicsMovementUpdate();
-		//ParticleUpdate(); 
-		//PhysicsCollisionUpdate();
-
-		//_time = _clock.getElapsedTime();
-		//double remainingTime = PhysicsTimeStep - _time.asSeconds(); 
-		//if (remainingTime >= 0)
-		//{		
-		//	this_thread::sleep_for(chrono::microseconds((long)remainingTime));
-		//}
 	}
 }
 
@@ -104,6 +92,9 @@ void Physics::PhysicsMovementUpdate()
 		// the deltaSpeed changes, sure, but the m_PhysicsDeltaTime should multiplied with the deltaSpeed, give the exact same value
 		// Now deltaSpeed is constant and physicsDelta is not, meaning that deltaSpeed shouldn't be constant, it should be calculated for each physics update
 		rigidbody->transform->move(rigidbody->velocity * finalDeltaSpeed);
+
+		// then comes the question when do you apply the gravity within the physics loop? no movement should be done after collision tough
+		if (rigidbody->useGravity) AddForce(rigidbody, gravity * m_PhysicsDeltaTime); // Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
 	}
 }
 
@@ -156,6 +147,11 @@ void Physics::PhysicsCollisionUpdate()
 		}
 		tempColliderList.erase(next(tempColliderList.begin(), i), next(tempColliderList.begin(), i + 1));
 	}
+}
+
+void AddForce(Rigidbody* rb, Vector2f force)
+{
+	rb->velocity += force;
 }
 
 static bool Collision(Collider& first, Collider& second)
@@ -216,7 +212,7 @@ static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 	xi = (first.rigidbody != NULL) ? first.rigidbody->Magnitude() : 0;
 	xj = (second.rigidbody != NULL) ? second.rigidbody->Magnitude() : 0;
 
-	if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds()))
+	if (first.rect->getGlobalBounds().intersects(second.rect->getGlobalBounds())) // we are not able to use offset, should the gameObject's transform be an offset of the shape instead?!?
 	{
 		//if (xi == 0 || xj == 0) return true;
 		if (xi > xj)

@@ -11,6 +11,7 @@ public:
 	Vector2f velocity;
 	Vector2f rotationalVelocity;
 	Transformable* transform;
+	bool useGravity;
 
 	Rigidbody() {}
 	double Magnitude();

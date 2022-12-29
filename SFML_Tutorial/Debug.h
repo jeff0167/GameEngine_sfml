@@ -5,7 +5,8 @@
 // dude, so cool!!
 #ifdef GE_DEBUG
 #define DebugLog(x) Debug::GetInstance()->Log(x) // I do wonder if this actually affects performance where you first call getInstance and then log, as it does check if an instance of the class exist each time
-#define DebugFrameRate(x) Debug::GetInstance()->DisplayFrameRate(x) 
+#define DebugFrameRate(x) Debug::GetInstance()->DisplayFrameRate(&x) 
+//#define DebugMemory() Debug::GetInstance()->DisplayMemory() 
 #else
 #define DebugLog(x) 
 #define DebugFrameRate(x) 
@@ -38,11 +39,23 @@ public:
 	{
 		Log(to_string(line));
 	}
+	inline void Log(long double line) 
+	{
+		Log(to_string(line));
+	}
 	inline void Log(int line) 
 	{
 		Log(to_string(line));
 	}	
 	inline void Log(unsigned int line) 
+	{
+		Log(to_string(line));
+	}
+	inline void Log(long long line) 
+	{
+		Log(to_string(line));
+	}
+	inline void Log(long int line) 
 	{
 		Log(to_string(line));
 	}	
@@ -98,20 +111,24 @@ public:
 		WriteAllLines();
 	}
 
-	void DisplayFrameRate(Time _time) // would also like to show memory allocations, show in game, toggle
+	void DisplayMemory()
+	{
+	}
+
+	void DisplayFrameRate(Time* _time) // would also like to show memory allocations, show in game, toggle
 	{
 		if (fps_ms < 1000)
 		{
-			ms = _time.asMilliseconds();
+			ms = _time->asMilliseconds();
 			fps_ms += ms;
 			fpsTimes.push_back(ms); // show fps, with debug info or something
 		}
 		else if (fps_ms >= 1000)
 		{
 			double totalTime = 0; // technically wont be 1, but around there
-			for (size_t i = 0; i < fpsTimes.size(); i++)     // 1.1 s 60 frames
+			for (const auto& fpsTime : fpsTimes)     // 1.1 s 60 frames
 			{
-				totalTime += fpsTimes[i];
+				totalTime += fpsTime;
 			}
 			double averageFps = (1000 / totalTime) * fpsTimes.size();  // this is not really necesary at high refesh rate, the higher the rate the closer to 1000 the less deviance
 

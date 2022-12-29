@@ -41,8 +41,8 @@ const vector<Drawable*>& Canvas::GetDrawables()
 
 void Canvas::DrawCanvas() 
 {
-	for (size_t i = 0; i < drawables.size(); i++)
+	for (auto& drawable : drawables)
 	{
-		window->draw(*drawables[i]);
+		window->draw(*drawable);
 	}
 }

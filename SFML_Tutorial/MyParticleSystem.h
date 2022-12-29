@@ -99,16 +99,17 @@ public:
 
 		//Debug::GetInstance()->Log(debugDeltaTime);
 
-		for (size_t i = 0; i < m_particles.size(); ++i)
+		for (auto& particle : m_particles)
 		{
-			Canvas::GetInstance()->AddDrawable(m_particles[i].dot);
-			m_particles[i].SetParticleSystem(*this);
+			Renderer->AddDrawable(particle.dot);
+			particle.SetParticleSystem(*this);
 		}
 
-		for (size_t i = 0; i < m_particles.size(); ++i)  // saying 90ms - 100  with 10k particles
+		for (auto& particle : m_particles)
 		{
-			m_Futures.push_back(async(launch::async, InitializeParticle, &m_particles[i], &texture, radius, speed, lifeTime));
+			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, radius, speed, lifeTime));
 		}
+
 		/*	debugTime = debugClock.getElapsedTime();
 			debugDeltaTime = debugTime.asMilliseconds();
 			Debug::GetInstance()->Log(debugDeltaTime);*/
@@ -126,9 +127,9 @@ public:
 
 	void Update() override
 	{
-		for (size_t i = 0; i < m_particles.size(); ++i) // dude, I could literally use async for this loop, did not work
+		for (auto& particle : m_particles) // dude, I could literally use async for this loop, did not work
 		{
-			m_particles[i].Update();
+			particle.Update();
 		}
 	}
 

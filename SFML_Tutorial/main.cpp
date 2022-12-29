@@ -51,9 +51,8 @@ ApplicationState myApplication = ApplicationState::Running_GameWindow;
 
 bool idle = true;
 
-Rigidbody rb, g2rb, crb;
-GameObject go, g1, circleThing;
-RectangleShape rect1, rect2;
+Rigidbody rb, g2rb;
+GameObject go, circleThing;
 
 int main() // main should literally be empty!!
 {
@@ -110,11 +109,11 @@ int main() // main should literally be empty!!
 	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
 
-	//MyParticleSystem p(&_player, 100, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
-	//go.AddComponent(p);
+	MyParticleSystem p(&_player, 50, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	go.AddComponent(p);
 
 	window.setFramerateLimit(120); // this should also be changeable
-	while (window.isOpen()) // checking window events
+	while (window.isOpen()) // checking window eventss
 	{
 		Mono->UpdateTime();
 
@@ -180,16 +179,17 @@ void PlayerAnimState()
 	_player.setTextureRect(_playerAnim.uvRect);
 }
 
-void Shoot() 
+void Shoot() // make objects with monobehaviour so that objects don't go out of scope, here the drawable and rigidbody ref are added to their management system and still
 {
 	CircleShape* s = new CircleShape(10, 50); 
-	s->setPosition(_player.getPosition() + Vector2f(0, 100) + Vector2f(+40, 0) + (Vector2f(50, 0) * _player.getScale().x));
+	s->setPosition(_player.getPosition() + Vector2f(0, 100) + Vector2f(+40, 0) + (Vector2f(70, 0) * _player.getScale().x));
 	s->setOrigin(_player.getOrigin());
 	s->setFillColor(Color::Blue);
 
 	Rigidbody* r = new Rigidbody();
 	GameObject g = GameObject(*s, *r);
-	r->velocity = Vector2f(_player.getScale().x * 7, 0);
+	r->useGravity = true;
+	r->velocity = Vector2f(_player.getScale().x * 2, 0);
 }
 
 void MouseInput() 
