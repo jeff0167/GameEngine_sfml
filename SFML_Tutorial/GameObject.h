@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Debug.h"
+#include "Pch.h"
 
 using namespace sf;
 using namespace std;

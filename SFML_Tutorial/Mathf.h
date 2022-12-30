@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Debug.h"
 
 using namespace sf;
 using namespace std;

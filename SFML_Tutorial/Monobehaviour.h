@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
+#include "Debug.h"
 
 #define Mono Monobehaviour::GetInstance()
 #define CreateObject(x, y) Instantiate(x,y)

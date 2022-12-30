@@ -31,55 +31,55 @@ public:
 	static Debug* GetInstance();
 
 
-	inline void Log(float line) 
+	inline void Log(float line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(double line) 
+	inline void Log(double line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(long double line) 
+	inline void Log(long double line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(int line) 
-	{
-		Log(to_string(line));
-	}	
-	inline void Log(unsigned int line) 
+	inline void Log(int line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(long long line) 
+	inline void Log(unsigned int line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(long int line) 
+	inline void Log(long long line)
 	{
 		Log(to_string(line));
-	}	
+	}
+	inline void Log(long int line)
+	{
+		Log(to_string(line));
+	}
 	inline void Log(size_t line)
 	{
 		Log(to_string(line));
 	}
-	inline void Log(const Vector2f& line) 
+	inline void Log(const Vector2f& line)
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
-	}	
-	inline void Log(Vector2i& line) 
+	}
+	inline void Log(Vector2i& line)
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
-	}	
-	inline void Log(Vector2u& line) 
+	}
+	inline void Log(Vector2u& line)
 	{
 		Log(string_view("x: " + to_string(line.x) + ", y: " + to_string(line.y)));
-	}	
-	inline void Log(FloatRect line) 
+	}
+	inline void Log(FloatRect line)
 	{
 		Log(string_view("x: " + to_string(line.width) + ", y: " + to_string(line.height)));
 	}
-	inline void Log(Time line) 
+	inline void Log(Time line)
 	{
 		Log(string_view("Milliseconds: " + to_string(line.asMilliseconds())));
 	}
@@ -115,27 +115,21 @@ public:
 	{
 	}
 
-	void DisplayFrameRate(Time* _time) // would also like to show memory allocations, show in game, toggle
+	void DisplayFrameRate(Time* _time)
 	{
-		if (fps_ms < 1000)
-		{
-			ms = _time->asMilliseconds();
-			fps_ms += ms;
-			fpsTimes.push_back(ms); // show fps, with debug info or something
-		}
-		else if (fps_ms >= 1000)
-		{
-			double totalTime = 0; // technically wont be 1, but around there
-			for (const auto& fpsTime : fpsTimes)     // 1.1 s 60 frames
-			{
-				totalTime += fpsTime;
-			}
-			double averageFps = (1000 / totalTime) * fpsTimes.size();  // this is not really necesary at high refesh rate, the higher the rate the closer to 1000 the less deviance
+		Int32 ms = _time->asMilliseconds();
+		duration += ms;
 
-			string averagefp = "fps: " + to_string(int(averageFps)); // it's like 1 fps off when having 100 fps
+		if (duration < 1000)
+			fpsCounter++;
+
+		else if (duration >= 1000)
+		{
+			double averageFps = (1000.0f / duration) * fpsCounter;
+
+			string averagefp = "fps: " + to_string(int(averageFps));
 			Log(averagefp);
-			fpsTimes.clear(); // well i do want to clear the values
-			fps_ms = 0;
+			duration = fpsCounter = 0;
 		}
 	}
 
@@ -144,18 +138,17 @@ protected:
 
 	vector<TextLog> ConsoleLogs = vector<TextLog>();
 
-	Debug() {}; 
+	Debug() {};
 
-	double fps_ms = 0;
-	Int32 ms = 0;
-	vector<double> fpsTimes;
+	int duration = 0;
+	int fpsCounter = 0;
 
 	void Clear()
 	{
 		cout << "\x1B[2J\x1B[H"; // this doesn't actually clear the window altough it makes it look like it
 	}
 
-	void WriteAllLines() 
+	void WriteAllLines()
 	{
 		for (size_t i = 0; i < ConsoleLogs.size(); i++)
 		{

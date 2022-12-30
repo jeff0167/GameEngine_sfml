@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <fstream> 
+#include <sstream>
 
 #include <string>
 #include <thread>

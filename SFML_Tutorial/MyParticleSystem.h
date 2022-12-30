@@ -4,7 +4,6 @@
 #include <mutex>
 #include "Canvas.h"
 #include "Debug.h"
-#include "Monobehaviour.h"
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -110,9 +109,9 @@ public:
 			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, radius, speed, lifeTime));
 		}
 
-		/*	debugTime = debugClock.getElapsedTime();
-			debugDeltaTime = debugTime.asMilliseconds();
-			Debug::GetInstance()->Log(debugDeltaTime);*/
+		//debugTime = debugClock.getElapsedTime();
+		//debugDeltaTime = debugTime.asMilliseconds();
+		//Debug::GetInstance()->Log(debugDeltaTime);
 	}
 
 	void SetEmitterTransform(Transformable& transform) override

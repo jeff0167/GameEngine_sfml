@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Pch.h"
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"

@@ -1,5 +1,3 @@
-#pragma once
-#include <SFML/Graphics.hpp>
 #include "SceneSerializer.h"
 #include "UI_Text.h"
 #include "UI_Button.h"
