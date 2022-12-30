@@ -9,7 +9,7 @@ class UI_Text : public Component, public Text // could you somehow set it to cal
 {
 public:
 	UI_Text() {};
-	UI_Text(Vector2f pos, string _string, unsigned int characterSize = 30)
+	UI_Text(Vector2f pos, const string& _string, unsigned int characterSize = 30)
 	{
 		setPosition(pos);
 		setString(_string);	
