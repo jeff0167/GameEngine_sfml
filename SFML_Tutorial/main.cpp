@@ -5,7 +5,6 @@
 #include "Scene.h"
 #include "SceneWindow.h"
 #include "Physics.h"
-#include "Component.h"
 #include "Monobehaviour.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
@@ -14,7 +13,7 @@
 #include "Mathf.h"
 #include "Debug.h"
 #include "Rigidbody.h"
-#include "MyParticle.h"
+#include "MyParticleSystem.h"
 
 using namespace sf;
 using namespace std;
@@ -108,11 +107,11 @@ int main() // main should literally be empty!!
 	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
 
-	MyParticleSystem p(&_player, 50, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	MyParticleSystem p(&_player, 2000, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	go.AddComponent(p);
 
 	window.setFramerateLimit(120); // this should also be changeable
-	while (window.isOpen()) // checking window eventss
+	while (window.isOpen()) // checking window events
 	{
 		Mono->UpdateTime();
 

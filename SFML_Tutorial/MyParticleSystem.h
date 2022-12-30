@@ -3,6 +3,7 @@
 #include <future>
 #include <mutex>
 #include "Canvas.h"
+#include "Monobehaviour.h"
 #include "Debug.h"
 #include <vector>
 #include <algorithm>
@@ -59,59 +60,39 @@ public:
 		particle->SetVelocity(cos(angle) * speed, sin(angle) * speed);
 		particle->SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
 
-		//lock_guard<mutex> lock(m_Mutex);
+		//lock_guard<mutex> lock(m_Mutex); // Get lower performance if used and isn't needed to make it work it seems
 	}
 
 	vector<future<void>> m_Futures;
-	MyParticleSystem(Transformable* targetTransform, unsigned int particleCount, float radius, Texture& texture, float speed, Time lifeTime, Color color) :
+	MyParticleSystem(Transformable* targetTransform, unsigned int particleCount, float radius, Texture& texture, float _speed, Time lifeTime, Color color) :
 		m_TargetTransform(targetTransform),
 		m_particles(particleCount),
 		m_Texture(&texture),
-		m_Speed(speed),
+		m_Speed(_speed),
 		m_Radius(radius),
 		m_LifeTime(lifeTime)
-
 	{
-		//Time debugTime;
-		//Clock debugClock;
-		//float debugDeltaTime;
+		auto d = Mono->Timer();
 
-		//debugClock.restart();
-
-		//for (size_t i = 0; i < m_particles.size(); ++i) // 630 ms - 640 with 10k particles
+		//for (auto& particle : m_particles)  // I get 130-150 withoput async and 15-30 with async with 2k particles, pog
 		//{
-		//	m_particles[i].dot.setTexture(m_Texture);
-		//	float size = (rand() % 3) * m_Radius;
-		//	m_particles[i].dot.setRadius(size);
-		//	m_particles[i].SetParticleSystem(*this);
+		//	Canvas::GetInstance()->AddDrawable(particle.dot);
+		//	particle.SetParticleSystem(*this);
+		//	particle.dot.setTexture(&texture);
+		//	float size = (rand() % 3) * radius;
+		//	particle.dot.setRadius(size);
 		//	float angle = (rand() % 360) * 3.14f / 180.f;
-		//	float speed = (rand() % 50) * 0.01 * m_Speed + 0.05; // takes a long time for it to generate these numbers
-		//	m_particles[i].SetVelocity(cos(angle) * speed, sin(angle) * speed);
-
-		//	m_particles[i].maxLifespan = milliseconds((rand() % 200) + 100) * m_LifeTime.asSeconds();
-
-		//	Canvas::GetInstance()->AddDrawable(m_particles[i].dot);
+		//	float speed = (rand() % 50) * 0.01 * _speed + 0.05;
+		//	particle.SetVelocity(cos(angle) * speed, sin(angle) * speed);
+		//	particle.SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
 		//}
-
-		//debugTime = debugClock.getElapsedTime();
-		//debugDeltaTime = debugTime.asMilliseconds();
-
-		//Debug::GetInstance()->Log(debugDeltaTime);
 
 		for (auto& particle : m_particles)
 		{
 			Renderer->AddDrawable(particle.dot);
 			particle.SetParticleSystem(*this);
+			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, radius, _speed, lifeTime));
 		}
-
-		for (auto& particle : m_particles)
-		{
-			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, radius, speed, lifeTime));
-		}
-
-		//debugTime = debugClock.getElapsedTime();
-		//debugDeltaTime = debugTime.asMilliseconds();
-		//Debug::GetInstance()->Log(debugDeltaTime);
 	}
 
 	void SetEmitterTransform(Transformable& transform) override
@@ -126,7 +107,7 @@ public:
 
 	void Update() override
 	{
-		for (auto& particle : m_particles) // dude, I could literally use async for this loop, did not work
+		for (auto& particle : m_particles) 
 		{
 			particle.Update();
 		}

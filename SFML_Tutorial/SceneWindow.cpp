@@ -10,7 +10,6 @@
 #include "Rigidbody.h"
 #include "UI_Text.h"
 #include "MousePoint.h"
-#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;

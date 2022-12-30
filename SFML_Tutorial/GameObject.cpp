@@ -8,7 +8,6 @@
 #include "Debug.h"
 #include <type_traits>
 #include <typeinfo>
-#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;

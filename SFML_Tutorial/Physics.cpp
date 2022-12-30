@@ -7,7 +7,6 @@
 #include "CircleCollider.h"
 #include <atomic>
 #include <chrono>
-#include "MyParticle.h"
 
 using namespace sf;
 using namespace std;
