@@ -94,6 +94,8 @@ int main() // main should literally be empty!!
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go = GameObject(_player, rb, box_);
+
+	Renderer->ChangeDrawableLayer(_player, 4); // the higher the layer the further in front
 	//go.AddComponent(particlesPlayer);
 
 	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); 
@@ -106,6 +108,8 @@ int main() // main should literally be empty!!
 	unique_ptr<CircleShape> d(new CircleShape(50, 50)); // hmm i don't like that i manually have to make sure that i use a unique ptr
 	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
 	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
+
+	Renderer->ChangeDrawableLayer(*circle2.shape, 7); // dude it works, no trouble, just worked first try
 
 	MyParticleSystem p(&_player, 2000, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	go.AddComponent(p);

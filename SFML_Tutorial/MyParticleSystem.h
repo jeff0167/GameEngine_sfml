@@ -72,7 +72,7 @@ public:
 		m_Radius(radius),
 		m_LifeTime(lifeTime)
 	{
-		auto d = Mono->Timer();
+		//auto d = Mono->Timer();
 
 		//for (auto& particle : m_particles)  // I get 130-150 withoput async and 15-30 with async with 2k particles, pog
 		//{

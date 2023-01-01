@@ -18,9 +18,9 @@ void Canvas::AddWindow(RenderTarget& renderTarget)
 	window = &renderTarget;
 }
 
-void Canvas::AddDrawable(Drawable &drawable) 
+void Canvas::AddDrawable(Drawable& drawable, int layerNr) 
 {
-	drawables.push_back(&drawable);
+	drawablesLayers[layerNr].push_back(&drawable);
 }
 
 void Canvas::RemoveDrawable(Drawable &_drawable)
@@ -41,8 +41,12 @@ const vector<Drawable*>& Canvas::GetDrawables()
 
 void Canvas::DrawCanvas() 
 {
-	for (auto& drawable : drawables)
+	for (auto& layer : drawablesLayers) // here we draw the first layer, then up and up and finally the tenth which is the upper most layer
 	{
-		window->draw(*drawable);
+		for (auto& drawable : layer)
+		{
+			if (drawable == nullptr) continue;
+			window->draw(*drawable);
+		}
 	}
 }
