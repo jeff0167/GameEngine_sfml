@@ -7,7 +7,7 @@ float Umapi(float value, float istart, float istop, float ostart, float ostop)
 	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
 
-Particle::Particle(float radius, Texture& texture)
+Particle::Particle(float radius, Texture& texture) // this is never called
 {
 	dot.setRadius(radius);
 	dot.setTexture(&texture);
@@ -24,8 +24,9 @@ void Particle::Update()
 	{
 		lifespan = Time::Zero;
 	}
-	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds() / 100)) * 2; // no dude, lifespan should be in the range 1-255, which it isn't //FIX this should be somewhat simple enough
-	dot.setFillColor(SetColor(Umapi(lifespan.asMilliseconds() * 0.2f, 255, 0, 360, 0), 1, 1, alpha)); //FIX the lifespan value is not acurate, which is why currently it's being multiplied to grant the desired range of colors, but it changes much quicker
+
+	float alpha = (lifespan.asSeconds() / (maxLifespan.asSeconds())) * 255; 
+	dot.setFillColor(SetColor(Umapi(alpha, 255, 0, 360, 0), 1, 1, alpha)); 
 	if (lifespan.asSeconds() == 0)
 	{
 		lifespan = maxLifespan;
@@ -35,17 +36,24 @@ void Particle::Update()
 		startPos = GetTargetPos();
 	}
 	velocity += acceleration;
-	position += velocity * (float)Physics::GetInstance()->m_DeltaSpeed * Physics::GetInstance()->m_PhysicsDeltaTime * 100.0f;
+	position += velocity * (float)Science->m_DeltaSpeed * Science->m_PhysicsDeltaTime * 100.0f;
 	dot.setPosition(position + startPos);
 
 	acceleration = acceleration * 0.f;
-	lifespan = milliseconds(lifespan.asMilliseconds() - Physics::GetInstance()->GetDeltaTimeMili());
+	lifespan = milliseconds(lifespan.asMilliseconds() - Science->GetDeltaTimeMili());
 }
 
 void Particle::SetPosition(float x, float y)
 {
 	position.x = x;
 	position.y = y;
+
+	dot.setPosition(position);
+}
+
+void Particle::SetPosition(Vector2f pos)
+{
+	position = pos;
 
 	dot.setPosition(position);
 }

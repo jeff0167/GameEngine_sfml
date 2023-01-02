@@ -13,7 +13,7 @@ public:
 	ParticleSystem(unsigned int count, Color color, int speed = 50) : 
 		m_particles(count),
 		m_vertices(Points, count),
-		m_lifetime(seconds(3.f)),
+		m_lifetime(seconds(1.f)),
 		m_emitter(0.f, 0.f),
 		m_particleSpeed(speed),
 		m_TargetTransform(nullptr)
@@ -42,14 +42,18 @@ public:
 		{
 			// update the particle lifetime
 			Particle& p = m_particles[i];
-			p.lifetime -= milliseconds(p.lifetime.asMicroseconds() - Monobehaviour::GetInstance()->DeltaTime); /// TODO fix the lifetime, it seems to go down to fast so you never get to see the particles
+
+			// slightly works as before with the correct settings, tough realistikly I would never use it in a game
+			// lifespan = milliseconds(lifespan.asMilliseconds() - Science->GetDeltaTimeMili()); // should use the physsics update time, but it wont compile with physics for some reason
+
+			p.lifetime = milliseconds(p.lifetime.asMilliseconds() - Mono->GetDeltaTimeMili() * 5); /// TODO fix the lifetime, it seems to go down to fast so you never get to see the particles
 
 			// if the particle is dead, respawn it
 			if (p.lifetime <= Time::Zero)
 				ResetParticle(i);
 
 			// update the position of the corresponding vertex
-			m_vertices[i].position += p.velocity * Monobehaviour::GetInstance()->DeltaTime; // this might not be working as intended with delta instead of elapsed as seconds
+			m_vertices[i].position += p.velocity * Mono->DeltaTime; // this might not be working as intended with delta instead of elapsed as seconds
 
 			// update the alpha (transparency) of the particle according to its lifetime
 			float ratio = p.lifetime.asSeconds() / m_lifetime.asSeconds();

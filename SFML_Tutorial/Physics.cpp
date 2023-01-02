@@ -18,6 +18,8 @@ bool BoxXBox(BoxCollider& first, BoxCollider& second);
 bool CircleXCircle(CircleCollider& first, CircleCollider& second);
 bool CircleXBox(CircleCollider& first, BoxCollider& second);
 
+Physics* m_Physics = Science;
+
 Physics* Physics::_physics = nullptr;
 
 Physics* Physics::GetInstance()
@@ -83,9 +85,9 @@ const vector<Rigidbody*>& Physics::GetRigidbodies()
 void Physics::PhysicsMovementUpdate()
 {
 	double x = m_PhysicsDeltaTime / 1 / PhysicsTimeStep.count(); // really not very clean code, the timeStep is acurate to a certain point, if keept within a reasonable range the difference is not very significant, 0.01 or 0.02 is not noticable in difference
-	m_DeltaSpeed = (500.0 / x) * 0.01f;
+	m_DeltaSpeed = (500.0 / x) * 0.0100;
 
-	float finalDeltaSpeed = (float)m_DeltaSpeed * m_PhysicsDeltaTime * 100.0f;
+	float finalDeltaSpeed = FixedUpdateMovement(); 
 
 	for (const auto& rigidbody : rigidbodies)
 	{
@@ -203,7 +205,7 @@ static bool Collision(Collider& first, Collider& second)
 // cleans up the code a bit, though not sure if it would impact the performance
 static float FixedUpdateMovement()
 {
-	return (float)Physics::GetInstance()->m_DeltaSpeed * Physics::GetInstance()->m_PhysicsDeltaTime * 100.0f;
+	return (float)m_Physics->m_DeltaSpeed * m_Physics->m_PhysicsDeltaTime * 100.0f;
 }
 
 static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box

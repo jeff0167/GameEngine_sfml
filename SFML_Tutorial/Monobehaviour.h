@@ -54,6 +54,11 @@ public:
 		DeltaTime = _time.asSeconds();
 	}
 
+	float GetDeltaTimeMili()
+	{
+		return _time.asMilliseconds();
+	}
+
 private:
 	static void DelayedCall(function<void()> function, float callDelay);
 

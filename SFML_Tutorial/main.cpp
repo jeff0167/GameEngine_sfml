@@ -56,12 +56,9 @@ int main() // main should literally be empty!!
 {
 	// What I have learned
 	// I cannot load the scene when in game mode
-	// ParticleSystem does not work cause of timing issues
 
 	// I think that I need to try and make a simple game and see what obstacles I face in doing so
 	// then I can find possible features that will improve the experience of developing games
-
-	// I really think that I am missing a layer system on the canvas for one ^
 
 	Renderer->AddWindow(window);
 	switch (myApplication)
@@ -69,7 +66,7 @@ int main() // main should literally be empty!!
 	case Running_GameWindow:
 		break;
 	case Running_SceneWindow:
-		SceneWindow(); // this will run it's own loop, and we will never continue in main here, well I mean technically we could return
+		SceneWindow(); // this will run it's own loop, and we will never continue in main here, well I mean technically we could return   
 		break;
 	}
 
@@ -88,15 +85,13 @@ int main() // main should literally be empty!!
 
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); 
 
-	//ParticleSystem particles(10000, Color::Blue); // currently not working correctly
-	//ParticleSystem particlesPlayer(10000, Color::Blue, 10000); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
+	//ParticleSystem particlesPlayer(5000, Color::Blue, 500); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
 
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go = GameObject(_player, rb, box_);
 
 	Renderer->ChangeDrawableLayer(_player, 4); // the higher the layer the further in front
-	//go.AddComponent(particlesPlayer);
 
 	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); 
 	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
@@ -208,7 +203,7 @@ void KeyBoardInput()
 	velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
-	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
+	if (Input::GetKey(Keyboard::Space, Input::KeyHeld)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{

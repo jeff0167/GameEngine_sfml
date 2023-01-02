@@ -18,6 +18,13 @@ void Canvas::AddWindow(RenderTarget& renderTarget)
 	window = &renderTarget;
 }
 
+void Canvas::ChangeDrawableLayer(Drawable& _drawable, int layerNr)
+{
+	RemoveDrawable(_drawable);
+
+	drawablesLayers[layerNr].push_back(&_drawable);
+}
+
 void Canvas::AddDrawable(Drawable& drawable, int layerNr) 
 {
 	drawablesLayers[layerNr].push_back(&drawable);
@@ -25,23 +32,27 @@ void Canvas::AddDrawable(Drawable& drawable, int layerNr)
 
 void Canvas::RemoveDrawable(Drawable &_drawable)
 {
-	for (size_t i = 0; i < drawables.size(); i++)
+	for (auto& layer : drawablesLayers)
 	{
-		if (drawables[i] == &_drawable)
+		for (size_t i = 0; i < layer.size(); i++)
 		{
-			drawables.erase(next(drawables.begin(), i), next(drawables.begin(), i + 1)); 
+			if (layer[i] == &_drawable)
+			{
+				layer.erase(next(layer.begin(), i), next(layer.begin(), i + 1));
+				return;
+			}
 		}
 	}
 }
 
-const vector<Drawable*>& Canvas::GetDrawables() 
+const vector<vector<Drawable*>>& Canvas::GetDrawables() 
 {
-	return drawables;
+	return drawablesLayers;
 }
 
 void Canvas::DrawCanvas() 
 {
-	for (auto& layer : drawablesLayers) // here we draw the first layer, then up and up and finally the tenth which is the upper most layer
+	for (auto& layer : drawablesLayers) 
 	{
 		for (auto& drawable : layer)
 		{

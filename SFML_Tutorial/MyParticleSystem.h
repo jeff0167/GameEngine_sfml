@@ -25,6 +25,7 @@ public:
 
 	void SetVelocity(float x, float y);
 	void SetPosition(float x, float y);
+	void SetPosition(Vector2f pos);
 	void SetMaxLifeTime(Time time);
 	Vector2f GetTargetPos();
 	void Update();
@@ -50,7 +51,7 @@ public:
 
 	//static mutex m_Mutex;
 
-	static void InitializeParticle(Particle* particle, Texture* texture, float radius, float _speed, Time lifeTime) // don't need to lock with mutex here
+	static void InitializeParticle(Particle* particle, Texture* texture, Vector2f pos, float radius, float _speed, Time lifeTime) // don't need to lock with mutex here
 	{
 		particle->dot.setTexture(texture);
 		float size = (rand() % 3) * radius;
@@ -59,7 +60,8 @@ public:
 		float speed = (rand() % 50) * 0.01 * _speed + 0.05;
 		particle->SetVelocity(cos(angle) * speed, sin(angle) * speed);
 		particle->SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
-
+		particle->lifespan = particle->maxLifespan;
+		particle->SetPosition(pos);
 		//lock_guard<mutex> lock(m_Mutex); // Get lower performance if used and isn't needed to make it work it seems
 	}
 
@@ -85,13 +87,15 @@ public:
 		//	float speed = (rand() % 50) * 0.01 * _speed + 0.05;
 		//	particle.SetVelocity(cos(angle) * speed, sin(angle) * speed);
 		//	particle.SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
+		//  particle.lifespan = particle->maxLifespan;
+		//  particle.SetPosition(m_TargetTransform->getPosition());
 		//}
 
 		for (auto& particle : m_particles)
 		{
 			Renderer->AddDrawable(particle.dot);
 			particle.SetParticleSystem(*this);
-			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, radius, _speed, lifeTime));
+			m_Futures.push_back(async(launch::async, InitializeParticle, &particle, &texture, m_TargetTransform->getPosition(), radius, _speed, lifeTime));
 		}
 	}
 
