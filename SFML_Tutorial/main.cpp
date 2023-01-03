@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include "Pch.h"
 #include "Animation.h"
 #include "Canvas.h"
 #include "Scene.h"
@@ -66,7 +65,7 @@ int main() // main should literally be empty!!
 	case Running_GameWindow:
 		break;
 	case Running_SceneWindow:
-		SceneWindow(); // this will run it's own loop, and we will never continue in main here, well I mean technically we could return   
+		SceneWindow(); // this will run it's own loop
 		break;
 	}
 

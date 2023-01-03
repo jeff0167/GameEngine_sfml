@@ -5,8 +5,6 @@
 #include "Debug.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
-#include <atomic>
-#include <chrono>
 
 using namespace sf;
 using namespace std;

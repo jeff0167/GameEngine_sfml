@@ -1,13 +1,9 @@
 #include <SFML/Graphics.hpp>
-#include "Pch.h"
-#include "Canvas.h"
 #include "SceneWindow.h"
+#include "Canvas.h"
 #include "Monobehaviour.h"
 #include "CircleCollider.h"
-#include "Input.h"
-#include "Mathf.h"
 #include "Debug.h"
-#include "Rigidbody.h"
 #include "UI_Text.h"
 #include "MousePoint.h"
 

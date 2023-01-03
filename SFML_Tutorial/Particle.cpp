@@ -1,6 +1,5 @@
 #include "MyParticleSystem.h"
 #include "Physics.h"
-#include "Monobehaviour.h"
 
 float Umapi(float value, float istart, float istop, float ostart, float ostop)
 {
@@ -9,9 +8,9 @@ float Umapi(float value, float istart, float istop, float ostart, float ostop)
 
 Particle::Particle(float radius, Texture& texture) // this is never called
 {
-	dot.setRadius(radius);
-	dot.setTexture(&texture);
-	lifespan = maxLifespan;
+	//dot.setRadius(radius);
+	//dot.setTexture(&texture);
+	//lifespan = maxLifespan;
 }
 
 Particle::~Particle()
@@ -71,12 +70,12 @@ void Particle::SetMaxLifeTime(Time time)
 
 void Particle::SetParticleSystem(MyParticleSystem& ps)
 {
-	m_particleSystem = &ps;
+	m_ParticleSystem = &ps;
 }
 
 Vector2f Particle::GetTargetPos()
 {
-	return m_particleSystem->GetTargetTransform();
+	return m_ParticleSystem->GetTargetTransform();
 }
 
 void Particle::ApplyForce(Vector2f force)

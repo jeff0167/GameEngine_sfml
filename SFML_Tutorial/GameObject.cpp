@@ -1,13 +1,10 @@
 #include "GameObject.h"
-#include "Pch.h"
 #include "Rigidbody.h"
 #include "Physics.h"
 #include "Canvas.h"
 #include "SceneWindow.h"
 #include "Collider.h"
 #include "Debug.h"
-#include <type_traits>
-#include <typeinfo>
 
 using namespace sf;
 using namespace std;

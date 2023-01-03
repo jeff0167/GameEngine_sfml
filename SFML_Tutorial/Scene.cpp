@@ -1,9 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Pch.h"
 #include "Scene.h"
-#include "SceneSerializer.h"
-#include "SceneWindow.h"
 #include "MousePoint.h"
 #include "CircleCollider.h"
 #include "Monobehaviour.h"

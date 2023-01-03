@@ -1,5 +1,4 @@
 #include "Monobehaviour.h"
-#include "GameObject.h"
 
 using namespace sf;
 using namespace std;

@@ -4,10 +4,7 @@
 #include <mutex>
 #include "Canvas.h"
 #include "Monobehaviour.h"
-#include "Debug.h"
 #include <vector>
-#include <algorithm>
-#include <numeric>
 
 using namespace sf;
 using namespace std;
@@ -40,7 +37,7 @@ protected:
 	Vector2f velocity;
 	Vector2f acceleration;
 	Vector2f position, startPos;
-	MyParticleSystem* m_particleSystem;
+	MyParticleSystem* m_ParticleSystem;
 
 };
 
