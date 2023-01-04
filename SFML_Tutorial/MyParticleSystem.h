@@ -118,7 +118,7 @@ protected:
 	vector<Particle> m_particles;
 	Transformable* m_TargetTransform;
 	const Texture* m_Texture;
-	float m_Speed = 0, m_Radius = 0;
+	float m_Speed, m_Radius;
 	Time m_LifeTime;
 
 };

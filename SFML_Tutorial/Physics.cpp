@@ -5,18 +5,18 @@
 #include "Debug.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
+#include "Debug.h"
 
 using namespace sf;
 using namespace std;
 
 void AddForce(Rigidbody* rb, Vector2f force);
-float FixedUpdateMovement();
 bool Collision(Collider& first, Collider& second);
 bool BoxXBox(BoxCollider& first, BoxCollider& second);
 bool CircleXCircle(CircleCollider& first, CircleCollider& second);
 bool CircleXBox(CircleCollider& first, BoxCollider& second);
 
-Physics* m_Physics = Science;
+Physics m_Physics = *Science; // caching it's reference to itself for the static functions to use, real pretty
 
 Physics* Physics::_physics = nullptr;
 
@@ -37,19 +37,20 @@ void Physics::InitializePhysicsUpdate()
 
 void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
 {
-	double x = 1 / PhysicsTimeStep.count();
-	m_DeltaSpeed = 500.0 / x;
 	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
 
 	while (true) // 120 fps is around 0.008333 in ms
 	{
+		//double x = 1 / PhysicsTimeStep.count(); // 50 * 0.02      100 * 0.01
+		//m_DeltaSpeed = x * y * deltaSpeedMultiplier;
+
 		step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
 
 		UpdateTime();
 		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
 		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
 		PhysicsCollisionUpdate();
-
+		// it's not close to 20 ms, sometimes it's even well above 30 ms
 		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
 	}
 }
@@ -82,10 +83,7 @@ const vector<Rigidbody*>& Physics::GetRigidbodies()
 
 void Physics::PhysicsMovementUpdate()
 {
-	double x = m_PhysicsDeltaTime / 1 / PhysicsTimeStep.count(); // really not very clean code, the timeStep is acurate to a certain point, if keept within a reasonable range the difference is not very significant, 0.01 or 0.02 is not noticable in difference
-	m_DeltaSpeed = (500.0 / x) * 0.0100;
-
-	float finalDeltaSpeed = FixedUpdateMovement(); 
+	float finalDeltaSpeed = FixedUpdateMovement();
 
 	for (const auto& rigidbody : rigidbodies)
 	{
@@ -94,7 +92,7 @@ void Physics::PhysicsMovementUpdate()
 		rigidbody->transform->move(rigidbody->velocity * finalDeltaSpeed);
 
 		// then comes the question when do you apply the gravity within the physics loop? no movement should be done after collision tough
-		if (rigidbody->useGravity) AddForce(rigidbody, gravity * m_PhysicsDeltaTime); // Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
+		if (rigidbody->useGravity) AddForce(rigidbody, gravity * finalDeltaSpeed); // Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
 	}
 }
 
@@ -123,8 +121,7 @@ void Physics::ParticleUpdate()
 {
 	for (const auto& particleSystem : particleSystems) // foreach
 	{
-		// milliseconds(ParticleTime * deltaSpeed) was put in update before, the movement should technically be dependent on the physics time step
-		// for now it is realying on the delta time between frames
+		// the movement should be dependent on the physics time step and delta time between frames
 		particleSystem->Update(); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
 	}
 }
@@ -201,9 +198,9 @@ static bool Collision(Collider& first, Collider& second)
 }
 
 // cleans up the code a bit, though not sure if it would impact the performance
-static float FixedUpdateMovement()
+float Physics::FixedUpdateMovement()
 {
-	return (float)m_Physics->m_DeltaSpeed * m_Physics->m_PhysicsDeltaTime * 100.0f;
+	return (float)m_DeltaSpeed * m_PhysicsDeltaTime;
 }
 
 static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
@@ -218,9 +215,9 @@ static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 		if (xi > xj)
 		{
 			// this might need some updates values, or other values, seems to work alright atm
-			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		//Debug::GetInstance()->Log("bound intersect");
 		return true;
 	}
@@ -240,9 +237,9 @@ static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circ
 		//if (xi == 0 || xj == 0) return true;
 		if (xi > xj)
 		{
-			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		//Debug::GetInstance()->Log("Circle collision");
 		return true;
 	}
@@ -260,9 +257,9 @@ static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x b
 
 		if (xi > xj)
 		{
-			second.rigidbody->transform->move(first.rigidbody->velocity * FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
 		//Debug::GetInstance()->Log("bound intersect");
 		return true;
 	}

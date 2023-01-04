@@ -35,7 +35,7 @@ public:
 	void AddParticleSystem(ParticleSystemUpdate& _particleSystem);
 	void RemoveParticleSystem(ParticleSystemUpdate& _particleSystem);
 
-	double m_DeltaSpeed;
+	double m_DeltaSpeed = 10.0;
 	float m_PhysicsDeltaTime;
 
 	float GetDeltaTimeMili() 
@@ -43,9 +43,11 @@ public:
 		return m_Time.asMilliseconds();
 	}
 
+	float FixedUpdateMovement();
+
 protected:
 	static Physics* _physics;
-	const chrono::duration<double> PhysicsTimeStep = 0.02s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit     //TODO this is now affecting movespeed
+	const chrono::duration<double> PhysicsTimeStep = 0.005s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit     //TODO this is now affecting movespeed
 	Time m_Time;
 	Clock m_Clock;
 	Vector2f gravity = Vector2f(0, 9.81);

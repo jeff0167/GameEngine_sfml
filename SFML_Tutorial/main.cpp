@@ -31,7 +31,7 @@ RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::
 
 RectangleShape _player(Vector2f(100, 200));
 
-float moveSpeed = 1.0f; // MoveSpeed was 5.0f as default
+float moveSpeed = 50.0f; // MoveSpeed was 5.0f as default
 Vector2f velocity;
 
 Texture hero, particle;
@@ -105,7 +105,7 @@ int main() // main should literally be empty!!
 
 	Renderer->ChangeDrawableLayer(*circle2.shape, 7); // dude it works, no trouble, just worked first try
 
-	MyParticleSystem p(&_player, 2000, 5, particle, 0.5f, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	MyParticleSystem p(&_player, 2000, 5, particle, 50, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
 	go.AddComponent(p);
 
 	window.setFramerateLimit(120); // this should also be changeable
@@ -185,7 +185,7 @@ void Shoot() // make objects with monobehaviour so that objects don't go out of 
 	Rigidbody* r = new Rigidbody();
 	GameObject g = GameObject(*s, *r);
 	r->useGravity = true;
-	r->velocity = Vector2f(_player.getScale().x * 2, 0);
+	r->velocity = Vector2f(_player.getScale().x * 60, 0);
 }
 
 void MouseInput() 
@@ -202,7 +202,7 @@ void KeyBoardInput()
 	velocity = Mathf::Zero();
 	if (Input::GetKey(Keyboard::Escape, Input::KeyDown)) window.close();
 
-	if (Input::GetKey(Keyboard::Space, Input::KeyHeld)) Shoot();
+	if (Input::GetKey(Keyboard::Space, Input::KeyDown)) Shoot();
 
 	if (Input::GetKey(Keyboard::Left, Input::KeyHeld) || Input::GetKey(Keyboard::A, Input::KeyHeld))
 	{

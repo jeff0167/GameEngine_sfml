@@ -35,7 +35,7 @@ void Particle::Update()
 		startPos = GetTargetPos();
 	}
 	velocity += acceleration;
-	position += velocity * (float)Science->m_DeltaSpeed * Science->m_PhysicsDeltaTime * 100.0f;
+	position += velocity * Science->FixedUpdateMovement();
 	dot.setPosition(position + startPos);
 
 	acceleration = acceleration * 0.f;
