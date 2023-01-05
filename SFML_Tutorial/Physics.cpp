@@ -32,23 +32,21 @@ void Physics::InitializePhysicsUpdate()
 	t.detach();
 }
 
-void Physics::PhysicsUpdate() // physics update is around 0.02 / 50 times pr second, really use deltatime for smooth movement, you can't count on this to sleep or be done the apropiate amount every single time
+void Physics::PhysicsUpdate() 
 {
-	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; // oh boy, a long type, saved as cache for reuse though
+	// oh boy, a long type, saved as cache for reuse though
+	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; 
 
-	while (true) // 120 fps is around 0.008333 in ms
+	while (true) 
 	{
-		//double x = 1 / PhysicsTimeStep.count(); // 50 * 0.02      100 * 0.01
-		//m_DeltaSpeed = x * y * deltaSpeedMultiplier;
-
-		step = chrono::system_clock::now() + PhysicsTimeStep; // would like to add the PhysicsTimeStep instead of the manual 0.020s though not sure what data type it is
+		step = chrono::system_clock::now() + PhysicsTimeStep; 
 
 		UpdateTime();
-		ParticleUpdate();    // the jittering seems to be worse without calling this!?!?      
-		PhysicsMovementUpdate(); // what if the draw function gets called right in between this func and the collision func? it would mean it would draw the movement frame and in the collision the position could have changed
+		ParticleUpdate();      
+		PhysicsMovementUpdate(); 
 		PhysicsCollisionUpdate();
 		// it's not close to 20 ms, sometimes it's even well above 30 ms
-		this_thread::sleep_until(step); // it just seems to not call it at the same interval, and it jitters and doesn't feel smooth and responsive
+		this_thread::sleep_until(step); 
 	}
 }
 
@@ -84,12 +82,10 @@ void Physics::PhysicsMovementUpdate()
 
 	for (const auto& rigidbody : rigidbodies)
 	{
-		// the deltaSpeed changes, sure, but the m_PhysicsDeltaTime should multiplied with the deltaSpeed, give the exact same value
-		// Now deltaSpeed is constant and physicsDelta is not, meaning that deltaSpeed shouldn't be constant, it should be calculated for each physics update
 		rigidbody->transform->move(rigidbody->velocity * finalDeltaSpeed);
 
-		// then comes the question when do you apply the gravity within the physics loop? no movement should be done after collision tough
-		if (rigidbody->useGravity) AddForce(rigidbody, gravity * finalDeltaSpeed); // Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
+		// Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
+		if (rigidbody->useGravity) AddForce(rigidbody, gravity * finalDeltaSpeed); 
 	}
 }
 
@@ -116,10 +112,9 @@ const vector<Collider*>& Physics::GetColliders()
 
 void Physics::ParticleUpdate()
 {
-	for (const auto& particleSystem : particleSystems) // foreach
+	for (const auto& particleSystem : particleSystems)
 	{
-		// the movement should be dependent on the physics time step and delta time between frames
-		particleSystem->Update(); // this will be dependent on the speed of the physicsUpdate, this is technically their movement speed
+		particleSystem->Update(); 
 	}
 }
 
