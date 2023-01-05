@@ -10,7 +10,7 @@ class BoxCollider : public Collider
 public:
 	RectangleShape* rect;
 	BoxCollider() {};
-	BoxCollider(RectangleShape& _rect, Vector2f pos, Color color = Color::White) : 
+	BoxCollider(RectangleShape& _rect, Vector2f pos = Vector2f(0,0), Color color = Color::White) :
 		rect(&_rect)
 	{
 		rect->setPosition(pos);
@@ -18,11 +18,6 @@ public:
 		rect->setFillColor(color);
 		shape = &_rect;
 	};
-
-	virtual bool Collision(Collider& _other)
-	{
-		return false;
-	}
 
 private:
 

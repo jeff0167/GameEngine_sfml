@@ -5,16 +5,17 @@
 using namespace sf;
 using namespace std;
 
-class Rigidbody : public Component 
+class Rigidbody : public Component
 {
 public:
-    Vector2f velocity;
-    Vector2f rotationalVelocity;
-    Transformable* transform;
+	Vector2f velocity;
+	Vector2f rotationalVelocity;
+	Transformable* transform;
+	bool useGravity;
 
-    Rigidbody() {}
-    double Magnitude();
-    void AddForce(float force);
+	Rigidbody() {}
+	double Magnitude();
+	void AddForce(float force);
 
 private:
 

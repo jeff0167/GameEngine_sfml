@@ -1,5 +1,6 @@
 # Prerequisites
 *.d
+.vs/
 
 # Personal Added for sfml, might make it hard to reuse the repo, but serves no functional purpose for me
 *.vsidx
@@ -55,3 +56,7 @@
 *.idb
 *.exe
 *.pdb
+
+.vs/SFML_Tutorial/v17/.suo
+.vs/SFML_Tutorial/v17/Browse.VC.db
+.vs/SFML_Tutorial/v17/Browse.VC.db

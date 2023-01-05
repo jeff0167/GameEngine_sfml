@@ -1,8 +1,17 @@
 #include "Monobehaviour.h"
-#include "GameObject.h"
-#include "Debug.h"
 
 using namespace sf;
+using namespace std;
+
+Monobehaviour* Monobehaviour::_monobehaviour = nullptr;
+
+Monobehaviour* Monobehaviour::GetInstance()
+{
+	if (_monobehaviour == nullptr) {
+		_monobehaviour = new Monobehaviour();
+	}
+	return _monobehaviour;
+}
 
 GameObject Monobehaviour::Instantiate(GameObject gameObject)
 {
@@ -25,9 +34,8 @@ void Monobehaviour::Invoke(function<void()> function, float callDelay)
 	t.detach();
 }
 
-void Monobehaviour::DelayedCall(function<void()> function, float callDellay)
+void Monobehaviour::DelayedCall(function<void()> function, float callDellay) 
 {
-	this_thread::sleep_for(chrono::milliseconds((long)callDellay));
+	this_thread::sleep_for(chrono::milliseconds((long)callDellay)); // should I call stop on the thread? will the thread keep existing? it should be going out of scope tough
 	function();
 }
-

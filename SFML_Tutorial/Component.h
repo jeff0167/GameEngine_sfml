@@ -5,10 +5,17 @@
 using namespace sf;
 using namespace std;
 
+class ParticleSystemUpdate
+{
+public:
+	virtual void Update() = 0;
+
+	virtual void SetEmitterTransform(Transformable& transform) = 0;
+};
+
 class Component
 {
 public:
-	int Member;
 	GameObject* gameObject;
 
 	Component() {};
@@ -16,19 +23,10 @@ public:
 	{
 	}
 
-	bool operator == (const Component& Ref) const
+	virtual string ToString() 
 	{
-		return(this->Member == Ref.GetMember());
-	}
-
-	const int GetMember() const
-	{
-		return(this->Member);
-	}
-
-	string ToString() 
-	{
-		return "Im a component";
+		string className = typeid(*this).name();
+		return "Im a " + className;
 	}
 
 private:
