@@ -1,11 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include "Physics.h"
-#include "Pch.h"
-#include "Mathf.h"
-#include "Debug.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
-#include "Debug.h"
+//#include "Mathf.h"
 
 using namespace sf;
 using namespace std;
@@ -16,7 +13,7 @@ bool BoxXBox(BoxCollider& first, BoxCollider& second);
 bool CircleXCircle(CircleCollider& first, CircleCollider& second);
 bool CircleXBox(CircleCollider& first, BoxCollider& second);
 
-Physics m_Physics = *Science; // caching it's reference to itself for the static functions to use, real pretty
+Physics* m_Physics = Science; // caching it's reference to itself for the static functions to use, real pretty
 
 Physics* Physics::_physics = nullptr;
 
@@ -215,9 +212,9 @@ static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 		if (xi > xj)
 		{
 			// this might need some updates values, or other values, seems to work alright atm
-			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		//Debug::GetInstance()->Log("bound intersect");
 		return true;
 	}
@@ -237,9 +234,9 @@ static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circ
 		//if (xi == 0 || xj == 0) return true;
 		if (xi > xj)
 		{
-			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		//Debug::GetInstance()->Log("Circle collision");
 		return true;
 	}
@@ -257,9 +254,9 @@ static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x b
 
 		if (xi > xj)
 		{
-			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
-		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics.FixedUpdateMovement());
+		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		//Debug::GetInstance()->Log("bound intersect");
 		return true;
 	}

@@ -51,8 +51,14 @@ bool idle = true;
 Rigidbody rb, g2rb;
 GameObject go, circleThing;
 
+//View camera; // usable if you need to move, scale and rotate the view, like any camera in Unity
+
 int main() // main should literally be empty!!
 {
+	//camera.setCenter(Vector2f(600, 600)); // making use of a camera
+	//camera.setSize(Vector2f(1200, 1200));
+	//window.getViewport(camera);
+	// 
 	// What I have learned
 	// I cannot load the scene when in game mode
 
@@ -140,6 +146,9 @@ int main() // main should literally be empty!!
 
 		PlayerAnimState(); // animate based on input
 		CollisionChecking(); // last check for collisions
+
+		//window.setView(camera); // setting the view of the camera, this is not a expensive call, don't worry
+
 		Draw();
 	}
 	return 0;
@@ -220,6 +229,7 @@ void KeyBoardInput()
 	{
 		velocity.y = 1;
 	}
+	//camera.move(Mathf::Normalize(velocity) * moveSpeed); // moves the camera
 	rb.velocity = Mathf::Normalize(velocity) * moveSpeed;
 }
 
