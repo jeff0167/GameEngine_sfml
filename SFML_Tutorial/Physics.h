@@ -25,7 +25,7 @@ public:
 	void AddRigidbody(Rigidbody& _rigidbody);
 	void RemoveRigidbody(Rigidbody& _rigidbody);
 
-	vector<Collider*> colliders; // need to use dynamic programming when checking for collisions, though for a simple test with only a handfull of different colliders it will do fine
+	vector<Collider*> colliders;
 	const vector<Collider*>& GetColliders();
 	void AddCollider(Collider& _collider);
 	void RemoveCollider(Collider& _collider);
@@ -47,7 +47,7 @@ public:
 
 protected:
 	static Physics* _physics;
-	const chrono::duration<double> PhysicsTimeStep = 0.005s; // 0.02 for 50 times pr sec 0.008333 for 120 times pr sec, equal to defualt fps limit     //TODO this is now affecting movespeed
+	const chrono::duration<double> PhysicsTimeStep = 0.005s; // 0.02 for 50 times pr sec, 0.008333 for 120 times pr sec
 	Time m_Time;
 	Clock m_Clock;
 	Vector2f gravity = Vector2f(0, 9.81);

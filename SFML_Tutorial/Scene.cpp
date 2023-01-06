@@ -55,10 +55,8 @@ void Scene::LoadScene()
 	file_obj.close();
 }
 
-void Scene::LoadScene(string scenePath) // well okey, we load the text file but we do nothing with it?!?! at least return it or put it into the scene
+void Scene::LoadScene(string scenePath)
 {
-	// well suppose the scene just holds all gameObjects and we try and create them by reading from the scene we load
-
 	ifstream file_obj(scenePath + ".txt", ios::in); // deserializing
 	stringstream stream;
 	stream << file_obj.rdbuf();

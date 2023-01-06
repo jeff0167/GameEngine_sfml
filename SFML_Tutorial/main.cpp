@@ -24,7 +24,7 @@ void CollisionChecking();
 void PlayerAnimState();
 void SceneWindow();
 
-uint32_t windowHeight = 1200; // better then unsigned int, shorter and clearer
+uint32_t windowHeight = 1200;
 uint32_t windowWidth = 1200;
 
 RenderWindow window(VideoMode(windowWidth, windowHeight), "Dragon game", Style::Close | Style::Titlebar | Style::Resize);
@@ -92,7 +92,7 @@ int main() // main should literally be empty!!
 
 	//ParticleSystem particlesPlayer(5000, Color::Blue, 500); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
 
-	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); // the pos should be set to the gameObject pos if no pos is given
+	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); 
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go = GameObject(_player, rb, box_);
 
@@ -184,12 +184,12 @@ void PlayerAnimState()
 	_player.setTextureRect(_playerAnim.uvRect);
 }
 
-void Shoot() // make objects with monobehaviour so that objects don't go out of scope, here the drawable and rigidbody ref are added to their management system and still
+void Shoot() // make objects with monobehaviour so that objects don't go out of scope, here the drawable and rigidbody ref are added to their management system
 {
 	CircleShape* s = new CircleShape(10, 50); 
 	s->setPosition(_player.getPosition() + Vector2f(0, 100) + Vector2f(+40, 0) + (Vector2f(70, 0) * _player.getScale().x));
 	s->setOrigin(_player.getOrigin());
-	s->setFillColor(Color::Blue);
+	s->setFillColor(Color::Magenta);
 
 	Rigidbody* r = new Rigidbody();
 	GameObject g = GameObject(*s, *r);
