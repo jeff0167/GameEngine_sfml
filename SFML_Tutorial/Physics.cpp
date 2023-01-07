@@ -32,21 +32,21 @@ void Physics::InitializePhysicsUpdate()
 	t.detach();
 }
 
-void Physics::PhysicsUpdate() 
+void Physics::PhysicsUpdate()
 {
 	// oh boy, a long type, saved as cache for reuse though
-	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step; 
+	chrono::time_point<chrono::system_clock, chrono::duration<double, chrono::system_clock::period>> step;
 
-	while (true) 
+	while (true)
 	{
-		step = chrono::system_clock::now() + PhysicsTimeStep; 
+		step = chrono::system_clock::now() + PhysicsTimeStep;
 
 		UpdateTime();
-		ParticleUpdate();      
-		PhysicsMovementUpdate(); 
+		ParticleUpdate();
+		PhysicsMovementUpdate();
 		PhysicsCollisionUpdate();
 		// it's not close to 20 ms, sometimes it's even well above 30 ms
-		this_thread::sleep_until(step); 
+		this_thread::sleep_until(step);
 	}
 }
 
@@ -85,7 +85,7 @@ void Physics::PhysicsMovementUpdate()
 		rigidbody->transform->move(rigidbody->velocity * finalDeltaSpeed);
 
 		// Hmm should perhaps have it so you have a list of all objects that use gravity, so you dont do the check
-		if (rigidbody->useGravity) AddForce(rigidbody, gravity * finalDeltaSpeed); 
+		if (rigidbody->useGravity) AddForce(rigidbody, gravity * finalDeltaSpeed);
 	}
 }
 
@@ -114,7 +114,7 @@ void Physics::ParticleUpdate()
 {
 	for (const auto& particleSystem : particleSystems)
 	{
-		particleSystem->Update(); 
+		particleSystem->Update();
 	}
 }
 
@@ -143,9 +143,9 @@ void AddForce(Rigidbody* rb, Vector2f force)
 	rb->velocity += force;
 }
 
-static bool Collision(Collider& first, Collider& second)
+static bool Collision(Collider& first, Collider& second) // can't catch and ignore access violation
 {
-	string firstName = typeid(first).name();
+	string firstName = typeid(first).name(); // really wish I knew how to check for null here of the type
 	string secondName = typeid(second).name();
 
 	Vector2f d(0, 0);
@@ -210,7 +210,7 @@ static bool BoxXBox(BoxCollider& first, BoxCollider& second) // box x box
 			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
 		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
-		//Debug::GetInstance()->Log("bound intersect");
+		//DebugLog("bound intersect");
 		return true;
 	}
 	return false;
@@ -232,7 +232,7 @@ static bool CircleXCircle(CircleCollider& first, CircleCollider& second) // circ
 			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
 		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
-		//Debug::GetInstance()->Log("Circle collision");
+		//DebugLog("Circle collision");
 		return true;
 	}
 	return false;
@@ -252,9 +252,9 @@ static bool CircleXBox(CircleCollider& first, BoxCollider& second) // circle x b
 			second.rigidbody->transform->move(first.rigidbody->velocity * m_Physics->FixedUpdateMovement());
 		}
 		else first.rigidbody->transform->move(second.rigidbody->velocity * m_Physics->FixedUpdateMovement());
-		//Debug::GetInstance()->Log("bound intersect");
+		//DebugLog("bound intersect");
 		return true;
 	}
-	//Debug::GetInstance()->Log("bound not intersect");
+	//DebugLog("bound not intersect");
 	return false;
 }

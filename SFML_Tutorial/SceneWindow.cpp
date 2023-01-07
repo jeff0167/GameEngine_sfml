@@ -151,7 +151,7 @@ void SceneWindow::LoadScene(string scenePath)
 
 void SceneWindow::SetActiveScene(string scenePath)
 {
-	Scene::GetInstance()->SetActiveScene(scenePath);
+	SceneManager->SetActiveScene(scenePath);
 }
 
 static void CreateDefaultSceneWindowObjects()

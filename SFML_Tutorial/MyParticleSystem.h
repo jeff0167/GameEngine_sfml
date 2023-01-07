@@ -75,7 +75,7 @@ public:
 
 		//for (auto& particle : m_particles)  // I get 130-150 withoput async and 15-30 with async with 2k particles, pog
 		//{
-		//	Canvas::GetInstance()->AddDrawable(particle.dot);
+		//	Renderer->AddDrawable(particle.dot);
 		//	particle.SetParticleSystem(*this);
 		//	particle.dot.setTexture(&texture);
 		//	float size = (rand() % 3) * radius;

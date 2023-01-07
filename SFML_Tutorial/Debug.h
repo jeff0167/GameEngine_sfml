@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Pch.h"
+#include "BoxCollider.h"
 
 // dude, so cool!!
 #ifdef GE_DEBUG
@@ -83,6 +84,12 @@ public:
 	{
 		Log(string_view("Milliseconds: " + to_string(line.asMilliseconds())));
 	}
+
+	inline void Log(BoxCollider& line)
+	{
+		Log(string_view(line.ToString()));
+	}
+
 
 	inline void Log(string_view line)
 	{

@@ -10,7 +10,7 @@ m_emitter(0.f, 0.f),
 m_particleSpeed(speed),
 m_TargetTransform(nullptr)
 {
-	Canvas::GetInstance()->AddDrawable(*this);
+	Renderer->AddDrawable(*this);
 	for (size_t i = 0; i < m_particles.size(); ++i)
 	{
 		m_vertices[i].color = color;

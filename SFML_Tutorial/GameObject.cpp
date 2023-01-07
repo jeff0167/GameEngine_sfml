@@ -60,7 +60,7 @@ GameObject::GameObject(Shape& drawShape, const vector<Component*>& _components) 
 		AddComponent(*_components[i]);
 	}
 	SceneManager->AddGameObject(*this);
-	Canvas::GetInstance()->AddDrawable(drawShape);
+	Renderer->AddDrawable(drawShape);
 }
 
 void GameObject::AddComponent(Component& _component)
@@ -75,19 +75,19 @@ void GameObject::AddComponent(Component& _component)
 		auto cc = GetComponent(Collider()); 
 		if (cc != nullptr) dynamic_cast<Collider&>(*cc).rigidbody = &dynamic_cast<Rigidbody&>(_component);
 
-		Physics::GetInstance()->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
+		Science->AddRigidbody(dynamic_cast<Rigidbody&>(_component));
 	}
 	else if (classType == "class CircleCollider" || classType == "class BoxCollider") // check if it contains collider in string
 	{
 		auto d = GetComponent(Rigidbody());
 		dynamic_cast<Collider&>(_component).rigidbody = &dynamic_cast<Rigidbody&>(*d);
 
-		Physics::GetInstance()->AddCollider(dynamic_cast<Collider&>(_component)); 
+		Science->AddCollider(dynamic_cast<Collider&>(_component)); 
 	}
 	else if (classType == "class ParticleSystem" || classType == "class MyParticleSystem")
 	{
 		dynamic_cast<ParticleSystemUpdate&>(_component).SetEmitterTransform(*transform);
-		Physics::GetInstance()->AddParticleSystem(dynamic_cast<ParticleSystemUpdate&>(_component)); 
+		Science->AddParticleSystem(dynamic_cast<ParticleSystemUpdate&>(_component)); 
 	}
 	components.push_back(&_component);
 	_component.gameObject = this; 
@@ -114,7 +114,7 @@ void GameObject::RemoveComponent(Component& _component) // sure it's no longer i
 	for (size_t i = 0; i < components.size(); i++) // it needs to use templates as well to remove components by type and certainly not purely by the memory adress
 	{
 		string currentComponentType = typeid(*components[i]).name();
-		//Debug::GetInstance()->Log("to remove: " + removeComponentType + " current: " + currentComponentType);
+		//DebugLog("to remove: " + removeComponentType + " current: " + currentComponentType);
 		if (removeComponentType == currentComponentType) 
 		{
 			components.erase(next(components.begin(), i), next(components.begin(), i + 1));
