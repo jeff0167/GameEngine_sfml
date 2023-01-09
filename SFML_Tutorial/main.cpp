@@ -53,25 +53,23 @@ GameObject go, circleThing;
 
 //View camera; // usable if you need to move, scale and rotate the view, like any camera in Unity
 
-
-RectangleShape _background, _rock;
-BoxCollider bx;
-
-GameObject Background, Rock;
-
-Rigidbody rb2;
-
-void GameStart()
+int main() // main should literally be empty!!
 {
-	// this will initiate the game with it's positions and activate game objects to be visible and whatnot
+	//camera.setCenter(Vector2f(600, 600)); // making use of a camera
+	//camera.setSize(Vector2f(1200, 1200));
+	//window.getViewport(camera);
 
-	// dude i absolutely wasted my time, making useless ai images, fooling around with anim, making a game with unity?!?!?
+	Renderer->AddWindow(window);
+	switch (myApplication)
+	{
+	case Running_GameWindow:
+		break;
+	case Running_SceneWindow:
+		SceneWindow(); // this will run it's own loop
+		break;
+	}
 
-	// gonna make a game with the dragon, that already has anim
-	// it's gonna shoot projectiles, maybe with particle effect's at the mouse pos
-	// things, idk a rock or something comes at the player
-	// the things shrink and die and explode
-	// there are a few objects in the scene and a background
+	Science->InitializePhysicsUpdate();
 
 	hero.loadFromFile("_sprites_heroes.png");
 	particle.loadFromFile("ParticleDefault.png");
@@ -86,134 +84,29 @@ void GameStart()
 
 	_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); 
 
+	//ParticleSystem particlesPlayer(5000, Color::Blue, 500); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
+
 	BoxCollider box_ = BoxCollider(_player, _player.getPosition()); 
 	box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
 	go = GameObject(_player, rb, box_);
 
-	Renderer->ChangeDrawableLayer(_player, 9); // the higher the layer the further in front
+	Renderer->ChangeDrawableLayer(_player, 4); // the higher the layer the further in front
 
-	// background
+	BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); 
+	GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
 
-	snowyForest.loadFromFile("Dream_Background.jpg");
+	CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400, 400));
+	circleThing = GameObject(*circle.shape, circle);
+	circleThing.AddComponent(g2rb); 
 
-	auto size = Vector2f(snowyForest.getSize().x, snowyForest.getSize().y);
-	_background.setOrigin(_background.getSize().x, _background.getSize().y);
-	_background.setPosition(windowWidth / size.x - 5, windowHeight / size.y - 800);
+	unique_ptr<CircleShape> d(new CircleShape(50, 50)); // hmm i don't like that i manually have to make sure that i use a unique ptr
+	CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
+	GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
 
-	_background.setSize(size * 1.28f);
-	_background.setTexture(&snowyForest);
-	Background = GameObject(_background);
+	Renderer->ChangeDrawableLayer(*circle2.shape, 7); // dude it works, no trouble, just worked first try
 
-	Renderer->ChangeDrawableLayer(_background, 0);
-
-	// rock
-	astroid.loadFromFile("Rock.png");
-
-	size = Vector2f(astroid.getSize().x, astroid.getSize().y);
-	_rock.setOrigin(_rock.getSize().x / 2, _rock.getSize().y / 2);
-	_rock.setPosition(windowWidth / 2 + 200, windowHeight / 2 + 200);
-
-	_rock.setTexture(&astroid);
-	_rock.setSize(size);
-
-	_rock.setSize(_rock.getSize() * 0.5f); // when changing size, you must always change origin as well
-	_rock.setOrigin(_rock.getSize().x / 2.0f, _rock.getSize().y / 2.0f);
-
-	bx = BoxCollider(_rock, _rock.getPosition());
-	bx.rect->setOrigin(_rock.getOrigin().x / 2, _rock.getOrigin().y / 2);
-
-	// the boxcollider can go out of scope, and the physics still expect the rigidbody to exist
-	// when things go out of scope(gets destroyed) they have to be removed from what ever list they were added to
-
-	Rock = GameObject(_rock, rb2); // immediately after, delete on gameObject gets called, it doesn't even go out of scope yet?!? is it making a copy or something?
-	rb2.velocity = Vector2f(10, 0);
-	// even if the game object gets deleted the rigidbody should still exist and be accessible
-
-	Renderer->ChangeDrawableLayer(_rock, 1);
-
-	// what I really need is a sprite renderer class to handle all this png data
-}
-
-int main() // main should literally be empty!!
-{
-	//camera.setCenter(Vector2f(600, 600)); // making use of a camera
-	//camera.setSize(Vector2f(1200, 1200));
-	//window.getViewport(camera);
-
-	// I think that I need to try and make a simple game and see what obstacles I face in doing so
-	// then I can find possible features that will improve the experience of developing games
-
-	// conclusion, making a game with the engine is terribly difficult, takes alot of code to handle images
-	// tons of access violation, gameObject deletion for some reason, can't reset the lvl, that would have to be done manually
-	// would have to directly go and make changes to the engine to add wished functionallity 
-	// hard to place images and set appropriate size of things without having to compile and run the engine
-	// can't delete objects or components at the moment, nor even disable gameObjects, would have to relly on a pool system for reuse of objects
-	// can't easily make prefabs
-	// any and all changes has to be done through code, that then needs to be compiled
-	//
-	// the scenewindow would really be handy as well as well as a config file for simple settings
-	// not to mention the seperation of concerns with having the game engine and the game seperate, the game code should really not be within main
-	// would have a horrible time trying to use the engine with another project
-	//
-	// Scene serialization and the seperation of the game engine and the game would be huge benefits for the engine
-	// Though both things that are very hard to implement and would take a ton of time
-	// first the errors withing the game engine would have to be resolved, everything tested
-	// really tempted to start fresh to then also get release build setup and pch again and clean the headers
-	//
-	// Hmm a game I could see would be possible to create without issue would be a simple highscore game
-	// the only things fall or what ever, coming at the player and if he is hit he dies(invoke) and we place him at a start position
-	// the time is then measured upon dead and you would display the current time while playing and the highscore
-
-	Renderer->AddWindow(window);
-	switch (myApplication)
-	{
-	case Running_GameWindow:
-		break;
-	case Running_SceneWindow:
-		SceneWindow(); // this will run it's own loop
-		break;
-	}
-
-	Science->InitializePhysicsUpdate();
-
-	GameStart();
-
-	//hero.loadFromFile("_sprites_heroes.png");
-	//particle.loadFromFile("ParticleDefault.png");
-	//Vector2u textureSize = hero.getSize(); // 9 * 8
-	//textureSize.x /= 9;
-	//textureSize.y /= 8;
-
-	//_player.setPosition(600, 600);
-	//_player.setOrigin(textureSize.x * (float)3.5, hero.getSize().y / 2); // check what these values give,  the character in the image are not centered in their so called box, need a better image to do this with
-	//_player.setTexture(&hero);
-	//_player.setTextureRect(IntRect(textureSize.x * 1, textureSize.y * 7, textureSize.x, textureSize.y));
-
-	//_playerAnim = Animation(&hero, Vector2u(9, 8), 0.15f); 
-
-	////ParticleSystem particlesPlayer(5000, Color::Blue, 500); // try not and go over 50.000 particles, preferably under 40k, 40k will just about give 120 fps
-
-	//BoxCollider box_ = BoxCollider(_player, _player.getPosition()); 
-	//box_.rect->setOrigin(_player.getOrigin().x / 2, _player.getOrigin().y / 2);
-	//go = GameObject(_player, rb, box_);
-
-	//Renderer->ChangeDrawableLayer(_player, 4); // the higher the layer the further in front
-
-	//BoxCollider aboxC = BoxCollider(*new RectangleShape(Vector2f(100, 100)), Vector2f(1100, 1000)); 
-	//GameObject g = GameObject(*aboxC.shape, aboxC, *new Rigidbody());
-
-	//CircleCollider circle = CircleCollider(*new CircleShape(50, 50), Vector2f(400, 400));
-	//circleThing = GameObject(*circle.shape, circle);
-	//circleThing.AddComponent(g2rb); 
-
-	//unique_ptr<CircleShape> d(new CircleShape(50, 50)); // hmm i don't like that i manually have to make sure that i use a unique ptr
-	//CircleCollider circle2 = CircleCollider(*d, Vector2f(100, 200), Color::Red);
-	//GameObject c = GameObject(*circle2.shape, circle2, *new Rigidbody()); // carefull we have memory leak with new
-
-	//Renderer->ChangeDrawableLayer(*circle2.shape, 7); // dude it works, no trouble, just worked first try
-
-	//MyParticleSystem p(&_player, 2000, 5, particle, 50, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
-	//go.AddComponent(p);
+	MyParticleSystem p(&_player, 50, 5, particle, 50, seconds(1), Color::Black); // can currently only emit 1.5k before the fps goes below the minimum required fps
+	go.AddComponent(p);
 
 	window.setFramerateLimit(120); // this should also be changeable
 	while (window.isOpen()) // checking window events

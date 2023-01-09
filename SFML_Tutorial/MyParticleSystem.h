@@ -73,22 +73,7 @@ public:
 	{
 		//auto d = Mono->Timer();
 
-		//for (auto& particle : m_particles)  // I get 130-150 withoput async and 15-30 with async with 2k particles, pog
-		//{
-		//	Renderer->AddDrawable(particle.dot);
-		//	particle.SetParticleSystem(*this);
-		//	particle.dot.setTexture(&texture);
-		//	float size = (rand() % 3) * radius;
-		//	particle.dot.setRadius(size);
-		//	float angle = (rand() % 360) * 3.14f / 180.f;
-		//	float speed = (rand() % 50) * 0.01 * _speed + 0.05;
-		//	particle.SetVelocity(cos(angle) * speed, sin(angle) * speed);
-		//	particle.SetMaxLifeTime(milliseconds((rand() % 100) * 2.0f + lifeTime.asMilliseconds()));
-		//  particle.lifespan = particle->maxLifespan;
-		//  particle.SetPosition(m_TargetTransform->getPosition());
-		//}
-
-		for (auto& particle : m_particles)
+		for (auto& particle : m_particles) 
 		{
 			Renderer->AddDrawable(particle.dot);
 			particle.SetParticleSystem(*this);
@@ -108,7 +93,7 @@ public:
 
 	void Update() override
 	{
-		for (auto& particle : m_particles) 
+		for (auto& particle : m_particles)
 		{
 			particle.Update();
 		}

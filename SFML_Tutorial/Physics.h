@@ -35,7 +35,7 @@ public:
 	void AddParticleSystem(ParticleSystemUpdate& _particleSystem);
 	void RemoveParticleSystem(ParticleSystemUpdate& _particleSystem);
 
-	double m_DeltaSpeed = 10.0;
+	const double m_DeltaSpeed = 10.0;
 	float m_PhysicsDeltaTime;
 
 	float GetDeltaTimeMili() 
